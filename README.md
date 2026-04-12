@@ -30,6 +30,9 @@ cp -r /tmp/cc-skills/<skill-name> ~/.claude/skills/
 | 스킬 | 설명 | 트리거 예시 |
 |------|------|------------|
 | [terminal-dev-setup](./terminal-dev-setup) | Ghostty, tmux 터미널 개발환경 설정 | "터미널 설정해줘", "ghostty 테마 바꿔줘", "tmux 세팅" |
+| [tmux-work-setting](./tmux-work-setting) | tmux 세션/윈도우/pane을 구성하고 각 pane에서 Claude Code를 자동 실행 | "tmux 작업환경 세팅", "클로드 여러 개 띄워줘", "멀티 pane 세션 만들어줘" |
+| [email-sender](./email-sender) | 파일 탐색·문서 생성 결과를 정리해 Gmail 초안으로 작성 | "메일로 보내줘", "파일 찾아서 메일로", "보고서 만들어서 이메일로" |
+| [evidence-capture](./evidence-capture) | 소스코드·웹·터미널·로그를 PNG 스크린샷으로 캡처해 증적 폴더에 저장 | "증적 캡처해줘", "스크린샷 찍어줘", "감사 자료 수집" |
 
 ## 디렉토리 구조
 
@@ -37,6 +40,12 @@ cp -r /tmp/cc-skills/<skill-name> ~/.claude/skills/
 cc-skills/
 ├── README.md
 ├── terminal-dev-setup/
+│   └── SKILL.md
+├── tmux-work-setting/
+│   └── SKILL.md
+├── email-sender/
+│   └── SKILL.md
+├── evidence-capture/
 │   └── SKILL.md
 ├── <future-skill>/
 │   ├── SKILL.md
