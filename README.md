@@ -7,7 +7,9 @@ Claude Code에서 사용하는 커스텀 스킬 모음.
 ### 심볼릭 링크 방식 (권장)
 
 워크스페이스에서 직접 스킬을 수정하면서 사용하려면 `~/.claude/skills/<name>`을 심볼릭 링크로 연결한다.
-`SKILL.md`의 `description` 필드는 single-line 문자열이어야 Skill 도구에서 인식한다.
+`SKILL.md`의 `description`은 유효한 YAML 스칼라면 인식된다. 한 줄 문자열뿐 아니라
+블록 스칼라(`|`, `>-`)도 정상 동작한다 — 이 레포의 13개 스킬 중 5개가 블록 스칼라를 쓰고 있다.
+다만 블록 인디케이터 없이 줄만 바꿔 이어 쓰면 YAML 파싱이 깨지므로, 여러 줄이 필요하면 `|` 또는 `>-`를 반드시 붙인다.
 
 ```bash
 git clone https://github.com/picpal/claude-skills.git ~/workspace/claude-skills
@@ -108,5 +110,6 @@ claude-skills/
 새 스킬을 추가하려면:
 
 1. 스킬 이름으로 폴더 생성 (kebab-case)
-2. `SKILL.md` 작성 — YAML frontmatter에 `name`, `description` 필수, `description`은 single-line
+2. `SKILL.md` 작성 — YAML frontmatter에 `name`, `description` 필수.
+   `description`은 한 줄 문자열 또는 블록 스칼라(`|`, `>-`) 중 하나로 쓴다 (인디케이터 없는 줄바꿈은 파싱 실패)
 3. 이 README의 스킬 목록 테이블에 추가
