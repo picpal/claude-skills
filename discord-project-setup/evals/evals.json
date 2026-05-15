@@ -1,0 +1,23 @@
+{
+  "skill_name": "discord-project-setup",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "이 프로젝트에 디스코드 봇 연결해줘. 토큰은 <YOUR_DISCORD_BOT_TOKEN> 이야 (실제 토큰은 https://discord.com/developers/applications 에서 발급)",
+      "expected_output": ".discord-token 파일 생성 (chmod 600), .gitignore에 항목 추가, 셸 wrapper 확인, 글로벌 .env 적용. 토큰 전체가 출력에 노출되지 않아야 함.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "현재 디스코드 설정 상태 좀 확인해줘",
+      "expected_output": "프로젝트명, 토큰 마스킹 상태, gitignore 포함 여부, wrapper 유무, 글로벌 env 일치 여부를 요약 출력",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "이 프로젝트에서 디스코드 토큰 제거해줘",
+      "expected_output": ".discord-token 삭제, .gitignore에서 항목 제거, 글로벌 .env는 건드리지 않음을 안내",
+      "files": []
+    }
+  ]
+}
