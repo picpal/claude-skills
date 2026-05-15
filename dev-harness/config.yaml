@@ -1,0 +1,52 @@
+# dev-harness phase 매핑 — 외부 스킬 교체점
+#
+# 각 phase의 type:
+#   - skill   : Skill 도구로 직접 호출 (id 필수)
+#   - command : 슬래시 커맨드 (value 필수). Claude는 직접 실행 못 함 → 사용자에게 안내
+#   - inline  : references/ 가이드 따라 Claude가 직접 진행 (path 필수)
+#
+# skill/command 타입은 fallback (inline path) 필수.
+# 호출 실패 시 자동으로 fallback 으로 전환.
+
+phases:
+  classify:
+    type: inline
+    path: references/classify-rubric.md
+
+  brainstorm:
+    type: skill
+    id: superpowers:brainstorming
+    fallback: references/phase-guides.md#brainstorm
+
+  plan:
+    type: skill
+    id: superpowers:writing-plans
+    fallback: references/phase-guides.md#plan
+
+  execute:
+    type: skill
+    id: superpowers:executing-plans
+    fallback: references/phase-guides.md#execute
+
+  qa:
+    type: skill
+    id: qa
+    fallback: references/phase-guides.md#qa
+
+  lesson:
+    type: inline
+    path: references/lesson-template.md
+
+# 교체 예시 (주석 처리됨):
+#
+# gstack 조합:
+#   brainstorm: { type: skill,   id: office-hours,            fallback: references/phase-guides.md#brainstorm }
+#   plan:       { type: command, value: /plan,                fallback: references/phase-guides.md#plan }
+#   execute:    { type: command, value: /implement,           fallback: references/phase-guides.md#execute }
+#   qa:         { type: command, value: /qa,                  fallback: references/phase-guides.md#qa }
+#
+# 완전 inline (외부 의존 0):
+#   brainstorm: { type: inline, path: references/phase-guides.md#brainstorm }
+#   plan:       { type: inline, path: references/phase-guides.md#plan }
+#   execute:    { type: inline, path: references/phase-guides.md#execute }
+#   qa:         { type: inline, path: references/phase-guides.md#qa }
