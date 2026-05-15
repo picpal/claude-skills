@@ -37,7 +37,6 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [evidence-capture](./evidence-capture) | 소스코드·웹·터미널·로그를 PNG 스크린샷으로 캡처해 증적 폴더에 저장 | "증적 캡처해줘", "스크린샷 찍어줘", "감사 자료 수집" |
 | [dev-harness](./dev-harness) | Classify→Brainstorm→Plan→Execute→QA→Lesson 6단계 코드 작업 파이프라인, `lessons.md` 자동 재투입 | "하네스 돌려줘", "파이프라인으로 진행", "dev harness로" |
 | [discord-project-setup](./discord-project-setup) | 프로젝트별 Discord 봇 토큰 연결·상태 확인·제거 (`.discord-token`, `.gitignore`, claude wrapper) | "디스코드 프로젝트 설정", "봇 토큰 연결", "discord setup" |
-| [doc-review-debate](./doc-review-debate) | Claude Opus와 OpenAI Codex가 다중 라운드 토론으로 설계문서·PRD·TRD를 심층 검토 | "문서 검토해줘", "설계서 리뷰", "PRD 검토" |
 | [inflearn-script-collector](./inflearn-script-collector) | Claude in Chrome으로 인프런 강의 스크립트를 자동 수집해 챕터별 원본·정리 MD 생성 | "인프런 강의 정리해줘", "강의 스크립트 뽑아줘", "인프런 자막 추출" |
 | [resume-checker](./resume-checker) | 한국어 이력서를 인터뷰→분석→AS-IS/TO-BE 첨삭→최종본까지 생성 | "이력서 봐줘", "이력서 첨삭해줘", "자소서 검토" |
 
@@ -62,9 +61,6 @@ claude-skills/
 ├── discord-project-setup/
 │   ├── SKILL.md
 │   ├── scripts/
-│   └── evals/
-├── doc-review-debate/
-│   ├── SKILL.md
 │   └── evals/
 ├── inflearn-script-collector/
 │   └── SKILL.md
