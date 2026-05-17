@@ -1,0 +1,10 @@
+# 평가 산출물 / skill-creator workspace
+obsidian-second-brain-workspace/
+*-workspace/
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
