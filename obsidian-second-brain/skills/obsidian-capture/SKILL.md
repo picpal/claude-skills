@@ -1,6 +1,6 @@
 ---
 name: obsidian-capture
-description: "생각, 링크, CLI 세션, OCR 책, 영상, YouTube 자막, 이미지, 문서, 웹페이지를 분류 강요 없이 Obsidian 제2의 뇌 Vault에 빠르게 받아 적는다. 'obsidian에 저장', '캡처해줘', '옵시디언에 메모', 'vault에 넣어줘', 'YouTube 자막 저장', 'OCR 책 저장', '링크 저장해줘' 같은 요청에 트리거. 원본은 덮어쓰지 않고, 분류 애매하면 needs_classification 상태로 둔다."
+description: "생각, 링크, CLI 세션, OCR 책, 영상, YouTube 자막, 이미지, 문서, 웹페이지를 분류 강요 없이 Obsidian 제2의 뇌 Vault에 빠르게 받아 적는다. 'obsidian에 저장', '캡처해줘', '옵시디언에 메모', 'vault에 넣어줘', 'YouTube 자막 저장', 'OCR 책 저장', '링크 저장해줘' 같은 요청에 트리거. 원본은 덮어쓰지 않고, 분류 애매하면 needs_classification 상태로 둔다. 사용자가 vault가 있다는 맥락에서 메모/저장/기록을 언급하면 명시 요청이 없어도 이 스킬을 우선 고려 — 캡처 마찰은 second brain의 최대 적이다."
 ---
 
 # Obsidian Capture
@@ -10,6 +10,8 @@ Use this skill when the user wants to save a thought, note, CLI session, URL, vi
 ## Core Rule
 
 Capture must be low-friction. Do not force the user to classify the material before saving it.
+
+**Why:** The largest failure mode of a second brain is empty inboxes — every classification question raised at capture time is friction that pushes the user to skip the vault entirely. Sorting can happen later in compile; saving cannot.
 
 ## Inputs
 
@@ -107,6 +109,46 @@ Prefer `20_Sources/books` for book material. Use `20_Sources/documents` only whe
 - Do not treat OCR text as exact evidence when the scan quality is uncertain.
 - Do not expose long copyrighted book text in chat output by default. Keep private OCR source material in the vault and work from summaries, location notes, and short excerpts unless the user explicitly asks otherwise.
 - If evidence is weak, set `confidence: low`.
+
+## Example
+
+**Input:** "이 YouTube 링크를 vault에 저장해줘 (vault: ~/my-vault): https://www.youtube.com/watch?v=XYZ — 가능하면 transcript 기반 핵심까지"
+
+**Output:** `~/my-vault/20_Sources/videos/2026-05-17-video-title.md` 1개 파일, 다음 frontmatter+섹션 포함:
+
+```markdown
+---
+type: source
+source_type: video
+created: 2026-05-17
+status: needs_transcript    # 자막 접근 불가 시
+confidence: low
+related_maps: []
+related_objects: []
+related_projects: []
+---
+# 영상 제목
+
+## Original
+URL: https://www.youtube.com/watch?v=XYZ
+채널, 게시일, 길이 (가용 시)
+
+## Transcript Basis
+자막 가용성, 언어, 신뢰도
+
+## Summary
+(자막 가용 시 1~5줄, 아니면 비워두고 needs_transcript 유지)
+
+## Key Points
+## Timestamp Notes
+## Compile Candidates
+- Concept 후보, Claim 후보, Question 후보, Insight 후보
+
+## Processing Notes
+다음 compile 단계 제안
+```
+
+자막 없으면 제목·썸네일만 보고 내용 추론하지 않음 — `status: needs_transcript` 유지.
 
 ## References
 

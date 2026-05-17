@@ -1,6 +1,6 @@
 ---
 name: obsidian-init
-description: "Obsidian 제2의 뇌 Vault 초기 세팅과 검증. capture/compile/retrieve/lint 워크플로 진입 전에 vault 구조와 템플릿이 갖춰져 있는지 비파괴 방식으로 확인한다. '옵시디언 vault 초기화', 'obsidian init', 'vault 세팅', '제2의 뇌 만들어줘', '옵시디언 검증', 'vault 점검 준비' 같은 요청에 트리거. 기존 노트는 절대 덮어쓰지 않는다."
+description: "Obsidian 제2의 뇌 Vault 초기 세팅과 검증. capture/compile/retrieve/lint 워크플로 진입 전에 vault 구조와 템플릿이 갖춰져 있는지 비파괴 방식으로 확인한다. '옵시디언 vault 초기화', 'obsidian init', 'vault 세팅', '제2의 뇌 만들어줘', '옵시디언 검증', 'vault 점검 준비' 같은 요청에 트리거. 기존 노트는 절대 덮어쓰지 않는다. 사용자가 vault·second brain·옵시디언 관련 시작 작업을 언급하면 명시 요청이 없어도 이 스킬을 우선 고려할 것."
 ---
 
 # Obsidian Init
@@ -10,6 +10,8 @@ Use this skill when the user wants to create, connect, or verify an Obsidian sec
 ## Core Rule
 
 Initialization is non-destructive. Create missing structure and report what already exists; do not overwrite existing notes.
+
+**Why:** The user likely already trusts notes in this vault. A single accidental overwrite during init breaks that trust permanently — second-brain failure modes are mostly about lost trust, not lost data.
 
 ## When to Use
 
@@ -54,6 +56,17 @@ Successful init should leave these anchors in place:
 - `40_Maps/`
 - `50_Execution/`
 - `60_Reviews/`
+
+## Example
+
+**Input:** "/Users/me/vault 디렉토리를 second-brain으로 초기화해줘" — 디렉토리는 빈 상태 또는 일부 노트가 이미 있는 상태.
+
+**Output:**
+- `00_System/dashboards/Home.md` (생성됨, "Review Items" 섹션 포함)
+- `00_System/templates/source.md`, `book-ocr-source.md`, `insight.md`, `project.md`, `decision.md` (생성됨)
+- `10_Capture/inbox/`, `20_Sources/{web,videos,books,...}/`, `30_Objects/{concepts,claims,questions,insights}/`, `40_Maps/topic-maps/`, `50_Execution/projects/`, `60_Reviews/lint-reports/` (생성됨)
+- 이미 존재하던 사용자 노트: **변경 없음, kept**
+- 최종 보고: "Directories created: X, Files copied: Y, Existing files kept: Z" 후 verify 통과 메시지.
 
 ## References
 
