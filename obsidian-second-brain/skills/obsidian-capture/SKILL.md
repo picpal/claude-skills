@@ -29,6 +29,7 @@ Capture must be low-friction. Do not force the user to classify the material bef
 
 1. Identify or ask for the vault path if it is not available from context.
 2. Preserve the raw input or pointer.
+   - For web pages / URLs (non-`.md`): use the `defuddle` skill to extract clean markdown first, then save the result. This removes navigation/ads and saves tokens. Skip `defuddle` for `.md` URLs.
 3. Choose the lightest safe destination:
    - `10_Capture/inbox` for quick thoughts.
    - `10_Capture/unprocessed` for ambiguous material.
@@ -53,7 +54,7 @@ Capture must be low-friction. Do not force the user to classify the material bef
    - Create chapter or section Source notes when a single note would become too long.
    - Record title, author, edition if known, OCR quality, page or chapter range, and file location.
    - Summarize and extract compile candidates from the OCR text, but keep uncertain OCR readings marked as low confidence.
-6. Create a Source or Capture note with metadata.
+6. Create a Source or Capture note with metadata. Write it as Obsidian Flavored Markdown — follow the `obsidian-markdown` skill for frontmatter properties (YAML), wikilinks `[[...]]`, embeds `![[...]]`, callouts `> [!note]`, and tag syntax. When Obsidian is running, use `obsidian-cli` for the actual file write so the live index updates immediately.
 7. Set `status: captured`, `status: needs_classification`, `status: needs_transcript`, or `status: needs_ocr_review`.
 8. Add compile candidates for concepts, claims, questions, insights, projects, or decisions when the source content supports them.
 9. Add a short processing note that suggests the next compile step.
@@ -149,6 +150,14 @@ URL: https://www.youtube.com/watch?v=XYZ
 ```
 
 자막 없으면 제목·썸네일만 보고 내용 추론하지 않음 — `status: needs_transcript` 유지.
+
+## Companion Skills (kepano/obsidian-skills)
+
+This skill decides *what to capture and where to put it*. Delegate the actual file shape and write path:
+
+- `defuddle` — fetch web pages / URLs and convert to clean markdown before saving. Use instead of WebFetch for any non-`.md` URL.
+- `obsidian-markdown` — Source/Capture note body and frontmatter must follow Obsidian Flavored Markdown (properties, wikilinks, embeds, callouts, tags).
+- `obsidian-cli` — when Obsidian is running, prefer it for creating notes so the index/graph refreshes; otherwise plain file write is fine for the inbox.
 
 ## References
 

@@ -27,9 +27,10 @@ Prefer updating existing notes before creating new notes. Create an Insight only
    - Decision
 4. Search for merge or update candidates.
 5. Update existing notes when suitable.
-6. Create new object notes only when needed.
-7. Update related maps and the Home dashboard.
-8. Add log entries in `00_System/logs`.
+6. Create new object notes only when needed. Write them as Obsidian Flavored Markdown — follow the `obsidian-markdown` skill for properties, wikilinks `[[...]]` (always link to existing concept notes by their exact filename), callouts for contradictions/hypotheses, and `#tag/subtag` hierarchy.
+7. Update related maps and the Home dashboard. When a Map needs a dynamic view (e.g. "all open Questions in topic X" or "Claims with stale review_date"), use the `obsidian-bases` skill to create a `.base` file instead of hand-maintaining a list.
+8. For Insights that capture a *visual* connection (network of 3+ nodes, flow, cluster), consider a `.canvas` via the `json-canvas` skill — wikilinks suffice for textual links.
+9. Add log entries in `00_System/logs`.
 
 ## Insight Promotion
 
@@ -59,6 +60,15 @@ Promote to Insight when:
 - Insight 노트는 **만들지 않음** — 단일 메모로는 의미 있는 *새 연결/모순/패턴/실행 함의* 기준을 충족하지 못함.
 
 **언제 Insight를 만드는가:** 두 개 이상의 노트가 새로 연결되거나, 기존 결정이 흔들리는 evidence가 들어왔거나, 반복 패턴이 처음 보일 때.
+
+## Companion Skills (kepano/obsidian-skills)
+
+Compile decides *what knowledge structure to build*. Delegate the file format:
+
+- `obsidian-markdown` — every Concept/Claim/Question/Insight/Project/Decision note must follow Obsidian Flavored Markdown (frontmatter properties, wikilinks, callouts, tag hierarchy).
+- `obsidian-bases` — for Maps and the Home dashboard, prefer a `.base` view (filters, formulas, summaries) over a hand-maintained markdown list when the view should stay live.
+- `json-canvas` — optional, when an Insight is better expressed as a visual graph of 3+ linked nodes than as wikilinks in prose.
+- `obsidian-cli` — when Obsidian is running, use it for the actual note creation/update so the live graph reflects new links immediately.
 
 ## References
 

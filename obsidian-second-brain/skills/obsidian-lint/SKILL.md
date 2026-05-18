@@ -15,15 +15,15 @@ Lint produces review items and synthesis reports. It does not silently rewrite l
 
 ## Workflow
 
-1. Scan vault structure.
+1. Scan vault structure. Prefer the `obsidian-cli` skill (when Obsidian is running) for vault traversal, link graph queries, and tag enumeration — it uses Obsidian's live index instead of re-parsing files.
 2. Find orphan notes.
 3. Find duplicate or merge candidates.
-4. Find stale claims and old decisions.
+4. Find stale claims and old decisions (compare `review_date` properties — see `obsidian-markdown` for property syntax).
 5. Find weak evidence and missing source links.
-6. Find broken links.
+6. Find broken links (use `obsidian-cli` link graph; do not rely on raw text grep — it misses aliases, embeds, block refs).
 7. Find unresolved questions.
-8. Create a lint report in `60_Reviews/lint-reports`.
-9. Update Home dashboard review items.
+8. Create a lint report in `60_Reviews/lint-reports`. Write it as Obsidian Flavored Markdown via the `obsidian-markdown` skill so wikilinks in the report are clickable.
+9. Update Home dashboard review items. If lint reports are produced regularly, consider a `.base` view (via the `obsidian-bases` skill) that auto-aggregates the latest report sections instead of editing the dashboard markdown by hand.
 
 ## Report Sections
 
@@ -82,6 +82,14 @@ created: 2026-05-17
 ```
 
 자동 삭제·자동 병합 **금지**. 위 4개 항목은 모두 *제안*이며, 사용자가 승인 후 별도로 적용. Home 대시보드 "Review Items"에 이 보고서 링크 추가.
+
+## Companion Skills (kepano/obsidian-skills)
+
+Lint decides *what to surface and how to score health*. Delegate the scanning and reporting mechanics:
+
+- `obsidian-cli` — vault scan, link graph, tag/alias enumeration, orphan detection. Use it instead of raw `find`/`grep` so aliases, embeds, and block refs are not missed.
+- `obsidian-markdown` — lint report file must use Obsidian Flavored Markdown so report links (`[[stale-claim]]`, `[[broken-target]]`) are clickable from the Home dashboard.
+- `obsidian-bases` — for recurring lint workflows, build a `.base` view that aggregates orphans/stale/broken counts live instead of regenerating a static report every time.
 
 ## References
 
