@@ -16,10 +16,10 @@ Start from Maps, then follow Object links, then open Source notes for evidence. 
 ## Workflow
 
 1. Identify the question and relevant topic area.
-2. Read relevant `40_Maps` notes first.
-3. Follow links into `30_Objects`.
+2. Read relevant `40_Maps` notes first. When Obsidian is running, use the `obsidian-cli` skill for search/read operations — it respects the live index and aliases.
+3. Follow links into `30_Objects`. Resolve `[[wikilinks]]` using the rules from the `obsidian-markdown` skill (exact filename, alias `|`, header `#`, block `^`).
 4. Open supporting `20_Sources`.
-5. Answer with evidence links and confidence.
+5. Answer with evidence links and confidence. The `## Evidence` section must use Obsidian wikilink syntax `[[note-name]]` so the user can click through; do not paste raw paths.
 6. If retrieval creates new value, save a candidate:
    - Insight
    - Question
@@ -91,6 +91,14 @@ medium — Map은 latest_synthesis: 2026-05-01로 비교적 최근. 더 강한 �
 ```
 
 답이 vault 근거를 못 찾으면 `confidence: low` + `needs_evidence`로 명시하며, 일반 지식만으로 채워 넣지 않는다.
+
+## Companion Skills (kepano/obsidian-skills)
+
+Retrieve decides *how to traverse Maps → Objects → Sources*. Delegate the mechanics:
+
+- `obsidian-cli` — vault search, read, and link traversal when Obsidian is running. Faster and index-aware vs. raw grep.
+- `obsidian-markdown` — Evidence/Answer output uses wikilinks (`[[note]]`, `[[note|alias]]`, `[[note#heading]]`, `[[note^block]]`) so the user can click through directly.
+- `obsidian-bases` — if a retrieval question is recurring (e.g. "all open Questions in topic X"), suggest persisting it as a `.base` view instead of re-running retrieve.
 
 ## References
 

@@ -35,6 +35,8 @@ Initialization is non-destructive. Create missing structure and report what alre
 5. Report the vault path, dashboard path, template path, and any remaining missing items.
 6. Tell the user the vault is ready for `obsidian-capture`, `obsidian-compile`, `obsidian-retrieve`, and `obsidian-lint` only after verification passes.
 
+After init passes, vault interactions during downstream workflows should prefer the official `obsidian-cli` skill when the Obsidian app is running — it is safer than raw filesystem writes (respects index, plugins, live reload).
+
 ## Safety
 
 - Do not overwrite existing files in the vault.
@@ -67,6 +69,15 @@ Successful init should leave these anchors in place:
 - `10_Capture/inbox/`, `20_Sources/{web,videos,books,...}/`, `30_Objects/{concepts,claims,questions,insights}/`, `40_Maps/topic-maps/`, `50_Execution/projects/`, `60_Reviews/lint-reports/` (생성됨)
 - 이미 존재하던 사용자 노트: **변경 없음, kept**
 - 최종 보고: "Directories created: X, Files copied: Y, Existing files kept: Z" 후 verify 통과 메시지.
+
+## Companion Skills (kepano/obsidian-skills)
+
+This workflow skill defines *what to verify*. For *how to touch the vault*, delegate to:
+
+- `obsidian-cli` — vault file operations when Obsidian is running; safer than raw `mkdir`/`cp`.
+- `obsidian-markdown` — when downstream skills need to write notes, follow Obsidian Flavored Markdown (frontmatter properties, wikilinks, callouts).
+
+`obsidian-init` itself uses the bundled shell scripts (`verify-vault.sh`, `init-second-brain-vault.sh`) because init runs even when Obsidian is not open. Switch to `obsidian-cli` once Obsidian is launched and capture/compile/retrieve/lint start writing real notes.
 
 ## References
 
