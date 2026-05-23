@@ -13,6 +13,16 @@ Start from Maps, then follow Object links, then open Source notes for evidence. 
 
 **Why:** Maps carry the latest synthesis of a topic — they compress what the user already knows. Starting there narrows the search space fast; jumping straight to Sources loses that compression and produces scattered, low-confidence answers. Mixing evidence and inference in the same paragraph erodes the trust that made the vault worth building.
 
+## Tool Preference
+
+Vault 접근 도구의 우선순위는 다음과 같다. **MCP를 첫 시도로 쓰지 말 것.**
+
+1. **`obsidian-cli` 스킬** — Obsidian 앱이 실행 중이면 무조건 1순위. 라이브 인덱스 사용, 별칭·임베드·블록 참조 모두 인식.
+2. **직접 파일시스템** (Read / Bash) — Obsidian이 꺼져 있거나 vault 파일 접근이 가능할 때. 항상 작동하지만 인덱스 사용 안 함.
+3. **`obsidian-mcp-server` MCP 툴** — 원격 vault 접근이 필요하고 Local REST API 플러그인이 활성화된 경우에만. 플러그인이 꺼져 있으면 조용히 실패함 (`fetch failed`).
+
+**Why:** MCP는 Local REST API 플러그인이 켜져 있어야만 작동하지만, 켜져 있는지 사전 검증 없이 호출하면 `Connection refused`로 실패해 시간 낭비. obsidian-cli는 Obsidian 앱 자체의 기본 CLI 인터페이스를 쓰므로 추가 플러그인 의존 없음. 한 도구가 실패하면 **다음 단계로 fallback**하지, "vault 정보 없음" 답변으로 도망가지 말 것.
+
 ## Workflow
 
 1. Identify the question and relevant topic area.

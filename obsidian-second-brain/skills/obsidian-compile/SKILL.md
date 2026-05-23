@@ -13,6 +13,16 @@ Prefer updating existing notes before creating new notes. Create an Insight only
 
 **Why:** Vault value comes from *connections per note*, not *note count*. A duplicate concept fragments search results and forces the next compile pass to reconcile two versions of the same idea — that cost compounds. New material gains leverage when bonded to existing structure.
 
+## Tool Preference
+
+Vault 접근·쓰기 도구 우선순위. **MCP를 첫 시도로 쓰지 말 것.**
+
+1. **`obsidian-cli` 스킬** — Obsidian 실행 중이면 1순위. 검색·읽기·쓰기 모두 라이브 인덱스 갱신.
+2. **직접 파일시스템** (Read / Write / Bash) — 다수 파일 일괄 처리 또는 Obsidian 꺼짐 상태.
+3. **`obsidian-mcp-server` MCP** — Local REST API 플러그인 활성 + 원격 vault 시에만.
+
+**Why:** MCP는 플러그인 의존이라 첫 시도가 `fetch failed`로 실패하면 시간 낭비. obsidian-cli는 Obsidian 기본 CLI라 추가 의존 없음.
+
 ## Workflow
 
 1. Locate captured or source notes to process.

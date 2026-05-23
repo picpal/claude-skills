@@ -13,27 +13,41 @@ Lint produces review items and synthesis reports. It does not silently rewrite l
 
 **Why:** A vault is the user's external memory and contains their unfinished thinking — silent auto-merges or deletions destroy provenance and erode trust irreversibly. Lint surfaces work; the user decides what to act on.
 
+## Tool Preference
+
+Vault 스캔·읽기 도구 우선순위. **MCP를 첫 시도로 쓰지 말 것.**
+
+1. **`obsidian-cli` 스킬** — Obsidian 실행 중이면 1순위. 라이브 인덱스, 링크 그래프, 별칭 처리 모두 정확.
+2. **직접 파일시스템** (`find`, `grep`, Read) — Obsidian 꺼짐 상태 fallback. 단, raw grep은 별칭·임베드·블록 참조를 놓치므로 link 검사용으로는 부적합.
+3. **`obsidian-mcp-server` MCP** — Local REST API 플러그인 활성 시에만.
+
+**Why:** MCP는 플러그인 의존이라 사전 점검 없이 호출하면 `Connection refused`로 실패. obsidian-cli는 Obsidian 자체 CLI라 추가 의존 없음.
+
 ## Workflow
 
-1. Scan vault structure. Prefer the `obsidian-cli` skill (when Obsidian is running) for vault traversal, link graph queries, and tag enumeration — it uses Obsidian's live index instead of re-parsing files.
+1. Scan vault structure. Use [Tool Preference](#tool-preference) — `obsidian-cli` first.
 2. Find orphan notes.
-3. Find duplicate or merge candidates.
-4. Find stale claims and old decisions (compare `review_date` properties — see `obsidian-markdown` for property syntax).
-5. Find weak evidence and missing source links.
-6. Find broken links (use `obsidian-cli` link graph; do not rely on raw text grep — it misses aliases, embeds, block refs).
-7. Find unresolved questions.
-8. Create a lint report in `60_Reviews/lint-reports`. Write it as Obsidian Flavored Markdown via the `obsidian-markdown` skill so wikilinks in the report are clickable.
-9. Update Home dashboard review items. If lint reports are produced regularly, consider a `.base` view (via the `obsidian-bases` skill) that auto-aggregates the latest report sections instead of editing the dashboard markdown by hand.
+3. **Find orphan raw material** — files in `20_Sources/books/raw/`, `20_Sources/documents/`, `20_Sources/papers/`, `20_Sources/images/` (non-`.md` files: PDF, scan, image, etc.) that have **no corresponding Source note** (`*.md`) in their parent directory (`20_Sources/books/`, etc.). These are raw assets that arrived but never went through capture.
+4. Find duplicate or merge candidates.
+5. Find stale claims and old decisions (compare `review_date` properties — see `obsidian-markdown` for property syntax).
+6. Find weak evidence and missing source links.
+7. Find broken links (use `obsidian-cli` link graph; do not rely on raw text grep — it misses aliases, embeds, block refs).
+8. Find unresolved questions.
+9. **Find Source notes with `compile` debt** — frontmatter `status: captured` (not yet compiled) older than 14 days, OR `status: needs_deep_extraction` / `needs_transcript` / `needs_ocr_review` older than 30 days. These are commitments the vault made but never honored.
+10. Create a lint report in `60_Reviews/lint-reports`. Write it as Obsidian Flavored Markdown via the `obsidian-markdown` skill so wikilinks in the report are clickable.
+11. Update Home dashboard review items. If lint reports are produced regularly, consider a `.base` view (via the `obsidian-bases` skill) that auto-aggregates the latest report sections instead of editing the dashboard markdown by hand.
 
 ## Report Sections
 
 - Orphan notes
+- **Orphan raw material** — raw assets without Source note
 - Merge candidates
 - Stale claims
 - Decisions needing review
 - Missing evidence
 - Broken links
 - Unresolved questions
+- **Compile debt** — captured but never compiled, or stuck in `needs_*` states past threshold
 - Suggested next actions
 
 ## Safety
