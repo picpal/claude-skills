@@ -56,9 +56,8 @@ def add_header(image: Image.Image, header_text: str, bg_color: str = "#2d2d2d", 
     # 한글 지원 폰트 우선, 없으면 모노스페이스 폴백
     font = None
     for font_path in [
+        "/Users/picpal/Library/Fonts/D2Coding-Ver1.3.2-20180524.ttc",
         "/System/Library/Fonts/AppleSDGothicNeo.ttc",
-        "/Library/Fonts/AppleGothic.ttf",
-        "/System/Library/Fonts/SFNSMono.ttf",
         "/System/Library/Fonts/Menlo.ttc",
     ]:
         try:
@@ -99,8 +98,23 @@ def main():
     except Exception:
         lexer = TextLexer()
 
+    # 한글 지원 monospace 폰트 탐색
+    font_name = "Menlo"  # 기본 폴백
+    for candidate in [
+        "/Users/picpal/Library/Fonts/D2Coding-Ver1.3.2-20180524.ttc",
+        "D2Coding",
+        "AppleSDGothicNeo",
+    ]:
+        try:
+            test_font = ImageFont.truetype(candidate, args.font_size)
+            font_name = candidate
+            break
+        except (OSError, IOError):
+            continue
+
     formatter = ImageFormatter(
         style="monokai",
+        font_name=font_name,
         font_size=args.font_size,
         line_numbers=True,
         line_number_start=line_offset,
