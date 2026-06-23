@@ -33,6 +33,12 @@ phases:
     id: qa
     fallback: references/phase-guides.md#qa
 
+  # fresh-eyes checker — maker(execute)와 컨텍스트 격리된 리뷰어 서브에이전트
+  review:
+    type: skill
+    id: superpowers:requesting-code-review
+    fallback: references/phase-guides.md#review
+
   lesson:
     type: inline
     path: references/lesson-template.md
@@ -44,9 +50,11 @@ phases:
 #   plan:       { type: command, value: /plan,                fallback: references/phase-guides.md#plan }
 #   execute:    { type: command, value: /implement,           fallback: references/phase-guides.md#execute }
 #   qa:         { type: command, value: /qa,                  fallback: references/phase-guides.md#qa }
+#   review:     { type: command, value: /code-review,         fallback: references/phase-guides.md#review }
 #
 # 완전 inline (외부 의존 0):
 #   brainstorm: { type: inline, path: references/phase-guides.md#brainstorm }
 #   plan:       { type: inline, path: references/phase-guides.md#plan }
 #   execute:    { type: inline, path: references/phase-guides.md#execute }
 #   qa:         { type: inline, path: references/phase-guides.md#qa }
+#   review:     { type: inline, path: references/phase-guides.md#review }
