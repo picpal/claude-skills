@@ -65,6 +65,23 @@
 
 ---
 
+## #review
+
+외부 스킬(`requesting-code-review`) 미사용/불가 시 fresh-eyes 검증 룰. **가능하면 리뷰는 별도 서브에이전트(general-purpose)에 위임해 컨텍스트를 격리한다** — 같은 컨텍스트의 self-review는 maker의 가정을 그대로 답습하기 쉬워 checker로서 분리의 의미가 약해진다.
+
+1. **diff 추출** — `BASE = last_safe_tag`(없으면 변경 직전 커밋), `HEAD = 현재`. `git diff BASE HEAD`를 유니크한 파일로 저장
+2. **리뷰어 dispatch** (가능 시) — general-purpose 서브에이전트에 **diff 파일 경로 + plan 요구사항만** 전달. ⚠️ 세션 히스토리·사고 과정 첨부 금지 (격리가 핵심)
+3. **검증 항목** — 요구사항 충족(spec), 정확성/엣지케이스, 회귀 위험, 테스트가 실제로 무언가를 검증하는지(빈 단언 금지)
+4. **심각도 분류** — Critical / Important / Minor
+5. **판정**:
+   - **CLEAN**: Critical/Important 0건 → PASS
+   - **Minor만**: lesson에 기록하고 통과 (진행 막지 않음)
+   - **FAIL**: Critical/Important ≥1 → `blocked_reason="review_failed"` + 사용자에게 (a) Execute 재진입 / (b) Lesson 후 종료
+
+⚠️ non-git이면 diff를 못 만든다 → 리뷰어에게 변경 파일 전체를 전달하거나, 최소 셀프 체크 후 한계를 명시한다.
+
+---
+
 ## 공통 룰 (모든 phase)
 
 - **재투입된 lesson 우선** — Phase 0에서 인용된 Rule들이 이 가이드보다 우선. 충돌 시 lesson Rule 따름
