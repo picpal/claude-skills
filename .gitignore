@@ -11,3 +11,9 @@ __pycache__/
 
 # user-local
 .discord-token
+.claude/
+
+# 미공개 스킬 / 작업 중
+learn-plan/
+notion-archive/
+youtube/
