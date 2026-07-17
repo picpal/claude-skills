@@ -40,6 +40,8 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [inflearn-script-collector](./inflearn-script-collector) | Claude in Chrome으로 인프런 강의 스크립트를 자동 수집해 챕터별 원본·정리 MD 생성 | "인프런 강의 정리해줘", "강의 스크립트 뽑아줘", "인프런 자막 추출" |
 | [resume-checker](./resume-checker) | 한국어 이력서를 인터뷰→분석→AS-IS/TO-BE 첨삭→최종본까지 생성 | "이력서 봐줘", "이력서 첨삭해줘", "자소서 검토" |
 | [obsidian-second-brain](./obsidian-second-brain) | Obsidian Vault를 제2의 뇌로 운용하는 멀티-skill pack (init·capture·compile·retrieve·lint). 등재 방식은 pack 내부 README 참고 | "옵시디언에 저장해줘", "vault 점검", "내 노트에서 찾아줘", "옵시디언 init" |
+| [gen-report-monodeck](./gen-report-monodeck) | 구조화된 보고서를 흑백 에디토리얼 "덱" 스타일 스크롤 HTML로 렌더링 | "보고서 html", "리포트 만들어줘", "모노크롬 보고서" |
+| [gen-report-monodeck-ppt](./gen-report-monodeck-ppt) | gen-report-monodeck과 동일한 모노크롬 테마를 유지하되, 스크롤 대신 화살표 키·버튼·스와이프로 한 장씩 넘기는 PPT 형태 슬라이드 HTML로 렌더링 | "ppt 형태 html", "슬라이드로 넘기는 html", "발표자료 html", "피치덱 만들어줘" |
 
 ## 디렉토리 구조
 

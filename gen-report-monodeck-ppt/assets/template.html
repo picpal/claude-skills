@@ -1,0 +1,676 @@
+<title>{{DOC_TITLE}}</title>
+<style>
+  :root{
+    --page-bg:#e9e7e2;
+    --page-muted:#7c7a75;
+    --ink:#121212;
+    --paper:#ffffff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --page-bg:#1a1a1a; --page-muted:#8d8b86; }
+  }
+  :root[data-theme="dark"]{ --page-bg:#1a1a1a; --page-muted:#8d8b86; }
+  :root[data-theme="light"]{ --page-bg:#e9e7e2; --page-muted:#7c7a75; }
+
+  html,body{ height:100%; margin:0; overflow:hidden; overscroll-behavior:none; -webkit-text-size-adjust:100%; }
+  body{
+    background:var(--page-bg);
+    font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",-apple-system,system-ui,"Segoe UI",sans-serif;
+    color:var(--ink);
+    line-height:1.7;
+    font-size:15px;
+  }
+
+  /* ---------- deck = horizontal paged viewport, left/right like a real PPT ---------- */
+  .deck{
+    width:100vw; width:100dvw;
+    height:100vh; height:100dvh;
+    display:flex;
+    flex-direction:row;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    scroll-behavior:smooth;
+    scrollbar-width:none;
+  }
+  .deck::-webkit-scrollbar{ display:none; }
+  @media (prefers-reduced-motion: reduce){ .deck{ scroll-behavior:auto; } }
+
+  /* ---------- slide grounds (deliberately fixed, deck is monochrome) ---------- */
+  .slide{
+    flex:0 0 auto;
+    width:100vw; width:100dvw;
+    height:100%;
+    box-sizing:border-box;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scroll-snap-align:start;
+    scroll-snap-stop:always;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:clamp(28px,6vw,64px) clamp(20px,7vw,64px);
+    background:var(--paper);
+    color:#141414;
+    --rule:#e3e1dc;
+    --muted:#71706b;
+    --chipbg:#f4f3f0;
+  }
+  .slide.dark{
+    background:var(--ink);
+    color:#f4f3ef;
+    --rule:#2e2e2e;
+    --muted:#9b9994;
+    --chipbg:#1e1e1e;
+  }
+  .slide-inner{ max-width:1040px; width:100%; margin:0 auto; }
+
+  /* ---------- type ---------- */
+  .display{
+    font-family:"Helvetica Neue",Helvetica,Arial,"Apple SD Gothic Neo",sans-serif;
+    font-weight:800;
+    font-stretch:condensed;
+    text-transform:uppercase;
+    letter-spacing:-.015em;
+    line-height:1.02;
+    text-wrap:balance;
+    margin:0;
+  }
+  .eyebrow{
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 10px;
+  }
+  .slide h3{
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:-.01em;
+    line-height:1.35;
+    margin:0 0 8px;
+    text-wrap:balance;
+  }
+  .slide p{ margin:0; max-width:62ch; }
+  .muted{ color:var(--muted); }
+  .num{ font-variant-numeric:tabular-nums; }
+
+  /* ---------- cover / closing — span the full slide, edge to edge ---------- */
+  .cover, .closing{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:48px;
+  }
+  .cover-top{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    font-size:11px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .cover h1{ font-size:clamp(52px,9vw,104px); }
+  .cover .sub{
+    margin-top:18px;
+    max-width:56ch;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .closing h2{ font-size:clamp(44px,8vw,92px); }
+  .closing .foot{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  /* ---------- contents ---------- */
+  .toc{ list-style:none; margin:28px 0 0; padding:0; }
+  .toc li{
+    display:grid;
+    grid-template-columns:64px 1fr auto;
+    gap:20px;
+    align-items:baseline;
+    padding:16px 4px;
+    border-top:1px solid var(--rule);
+  }
+  .toc li:last-child{ border-bottom:1px solid var(--rule); }
+  .toc .no{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:.04em;
+  }
+  .toc .t{ font-weight:700; }
+  .toc .d{ color:var(--muted); font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; }
+
+  /* ---------- 2-up summary ---------- */
+  .split{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+    border-top:1px solid var(--rule);
+    margin-top:26px;
+  }
+  .split > div{ padding:24px 28px 4px 0; }
+  .split > div + div{ border-left:1px solid var(--rule); padding-left:28px; padding-right:0; }
+  .split h4{
+    margin:0 0 14px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+  }
+  .list{ list-style:none; margin:0; padding:0; }
+  .list li{
+    padding:9px 0;
+    border-top:1px solid var(--rule);
+    display:flex;
+    gap:12px;
+    font-size:14px;
+  }
+  .list li:first-child{ border-top:0; }
+  .list .k{
+    flex:0 0 auto;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:800;
+    font-size:12px;
+    letter-spacing:.06em;
+    margin-top:2px;
+  }
+
+  /* ---------- action slides (4-quadrant + big number) ---------- */
+  .action-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:24px;
+    padding-bottom:26px;
+    border-bottom:1px solid var(--rule);
+  }
+  .action-head .bignum{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:800;
+    font-stretch:condensed;
+    font-size:clamp(48px,7vw,76px);
+    line-height:.9;
+    letter-spacing:-.02em;
+  }
+  .action-title{ flex:1; min-width:0; }
+  .action-title h2{
+    font-size:clamp(22px,3.4vw,30px);
+    font-weight:800;
+    letter-spacing:-.01em;
+    line-height:1.25;
+    margin:2px 0 6px;
+    text-wrap:balance;
+  }
+  .tag{
+    flex:0 0 auto;
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    border:1px solid currentColor;
+    padding:6px 12px;
+    white-space:nowrap;
+    margin-top:6px;
+  }
+  .action-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0;
+  }
+  .cell{
+    padding:24px 28px 24px 0;
+    border-bottom:1px solid var(--rule);
+  }
+  .cell:nth-child(even){
+    border-left:1px solid var(--rule);
+    padding-left:28px;
+    padding-right:0;
+  }
+  .cell:nth-last-child(-n+2){ border-bottom:0; padding-bottom:6px; }
+  .cell h4{
+    margin:0 0 10px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .cell p, .cell li{ font-size:14px; }
+  .cell ul{ margin:0; padding-left:17px; }
+  .cell li{ margin:5px 0; }
+  .cell li::marker{ color:var(--muted); }
+  code{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.86em;
+    background:var(--chipbg);
+    padding:1.5px 5px;
+    border:1px solid var(--rule);
+  }
+
+  /* ---------- before / after + outcome ---------- */
+  .ba{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    border-top:1px solid var(--rule);
+    margin-top:26px;
+  }
+  .ba > div{ padding:22px 28px 22px 0; }
+  .ba > div + div{ border-left:1px solid var(--rule); padding-left:28px; padding-right:0; }
+  .outcome{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    border-top:1px solid var(--rule);
+    margin-top:6px;
+  }
+  .outcome > div{ padding:26px 20px 4px 0; }
+  .outcome > div + div{ border-left:1px solid var(--rule); padding-left:24px; }
+  .outcome .v{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:800;
+    font-stretch:condensed;
+    font-size:clamp(40px,6vw,60px);
+    line-height:1;
+    letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;
+  }
+  .outcome .l{
+    margin-top:10px;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  /* ---------- as-is / to-be table ---------- */
+  .tablewrap{ overflow-x:auto; margin-top:26px; }
+  table{
+    width:100%;
+    min-width:640px;
+    border-collapse:collapse;
+    font-size:13.5px;
+  }
+  th{
+    text-align:left;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding:0 18px 12px 0;
+    border-bottom:1px solid currentColor;
+  }
+  td{
+    vertical-align:top;
+    padding:13px 18px 13px 0;
+    border-bottom:1px solid var(--rule);
+  }
+  td:first-child{ font-weight:700; white-space:nowrap; }
+  tr:last-child td{ border-bottom:0; }
+
+  /* ---------- sequence ---------- */
+  .seq{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border-top:1px solid var(--rule);
+    margin-top:26px;
+  }
+  .seq > div{ padding:22px 20px 4px 0; }
+  .seq > div + div{ border-left:1px solid var(--rule); padding-left:22px; }
+  .seq .no{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:800;
+    font-size:13px;
+    letter-spacing:.08em;
+  }
+  .seq h4{ margin:12px 0 6px; font-size:14.5px; font-weight:800; line-height:1.4; }
+  .seq p{ font-size:12.5px; color:var(--muted); }
+
+  a{ color:inherit; }
+  :focus-visible{ outline:2px solid currentColor; outline-offset:3px; }
+
+  /* ---------- HUD (counter / dots / nav buttons) ----------
+     mix-blend-mode:difference makes one white-drawn HUD legible on both
+     paper and ink slides — never hand-color these per slide. No fullscreen
+     control: Artifact's sandboxed iframe generally withholds the Fullscreen
+     API, so a button for it would just be dead UI. */
+  .hud, .hud *{ mix-blend-mode:difference; }
+  .counter{
+    position:fixed; top:20px; left:24px; z-index:20;
+    color:#fff; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    pointer-events:none;
+  }
+  .dots{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:20;
+    display:flex; flex-direction:row; gap:10px;
+  }
+  .dot{
+    width:6px; height:6px; padding:0; border-radius:50%;
+    border:0; background:#fff; opacity:.35; cursor:pointer;
+  }
+  .dot.active{ opacity:1; transform:scale(1.7); }
+  .navbtn{
+    position:fixed; top:50%; transform:translateY(-50%); z-index:20;
+    width:40px; height:40px; border-radius:50%;
+    border:1px solid #fff; background:transparent; color:#fff;
+    font-size:16px; line-height:1; cursor:pointer;
+  }
+  .navbtn.prev{ left:16px; }
+  .navbtn.next{ right:16px; }
+
+  @media (max-width:720px){
+    .split, .action-grid, .ba{ grid-template-columns:1fr; }
+    .split > div + div, .cell:nth-child(even), .ba > div + div{
+      border-left:0; padding-left:0;
+    }
+    .split > div, .ba > div{ padding-right:0; }
+    .cell{ padding-right:0; }
+    .cell:nth-last-child(-n+2){ border-bottom:1px solid var(--rule); padding-bottom:24px; }
+    .cell:last-child{ border-bottom:0; padding-bottom:6px; }
+    .outcome{ grid-template-columns:1fr; }
+    .outcome > div{ padding:20px 0 14px; border-left:0 !important; padding-left:0 !important; border-bottom:1px solid var(--rule); }
+    .outcome > div:last-child{ border-bottom:0; }
+    .seq{ grid-template-columns:1fr 1fr; }
+    .seq > div{ border-left:0 !important; padding-left:0 !important; border-bottom:1px solid var(--rule); padding-bottom:18px; }
+    .toc li{ grid-template-columns:48px 1fr; }
+    .toc .d{ grid-column:2; }
+    .dots{ bottom:14px; gap:8px; }
+    .navbtn{ width:34px; height:34px; }
+    .navbtn.prev{ left:8px; }
+    .navbtn.next{ right:8px; }
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .slide{ animation:rise .45s ease both; }
+    @keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none;} }
+  }
+</style>
+
+<!--
+  ==================================================================
+  MONO DECK PPT — horizontal paged slide skeleton (left/right, like a
+  real PPT deck). Keep <style> and the closing <script> verbatim. Fill
+  {{PLACEHOLDER}} slots. Delete slides you do not need and duplicate
+  the ones you do (e.g. one ACTION slide per item). Alternate .slide
+  and .slide.dark for ink/paper rhythm. Every slide's content lives
+  inside one .slide-inner wrapper.
+  ==================================================================
+-->
+<div class="deck">
+
+  <!-- COVER — top meta + large bottom title, spans the full slide -->
+  <section class="slide dark">
+    <div class="slide-inner cover">
+      <div class="cover-top num">
+        <span>{{COVER_META_LEFT}}</span>
+        <span>{{COVER_META_RIGHT}}</span>
+      </div>
+      <div>
+        <h1 class="display">{{COVER_TITLE_LINE_1}}<br>{{COVER_TITLE_LINE_2}}</h1>
+        <p class="sub">{{COVER_SUBTITLE}}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENTS -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">Contents</p>
+      <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{CONTENTS_TITLE}}</h3>
+      <ol class="toc num">
+        <li><span class="no">01</span><span class="t">{{TOC_1_TITLE}}</span><span class="d">{{TOC_1_TAG}}</span></li>
+        <li><span class="no">02</span><span class="t">{{TOC_2_TITLE}}</span><span class="d">{{TOC_2_TAG}}</span></li>
+        <li><span class="no">03</span><span class="t">{{TOC_3_TITLE}}</span><span class="d">{{TOC_3_TAG}}</span></li>
+        <li><span class="no">04</span><span class="t">{{TOC_4_TITLE}}</span><span class="d">{{TOC_4_TAG}}</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 2-UP SUMMARY — conclusion first, two contrasting columns -->
+  <section class="slide dark">
+    <div class="slide-inner">
+      <p class="eyebrow">{{SUMMARY_EYEBROW}}</p>
+      <h3>{{SUMMARY_HEADLINE}}</h3>
+      <p class="muted" style="font-size:14px;">{{SUMMARY_LEDE}}</p>
+      <div class="split">
+        <div>
+          <h4>{{SUMMARY_COL_A_TITLE}}</h4>
+          <ul class="list">
+            <li><span class="k num">＋</span><span>{{SUMMARY_COL_A_ITEM_1}}</span></li>
+            <li><span class="k num">＋</span><span>{{SUMMARY_COL_A_ITEM_2}}</span></li>
+            <li><span class="k num">＋</span><span>{{SUMMARY_COL_A_ITEM_3}}</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>{{SUMMARY_COL_B_TITLE}}</h4>
+          <ul class="list">
+            <li><span class="k num">01</span><span>{{SUMMARY_COL_B_ITEM_1}}</span></li>
+            <li><span class="k num">02</span><span>{{SUMMARY_COL_B_ITEM_2}}</span></li>
+            <li><span class="k num">03</span><span>{{SUMMARY_COL_B_ITEM_3}}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACTION — 4 quadrants (problem / decision / change / done-when) + big number.
+       Duplicate this block per item; alternate .dark. Number encodes priority order. -->
+  <section class="slide">
+    <div class="slide-inner">
+      <div class="action-head">
+        <span class="bignum num">{{ACTION_NUMBER}}</span>
+        <div class="action-title">
+          <p class="eyebrow">{{ACTION_PRIORITY}}</p>
+          <h2>{{ACTION_TITLE}}</h2>
+        </div>
+        <span class="tag">{{ACTION_TAG}}</span>
+      </div>
+      <div class="action-grid">
+        <div class="cell">
+          <h4>{{ACTION_Q1_LABEL}}</h4>
+          <p>{{ACTION_Q1_BODY}}</p>
+        </div>
+        <div class="cell">
+          <h4>{{ACTION_Q2_LABEL}}</h4>
+          <ul>
+            <li>{{ACTION_Q2_ITEM_1}}</li>
+            <li>{{ACTION_Q2_ITEM_2}}</li>
+          </ul>
+        </div>
+        <div class="cell">
+          <h4>{{ACTION_Q3_LABEL}}</h4>
+          <ul>
+            <li>{{ACTION_Q3_ITEM_1}}</li>
+            <li>{{ACTION_Q3_ITEM_2}}</li>
+          </ul>
+        </div>
+        <div class="cell">
+          <h4>{{ACTION_Q4_LABEL}}</h4>
+          <ul>
+            <li>{{ACTION_Q4_ITEM_1}}</li>
+            <li>{{ACTION_Q4_ITEM_2}}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER + OUTCOME STATS -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">Before / After</p>
+      <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{BA_TITLE}}</h3>
+      <div class="ba">
+        <div>
+          <h4 style="margin:0 0 14px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;">Before</h4>
+          <ul class="list">
+            <li><span class="k num">—</span><span>{{BEFORE_ITEM_1}}</span></li>
+            <li><span class="k num">—</span><span>{{BEFORE_ITEM_2}}</span></li>
+            <li><span class="k num">—</span><span>{{BEFORE_ITEM_3}}</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin:0 0 14px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;">After</h4>
+          <ul class="list">
+            <li><span class="k num">＋</span><span>{{AFTER_ITEM_1}}</span></li>
+            <li><span class="k num">＋</span><span>{{AFTER_ITEM_2}}</span></li>
+            <li><span class="k num">＋</span><span>{{AFTER_ITEM_3}}</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="eyebrow" style="margin-top:34px;">{{OUTCOME_EYEBROW}}</p>
+      <div class="outcome num">
+        <div><div class="v">{{STAT_1_VALUE}}</div><div class="l">{{STAT_1_LABEL}}</div></div>
+        <div><div class="v">{{STAT_2_VALUE}}</div><div class="l">{{STAT_2_LABEL}}</div></div>
+        <div><div class="v">{{STAT_3_VALUE}}</div><div class="l">{{STAT_3_LABEL}}</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AS-IS / TO-BE TABLE — wrapper enables horizontal scroll on mobile -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">{{TABLE_EYEBROW}}</p>
+      <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{TABLE_TITLE}}</h3>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th style="width:130px;">{{TABLE_COL_1}}</th><th>{{TABLE_COL_2}}</th><th>{{TABLE_COL_3}}</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num">{{ROW_1_C1}}</td><td>{{ROW_1_C2}}</td><td>{{ROW_1_C3}}</td></tr>
+            <tr><td class="num">{{ROW_2_C1}}</td><td>{{ROW_2_C2}}</td><td>{{ROW_2_C3}}</td></tr>
+            <tr><td class="num">{{ROW_3_C1}}</td><td>{{ROW_3_C2}}</td><td>{{ROW_3_C3}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEQUENCE — ordered steps -->
+  <section class="slide">
+    <div class="slide-inner">
+      <p class="eyebrow">{{SEQ_EYEBROW}}</p>
+      <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{SEQ_TITLE}}</h3>
+      <div class="seq">
+        <div>
+          <span class="no num">Step 1</span>
+          <h4>{{STEP_1_TITLE}}</h4>
+          <p>{{STEP_1_BODY}}</p>
+        </div>
+        <div>
+          <span class="no num">Step 2</span>
+          <h4>{{STEP_2_TITLE}}</h4>
+          <p>{{STEP_2_BODY}}</p>
+        </div>
+        <div>
+          <span class="no num">Step 3</span>
+          <h4>{{STEP_3_TITLE}}</h4>
+          <p>{{STEP_3_BODY}}</p>
+        </div>
+        <div>
+          <span class="no num">Step 4</span>
+          <h4>{{STEP_4_TITLE}}</h4>
+          <p>{{STEP_4_BODY}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING — one large statement + footer meta, spans the full slide -->
+  <section class="slide dark">
+    <div class="slide-inner closing">
+      <h2 class="display">{{CLOSING_LINE_1}}<br>{{CLOSING_LINE_2}}</h2>
+      <div class="foot num">
+        <span>{{CLOSING_FOOT_LEFT}}</span>
+        <span>{{CLOSING_FOOT_RIGHT}}</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- HUD — counter, progress dots, prev/next. Works without JS too:
+     .deck is a plain CSS scroll-snap container, this only adds the
+     keyboard/click/counter convenience layer. -->
+<div class="hud">
+  <div class="counter num" id="counter" aria-live="polite">01 / 01</div>
+  <div class="dots" id="dots" role="tablist" aria-label="Slides"></div>
+  <button class="navbtn prev" id="prevbtn" type="button" aria-label="Previous slide">‹</button>
+  <button class="navbtn next" id="nextbtn" type="button" aria-label="Next slide">›</button>
+</div>
+
+<script>
+(function(){
+  var deck = document.querySelector('.deck');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var counter = document.getElementById('counter');
+  var dotsWrap = document.getElementById('dots');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  slides.forEach(function(_, i){
+    var dot = document.createElement('button');
+    dot.className = 'dot';
+    dot.type = 'button';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', function(){ go(i); });
+    dotsWrap.appendChild(dot);
+  });
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function pad(n){ return n < 10 ? '0' + n : String(n); }
+
+  function currentIndex(){
+    var idx = Math.round(deck.scrollLeft / deck.clientWidth);
+    return Math.min(Math.max(idx, 0), slides.length - 1);
+  }
+
+  function render(){
+    var idx = currentIndex();
+    counter.textContent = pad(idx + 1) + ' / ' + pad(slides.length);
+    dots.forEach(function(d, i){
+      d.classList.toggle('active', i === idx);
+      d.setAttribute('aria-current', i === idx ? 'true' : 'false');
+    });
+  }
+
+  function go(idx){
+    idx = Math.min(Math.max(idx, 0), slides.length - 1);
+    slides[idx].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', inline: 'start', block: 'nearest' });
+  }
+
+  var scrollTimer = null;
+  deck.addEventListener('scroll', function(){
+    window.clearTimeout(scrollTimer);
+    scrollTimer = window.setTimeout(render, 80);
+  });
+
+  document.addEventListener('keydown', function(e){
+    var idx = currentIndex();
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].indexOf(e.key) > -1){
+      e.preventDefault(); go(idx + 1);
+    } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].indexOf(e.key) > -1){
+      e.preventDefault(); go(idx - 1);
+    } else if (e.key === 'Home'){
+      e.preventDefault(); go(0);
+    } else if (e.key === 'End'){
+      e.preventDefault(); go(slides.length - 1);
+    }
+  });
+
+  document.getElementById('prevbtn').addEventListener('click', function(){ go(currentIndex() - 1); });
+  document.getElementById('nextbtn').addEventListener('click', function(){ go(currentIndex() + 1); });
+
+  render();
+})();
+</script>
