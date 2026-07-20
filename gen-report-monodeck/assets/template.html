@@ -341,6 +341,44 @@
   a{ color:inherit; }
   :focus-visible{ outline:2px solid currentColor; outline-offset:3px; }
 
+  /* ---------- quick nav (fixed slide navigator, bottom-right) ---------- */
+  .deck section[id]{ scroll-margin-top:26px; }
+  .quicknav{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    z-index:50;
+    background:var(--ink);
+    border:1px solid #2e2e2e;
+    padding:10px 8px;
+    max-height:min(62vh,480px);
+    overflow-y:auto;
+  }
+  .quicknav ol{ list-style:none; margin:0; padding:0; }
+  .quicknav a{
+    display:flex;
+    align-items:baseline;
+    gap:9px;
+    padding:4px 8px 4px 6px;
+    border-left:2px solid transparent;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:#9b9994;
+    white-space:nowrap;
+  }
+  .quicknav a:hover,
+  .quicknav a.active{ color:#f4f3ef; }
+  .quicknav a.active{ border-left-color:#f4f3ef; }
+  .quicknav .no{
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight:800;
+    font-size:10px;
+    letter-spacing:.06em;
+  }
+
   @media (max-width:720px){
     .slide{ padding:34px 24px; }
     .cover{ min-height:360px; }
@@ -359,8 +397,11 @@
     .seq > div{ border-left:0 !important; padding-left:0 !important; border-bottom:1px solid var(--rule); padding-bottom:18px; }
     .toc li{ grid-template-columns:48px 1fr; }
     .toc .d{ grid-column:2; }
+    .quicknav{ right:10px; bottom:10px; padding:8px 6px; max-height:50vh; }
+    .quicknav .t{ display:none; }  /* numbers only on mobile */
   }
   @media (prefers-reduced-motion: no-preference){
+    html{ scroll-behavior:smooth; }
     .slide{ animation:rise .45s ease both; }
     @keyframes rise{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:none;} }
   }
@@ -378,7 +419,7 @@
   <div class="deck-caption num"><span>{{DECK_CAPTION_LEFT}}</span><span>{{DECK_CAPTION_RIGHT}}</span></div>
 
   <!-- COVER — top meta + large bottom title -->
-  <section class="slide dark cover">
+  <section class="slide dark cover" id="cover">
     <div class="cover-top num">
       <span>{{COVER_META_LEFT}}</span>
       <span>{{COVER_META_RIGHT}}</span>
@@ -390,7 +431,7 @@
   </section>
 
   <!-- CONTENTS -->
-  <section class="slide">
+  <section class="slide" id="contents">
     <p class="eyebrow">Contents</p>
     <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{CONTENTS_TITLE}}</h3>
     <ol class="toc num">
@@ -402,7 +443,7 @@
   </section>
 
   <!-- 2-UP SUMMARY — conclusion first, two contrasting columns -->
-  <section class="slide dark">
+  <section class="slide dark" id="summary">
     <p class="eyebrow">{{SUMMARY_EYEBROW}}</p>
     <h3>{{SUMMARY_HEADLINE}}</h3>
     <p class="muted" style="font-size:14px;">{{SUMMARY_LEDE}}</p>
@@ -428,7 +469,7 @@
 
   <!-- ACTION — 4 quadrants (problem / decision / change / done-when) + big number.
        Duplicate this block per item; alternate .dark. Number encodes priority order. -->
-  <section class="slide">
+  <section class="slide" id="action-1">
     <div class="action-head">
       <span class="bignum num">{{ACTION_NUMBER}}</span>
       <div class="action-title">
@@ -467,7 +508,7 @@
   </section>
 
   <!-- BEFORE / AFTER + OUTCOME STATS -->
-  <section class="slide">
+  <section class="slide" id="before-after">
     <p class="eyebrow">Before / After</p>
     <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{BA_TITLE}}</h3>
     <div class="ba">
@@ -497,7 +538,7 @@
   </section>
 
   <!-- AS-IS / TO-BE TABLE — wrapper enables horizontal scroll on mobile -->
-  <section class="slide">
+  <section class="slide" id="asis-tobe">
     <p class="eyebrow">{{TABLE_EYEBROW}}</p>
     <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{TABLE_TITLE}}</h3>
     <div class="tablewrap">
@@ -515,7 +556,7 @@
   </section>
 
   <!-- SEQUENCE — ordered steps -->
-  <section class="slide">
+  <section class="slide" id="sequence">
     <p class="eyebrow">{{SEQ_EYEBROW}}</p>
     <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{SEQ_TITLE}}</h3>
     <div class="seq">
@@ -543,7 +584,7 @@
   </section>
 
   <!-- CLOSING — one large statement + footer meta -->
-  <section class="slide dark closing">
+  <section class="slide dark closing" id="closing">
     <h2 class="display">{{CLOSING_LINE_1}}<br>{{CLOSING_LINE_2}}</h2>
     <div class="foot num">
       <span>{{CLOSING_FOOT_LEFT}}</span>
@@ -551,3 +592,38 @@
     </div>
   </section>
 </div>
+
+<!-- QUICK NAV — fixed slide navigator, bottom-right, follows scroll.
+     REQUIRED: one <li> per slide in final slide order; each href must match
+     a <section id>. Rebuild this list after deleting/duplicating slides
+     (duplicated ACTION slides get ids action-1, action-2, …).
+     Labels: short English uppercase words, never long Korean sentences. -->
+<nav class="quicknav num" aria-label="Slide navigation">
+  <ol>
+    <li><a href="#cover"><span class="no num">01</span><span class="t">Cover</span></a></li>
+    <li><a href="#contents"><span class="no num">02</span><span class="t">Contents</span></a></li>
+    <li><a href="#summary"><span class="no num">03</span><span class="t">Summary</span></a></li>
+    <li><a href="#action-1"><span class="no num">04</span><span class="t">Action 01</span></a></li>
+    <li><a href="#before-after"><span class="no num">05</span><span class="t">Before/After</span></a></li>
+    <li><a href="#asis-tobe"><span class="no num">06</span><span class="t">As-Is/To-Be</span></a></li>
+    <li><a href="#sequence"><span class="no num">07</span><span class="t">Sequence</span></a></li>
+    <li><a href="#closing"><span class="no num">08</span><span class="t">Closing</span></a></li>
+  </ol>
+</nav>
+
+<!-- Active-slide highlight for the quick nav. Inline (CSP-safe); keep as is. -->
+<script>
+(function(){
+  var links = document.querySelectorAll('.quicknav a');
+  if(!links.length || !('IntersectionObserver' in window)) return;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      links.forEach(function(a){
+        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+      });
+    });
+  }, { rootMargin:'-40% 0px -55% 0px' });
+  document.querySelectorAll('.deck section[id]').forEach(function(s){ obs.observe(s); });
+})();
+</script>

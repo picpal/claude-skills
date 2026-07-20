@@ -87,6 +87,24 @@ as a block in `assets/template.html`.
 | **Sequence** | 4 ordered steps (Step 1–4) for execution order / timeline. |
 | **Closing** | One large display statement + footer meta. Usually `.dark`. |
 
+## Quick nav (fixed slide navigator)
+
+Every deck ships with the `<nav class="quicknav">` block from the template — a
+fixed bottom-right list that follows scroll; clicking an entry jumps to that
+slide (smooth-scroll, gated behind `prefers-reduced-motion`).
+
+- **One `<li>` per slide, in final slide order.** After deleting/duplicating
+  slide blocks, rebuild the nav list so every `href="#id"` matches an existing
+  `<section id>` and no slide is missing. Renumber `01/02/…` to the final order.
+- Duplicated Action slides get unique ids: `action-1`, `action-2`, …
+- Labels are short English uppercase words (`Cover`, `Action 01`,
+  `Before/After`) — same rule as display type, no long Korean strings.
+- Keep the inline `<script>` at the bottom verbatim — it highlights the active
+  slide via IntersectionObserver. Inline JS is CSP-safe; only external scripts
+  are blocked.
+- Mobile (`≤720px`) hides labels and shows numbers only — preserve that
+  override.
+
 ## Authoring principles
 
 - **Numbering encodes meaning.** Use 01/02/03 only when it's a real order or
@@ -115,7 +133,10 @@ as a block in `assets/template.html`.
    (or the user's requested path) and fill every `{{PLACEHOLDER}}`. Delete
    unused slide blocks; duplicate Action blocks per item; keep the `<style>`
    block verbatim.
-3. **Publish.** Save the filled file, then call the **Artifact** tool with its
+3. **Sync the quick nav.** Rebuild the `.quicknav` list to mirror the final
+   slide set: one entry per remaining slide, sequential numbering, every
+   `href` pointing at a real `<section id>`. Keep the inline script.
+4. **Publish.** Save the filled file, then call the **Artifact** tool with its
    path, a stable `<title>`, a one-line `description`, and a monochrome-friendly
    `favicon` emoji. Redeploy to the same path to update in place.
 
@@ -128,3 +149,9 @@ as a block in `assets/template.html`.
 - Dropping the table out of `.tablewrap` → horizontal overflow breaks mobile.
 - Sequential numbers on unordered items → implies a false priority.
 - Pulling a web font or CDN → blocked by Artifact CSP, page renders unstyled.
+- Quick nav out of sync with slides → dead `#anchor` links or missing entries;
+  rebuild the list whenever slides are deleted, duplicated, or reordered.
+- Copied Action slides sharing one id → anchors all jump to the first copy;
+  ids must be unique (`action-1`, `action-2`, …).
+- Deleting the quicknav block or its inline script → the deck loses navigation;
+  the nav is a required part of every deck.
