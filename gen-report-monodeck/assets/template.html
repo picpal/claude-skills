@@ -611,19 +611,53 @@
   </ol>
 </nav>
 
-<!-- Active-slide highlight for the quick nav. Inline (CSP-safe); keep as is. -->
+<!-- Active-slide highlight for the quick nav. Inline (CSP-safe); keep as is.
+     Deterministic scrollspy: clicked link wins immediately; on scroll, active =
+     last slide whose top passed the 35%-viewport reading line (last slide when
+     pinned at true bottom). Works when the window OR an inner container scrolls. -->
 <script>
 (function(){
-  var links = document.querySelectorAll('.quicknav a');
-  if(!links.length || !('IntersectionObserver' in window)) return;
-  var obs = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(!e.isIntersecting) return;
-      links.forEach(function(a){
-        a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
-      });
+  var links = Array.prototype.slice.call(document.querySelectorAll('.quicknav a'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('.deck section[id]'));
+  if(!links.length || !sections.length) return;
+  var locked = 0, raf = 0, scrollEl = null;
+  function setActive(id){
+    links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#' + id); });
+  }
+  function scroller(){
+    if(scrollEl) return scrollEl;
+    var el = sections[0].parentElement;
+    while(el && el !== document.body){
+      var o = getComputedStyle(el).overflowY;
+      if(el.scrollHeight > el.clientHeight + 1 && (o === 'auto' || o === 'scroll')) return (scrollEl = el);
+      el = el.parentElement;
+    }
+    return (scrollEl = document.scrollingElement || document.documentElement);
+  }
+  function compute(){
+    if(Date.now() < locked) return;
+    var sc = scroller(), current;
+    if(sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2){
+      current = sections[sections.length - 1].id;
+    } else {
+      var line = window.innerHeight * 0.35;
+      current = sections[0].id;
+      sections.forEach(function(s){ if(s.getBoundingClientRect().top <= line) current = s.id; });
+    }
+    setActive(current);
+  }
+  function onScroll(){ if(!raf) raf = requestAnimationFrame(function(){ raf = 0; compute(); }); }
+  links.forEach(function(a){
+    a.addEventListener('click', function(){
+      setActive(a.getAttribute('href').slice(1));
+      locked = Date.now() + 1200;
     });
-  }, { rootMargin:'-40% 0px -55% 0px' });
-  document.querySelectorAll('.deck section[id]').forEach(function(s){ obs.observe(s); });
+  });
+  ['wheel','touchstart','keydown'].forEach(function(ev){
+    window.addEventListener(ev, function(){ locked = 0; }, {passive:true});
+  });
+  document.addEventListener('scroll', onScroll, true);
+  window.addEventListener('resize', onScroll);
+  compute();
 })();
 </script>

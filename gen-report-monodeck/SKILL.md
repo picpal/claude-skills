@@ -99,9 +99,13 @@ slide (smooth-scroll, gated behind `prefers-reduced-motion`).
 - Duplicated Action slides get unique ids: `action-1`, `action-2`, …
 - Labels are short English uppercase words (`Cover`, `Action 01`,
   `Before/After`) — same rule as display type, no long Korean strings.
-- Keep the inline `<script>` at the bottom verbatim — it highlights the active
-  slide via IntersectionObserver. Inline JS is CSP-safe; only external scripts
-  are blocked.
+- Keep the inline `<script>` at the bottom verbatim — a deterministic scrollspy
+  highlights the active slide: a clicked entry wins immediately, and on scroll
+  the active slide is recomputed from the 35%-viewport reading line (bottom
+  slide when pinned at max scroll). Do NOT replace it with an
+  IntersectionObserver band — narrow bands mis-highlight neighbors depending on
+  viewport height and go silent when a click can't scroll (clamped at page
+  bottom). Inline JS is CSP-safe; only external scripts are blocked.
 - Mobile (`≤720px`) hides labels and shows numbers only — preserve that
   override.
 
