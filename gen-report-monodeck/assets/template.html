@@ -637,7 +637,7 @@
   function compute(){
     if(Date.now() < locked) return;
     var sc = scroller(), current;
-    if(sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2){
+    if(sc.scrollHeight > sc.clientHeight + 4 && sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2){
       current = sections[sections.length - 1].id;
     } else {
       var line = window.innerHeight * 0.35;
