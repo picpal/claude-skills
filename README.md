@@ -35,7 +35,7 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [tmux-work-setting](./tmux-work-setting) | tmux 세션/윈도우/pane을 구성하고 각 pane에서 Claude Code를 자동 실행 | "tmux 작업환경 세팅", "클로드 여러 개 띄워줘", "멀티 pane 세션 만들어줘" |
 | [email-sender](./email-sender) | 파일 탐색·문서 생성 결과를 정리해 Gmail 초안으로 작성 | "메일로 보내줘", "파일 찾아서 메일로", "보고서 만들어서 이메일로" |
 | [evidence-capture](./evidence-capture) | 소스코드·웹·터미널·로그를 PNG 스크린샷으로 캡처해 증적 폴더에 저장 | "증적 캡처해줘", "스크린샷 찍어줘", "감사 자료 수집" |
-| [dev-harness](./dev-harness) | Classify→Brainstorm→Plan→Execute→QA→Lesson 6단계 코드 작업 파이프라인, `lessons.md` 자동 재투입 | "하네스 돌려줘", "파이프라인으로 진행", "dev harness로" |
+| [dev-harness](./dev-harness) | Classify→Brainstorm→Plan→Execute→QA→Review→Lesson 7단계 코드 작업 파이프라인. maker(Execute)와 컨텍스트 격리된 fresh-eyes checker(Review) 분리, `lessons.md` 자동 재투입 | "하네스 돌려줘", "파이프라인으로 진행", "dev harness로" |
 | [discord-project-setup](./discord-project-setup) | 프로젝트별 Discord 봇 토큰 연결·상태 확인·제거 (`.discord-token`, `.gitignore`, claude wrapper) | "디스코드 프로젝트 설정", "봇 토큰 연결", "discord setup" |
 | [inflearn-script-collector](./inflearn-script-collector) | Claude in Chrome으로 인프런 강의 스크립트를 자동 수집해 챕터별 원본·정리 MD 생성 | "인프런 강의 정리해줘", "강의 스크립트 뽑아줘", "인프런 자막 추출" |
 | [resume-checker](./resume-checker) | 한국어 이력서를 인터뷰→분석→AS-IS/TO-BE 첨삭→최종본까지 생성 | "이력서 봐줘", "이력서 첨삭해줘", "자소서 검토" |
