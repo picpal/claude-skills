@@ -8,6 +8,14 @@
 
 **Tech Stack:** Python 3.10+, spotipy>=2.26.0, ytmusicapi, pytest
 
+> **상태: 실행 완료 (2026-08-16).** 단, **Task 5(Spotify 수집)는 계획대로 구현하지 않았다.**
+> 사용자에게 Spotify Premium이 없어 Web API 경로가 성립하지 않으므로, embed 페이지
+> (`/embed/playlist/<id>`)의 `__NEXT_DATA__`를 파싱하는 방식으로 대체했다. spotipy 의존이
+>사라졌고 인증·Premium·소유권이 모두 불필요해졌다. 대신 embed는 100곡 상한이 있다.
+> 나머지 Task(1~4, 6~9)는 계획대로 구현되었다. 최종 설계는 스펙 문서를 보라:
+> `docs/superpowers/specs/2026-08-16-spotify-to-ytmusic-design.md`
+> 실제 테스트 수는 96개다 (계획의 88개 + embed 파서·잘림 경고 테스트 추가분).
+
 **개정 이력:** 2026-08-16 Codex 교차 검토로 P1 11건 발견. Spotify 2026-02 마이그레이션(`track`→`item`, 소유 플레이리스트 한정, Premium 필수) 반영 및 전 태스크 개정.
 
 ## Global Constraints
