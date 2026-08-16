@@ -1,39 +1,70 @@
 # spotify-to-ytmusic 스킬 설계
 
 작성일: 2026-08-16
-개정일: 2026-08-16 (Codex 교차 검토 반영 — Spotify 2026-02 마이그레이션 대응 및 P1 11건 수정)
+개정일: 2026-08-16 (2차: Spotify 읽기를 Web API → embed 페이지 파싱으로 교체. Premium·소유권·인증 요건 소멸)
 
 ## 목적
 
-내 Spotify 플레이리스트를 YouTube Music에 동일한 구성으로 복제한다. 반복 실행 시 새로 추가된 곡만 증분 동기화한다.
+공유받은 Spotify 플레이리스트를 YouTube Music에 동일한 구성으로 복제한다. 반복 실행 시 새로 추가된 곡만 증분 동기화한다.
+
+Spotify 계정도 Premium도 필요 없다. 공개(또는 링크 공유) 플레이리스트의 embed 페이지에 트랙 목록 JSON이 들어 있어 그것만 파싱한다.
 
 ## 결정 사항 요약
 
 | 항목 | 결정 | 이유 |
 |---|---|---|
-| 접근 방식 | API 기반 (spotipy + ytmusicapi) | 브라우저 자동화 대비 빠르고 안정적. 매칭 결과를 데이터로 다룰 수 있어 리포트·재시도가 가능 |
+| Spotify 읽기 | **embed 페이지(`/embed/playlist/<id>`)의 `__NEXT_DATA__` JSON 파싱** | 인증·Premium·소유권·브라우저가 모두 불필요. 순수 HTTP + JSON |
+| YouTube Music 쓰기 | ytmusicapi (browser 헤더 인증) | 공식 API는 플레이리스트 조작 쿼터가 비현실적 |
 | 매칭 실패 처리 | 자동 추가 + 미매칭 리포트 | 중단 없이 완주. 사용자는 사후에 리포트만 확인 |
 | 재실행 동작 | 증분 동기화 (새 곡만 추가) | 중복 없음. 기 매칭 곡은 재검색하지 않아 2회차부터 빠름 |
-| 입력 범위 | **내가 소유하거나 협업 중인** 플레이리스트. URL/ID/이름 지정 + `--all` 전체 일괄 | Spotify가 2026-02부터 타인·에디토리얼 플레이리스트 내용 조회를 차단 (아래 참조) |
+| 입력 | 플레이리스트 URL/ID (여러 개 가능) | 공유 링크를 그대로 붙여넣으면 된다 |
 
 의도적으로 채택하지 않은 것:
+- **Spotify Web API** — 2026년 2월 개편으로 플레이리스트 내용은 소유자/협업자만 조회 가능하고, Development Mode 앱은 소유자의 Premium 구독이 필요하다. 공유받은 플레이리스트를 다루는 이 스킬의 목적과 맞지 않는다
+- **브라우저 자동화** — embed 파싱으로 같은 데이터를 얻을 수 있어 불필요하다. 가상 스크롤·DOM 변경 취약성만 떠안게 된다
 - **완전 미러링(Spotify 삭제분을 YT에서도 제거)** — 수동으로 YT에 더해둔 곡까지 지울 위험이 있어 제외
-- **Liked Songs 복제** — 곡 수가 수천 개면 검색 호출이 과도해짐. 필요해지면 별도 옵션으로 추가
 - **애매한 건마다 사용자 확인** — 100곡 플레이리스트에서 확인 요청이 10회 이상 발생해 흐름이 끊김
-- **ISRC 기반 매칭** — YouTube Music 검색은 ISRC 조회를 지원하지 않아 수집해도 쓸 데가 없다. 트랙 데이터에서 제외한다
+- **ISRC 기반 매칭** — embed 데이터에 ISRC가 없고, YouTube Music 검색도 ISRC 조회를 지원하지 않는다
 
-## Spotify API 제약 (2026-02 마이그레이션)
+## Spotify 읽기: embed 페이지 파싱
 
-Spotify가 2026년 2월 Web API를 개편했다. 이 스킬의 전제에 직접 영향을 준다.
+`https://open.spotify.com/embed/playlist/<id>` 를 평범한 GET으로 받으면 HTML 안에
+`<script id="__NEXT_DATA__" type="application/json">` 이 있고, 그 안에 `trackList` 배열이 들어 있다.
 
-| 변경 | 대응 |
-|---|---|
-| 플레이리스트 항목 엔드포인트가 `/playlists/{id}/tracks` → `/playlists/{id}/items` | spotipy `playlist_items()`가 이미 새 엔드포인트를 호출한다. 메서드명은 그대로 |
-| 응답 필드가 `tracks.items[].track` → `items.items[].item` | `fields` 표현식과 파싱을 `item`으로 작성한다 |
-| **플레이리스트 내용은 소유하거나 협업 중인 것만 조회 가능** | 타인·Spotify 에디토리얼 플레이리스트는 복제 불가. 접근 실패 시 이 사유를 명시해 안내한다 |
-| **Development Mode 앱은 소유자의 Premium 구독 필수** | 사전 준비 문서에 전제조건으로 명시한다 |
+실측(2026-08-16, 54곡 공유 플레이리스트) 기준 항목 형태:
 
-의존성은 `spotipy>=2.26.0`으로 하한을 잡는다. 2.24는 구 엔드포인트를 호출하므로 쓸 수 없다.
+```json
+{
+  "uri": "spotify:track:64LDTMmwjwpI416zpQbIRt",
+  "title": "Flowerpot (Bonus Track)",
+  "subtitle": "Alex",
+  "duration": 265653,
+  "isPlayable": true,
+  "entityType": "track"
+}
+```
+
+| embed 필드 | 우리 필드 | 비고 |
+|---|---|---|
+| `uri` | `id` | `spotify:track:` 접두사를 떼어 track ID로 쓴다. state 키가 된다 |
+| `title` | `title` | 그대로 |
+| `subtitle` | `artists` | 쉼표로 분리. 첫 번째가 주 아티스트 |
+| `duration` | `duration_ms` | **이미 밀리초**. 변환 불필요 |
+
+플레이리스트 이름은 같은 JSON의 `name` 필드에서 얻는다.
+
+### 100곡 상한
+
+**embed는 최대 100곡까지만 반환한다.** 실측으로 확인했다 — 100곡을 넘는 Rock Classics와 All Out 80s가 둘 다 정확히 100개를 반환했다.
+
+정확히 100곡이 나오면 잘렸을 가능성이 있으므로 **경고를 출력한다.** 100곡 초과 플레이리스트를 다뤄야 하면 별도 수집 경로(브라우저 자동화 등)가 필요하며, 그건 이 스펙의 범위 밖이다.
+
+### 취약성
+
+비공개 인터페이스이므로 Spotify가 embed 페이지 구조를 바꾸면 깨진다. 대응:
+
+- `__NEXT_DATA__`를 못 찾거나 `trackList`가 없으면 **명확한 사유와 함께 중단한다.** 빈 목록으로 조용히 성공하면 안 된다
+- 파싱은 순수 함수로 분리해 저장된 픽스처로 테스트한다. 구조가 바뀌면 픽스처를 갱신해 고친다
 
 ## 아키텍처
 
@@ -71,11 +102,11 @@ spotify-to-ytmusic/
 | `match.py` | 제목/아티스트 정규화, 후보 점수 계산, 최적 후보 선정 | 없음 |
 | `state.py` | 데이터 홈 경로 결정, state JSON 원자적 로드/저장 | 없음 |
 | `report.py` | 실행 결과 → 마크다운 리포트 생성 및 저장 | 없음 |
-| `fetch_spotify.py` | 플레이리스트 ID 추출, 이름 검색, 트랙 목록 수집 | spotipy |
+| `fetch_spotify.py` | URL에서 ID 추출, embed 페이지 취득, `__NEXT_DATA__` 파싱 | **없음** (urllib) |
 | `sync_ytmusic.py` | YT 검색·쓰기, 응답 검증, 매칭 호출, 전체 흐름 조율 | ytmusicapi |
-| `check_auth.py` | 양쪽 인증 실동작 점검, 미설정 시 셋업 절차 출력 | 둘 다 |
+| `check_auth.py` | YT 인증 실동작 점검 + Spotify embed 도달 확인 | ytmusicapi |
 
-순수 로직(`match`, `state`, `report`)을 분리하는 이유는 두 가지다. 매칭 품질이 이 스킬의 핵심 가치인데 API 호출에 묶여 있으면 튜닝할 때마다 네트워크가 필요하고, 리포트·상태 관리도 마찬가지로 실제 계정 없이는 검증할 수 없게 된다.
+Spotify 쪽 서드파티 의존이 사라져 `fetch_spotify.py`도 표준 라이브러리만 쓴다. 덕분에 HTTP 취득 함수 하나만 빼면 전부 단위 테스트가 가능하다.
 
 ## 데이터 계약
 
@@ -83,31 +114,29 @@ spotify-to-ytmusic/
 
 ```json
 {
-  "playlist_id": "3cEYpjA9oz9GiPac4AsH4n",
-  "playlist_name": "내 플레이리스트",
-  "playlist_description": "...",
+  "playlist_id": "46WRCRFym2ofhc5l72Tf6B",
+  "playlist_name": "밍밍 茶차2",
+  "playlist_description": "",
   "tracks": [
     {
-      "id": "spotify_track_id",
-      "title": "Song Title",
-      "artists": ["Primary Artist", "Featured Artist"],
-      "duration_ms": 213000
+      "id": "64LDTMmwjwpI416zpQbIRt",
+      "title": "Flowerpot (Bonus Track)",
+      "artists": ["Alex"],
+      "duration_ms": 265653
     }
   ]
 }
 ```
 
-`album`과 `isrc`는 수집하지 않는다. 매칭에 쓰이지 않고 리포트에도 등장하지 않으므로 Spotify 필드 계약만 넓히는 비용이다.
-
-로컬 파일·삭제된 트랙·팟캐스트 에피소드 등 `item` 객체가 null이거나 id가 없는 항목은 건너뛰고, 건너뛴 개수를 stderr에 보고한다.
+`uri`가 `spotify:track:`으로 시작하지 않는 항목(에피소드 등)이나 `title`이 없는 항목은 건너뛰고, 건너뛴 개수를 stderr에 보고한다.
 
 ### 입력 지정 방식
 
-- **URL 또는 ID**: `https://open.spotify.com/playlist/<id>` 에서 id를 추출하거나, id를 직접 받는다
-- **이름**: 내 플레이리스트 목록을 순회해 대소문자 무시 정확 일치를 먼저 찾고, 없으면 부분 일치를 찾는다. 부분 일치가 2개 이상이면 후보 목록을 출력하고 중단한다 (임의 선택하지 않음)
-- **`--all`**: 내 플레이리스트 전체를 순회한다. 플레이리스트마다 독립적인 state 파일과 독립적인 리포트를 생성하고, 하나가 실패해도 다음으로 진행한다. 마지막에 전체 요약을 출력하고, **하나라도 실패했으면 종료 코드 1을 반환한다**
+- **URL**: 공유 링크를 그대로 받는다. `?si=...&utm_source=...` 같은 쿼리스트링이 붙어 있어도 ID만 뽑아낸다
+- **ID**: 22자 base62 ID를 직접 받는다
+- **여러 개**: URL을 여러 개 나열하면 순서대로 처리한다. 플레이리스트마다 독립적인 state 파일과 리포트를 만들고, 하나가 실패해도 다음으로 진행하되 **하나라도 실패했으면 종료 코드 1을 반환한다**
 
-URL/ID로 지정하더라도 내가 소유하거나 협업 중인 플레이리스트가 아니면 Spotify가 내용을 주지 않는다. 이 경우 "소유 또는 협업 중인 플레이리스트만 복제할 수 있다"는 사유를 명시하고 중단한다.
+이름으로 검색하는 기능은 없다. 내 라이브러리에 접근하지 않기 때문이다.
 
 ### state 파일
 
@@ -115,8 +144,8 @@ URL/ID로 지정하더라도 내가 소유하거나 협업 중인 플레이리�
 
 ```json
 {
-  "spotify_playlist_id": "3cEY...",
-  "spotify_playlist_name": "내 플레이리스트",
+  "spotify_playlist_id": "46WRCRFym2ofhc5l72Tf6B",
+  "spotify_playlist_name": "밍밍 茶차2",
   "yt_playlist_id": "PLxxx",
   "matched": {
     "<spotify_track_id>": { "video_id": "dQw4...", "score": 0.92, "yt_title": "..." }
@@ -222,7 +251,7 @@ ytmusicapi는 실패를 예외가 아니라 반환값으로 알리는 경우가 
 
 경로: `~/.claude/spotify-to-ytmusic/reports/<playlist_name>-<YYYYMMDD-HHMMSS>.md`
 
-초 단위까지 쓴다. 분 단위면 `--all`로 여러 플레이리스트를 처리할 때 같은 파일을 덮어쓸 수 있다.
+초 단위까지 쓴다. 분 단위면 여러 플레이리스트를 연속 처리할 때 같은 파일을 덮어쓸 수 있다.
 
 포함 내용:
 - 요약: 전체 곡 수 / 이미 동기화됨 / 이번 처리 / 매칭 성공 / 미매칭
@@ -236,49 +265,47 @@ ytmusicapi는 실패를 예외가 아니라 반환값으로 알리는 경우가 
 
 | 상황 | 처리 |
 |---|---|
-| 인증 미설정/무효 | `check_auth.py`가 셋업 절차를 출력하고 exit 1. 동기화를 시작하지 않음 |
-| Spotify 플레이리스트 접근 불가 | 소유/협업 제약을 사유로 명시하고 중단 |
+| embed 페이지 취득 실패(네트워크·404) | 사유를 명시하고 중단 |
+| `__NEXT_DATA__`/`trackList` 없음 | "Spotify가 페이지 구조를 변경했을 수 있다"는 사유와 함께 중단. 빈 목록으로 조용히 성공하지 않는다 |
+| 트랙 100개 정확히 반환 | 잘렸을 수 있다는 **경고** 출력 후 계속 진행 |
+| YT 인증 미설정/무효 | `check_auth.py`가 셋업 절차를 출력하고 exit 1. 동기화를 시작하지 않음 |
 | state 파일 손상 | 예외를 던지고 중단. 새 state로 조용히 넘어가지 않음 (중복 플레이리스트 방지) |
 | YT 플레이리스트 소실 | 사유를 알리고 중단 |
 | YT 검색/쓰기 실패 | 재시도 후 실패하면 `unmatched`에 사유와 함께 기록하고 **다음 곡으로 진행** |
 | 재시도 | 최대 3회 시도(= 2회 재시도), 대기 1초 → 2초. 인증·검증 오류는 재시도하지 않음 |
 | 요청 간격 | 곡당 기본 0.3초. **성공·실패 경로 모두에서 적용한다** — 실패 시 건너뛰면 레이트리밋 상황에서 딜레이 없이 연타하게 된다. 매칭된 곡은 검색+추가로 요청이 2회임을 문서에 명시 |
 | 중간 중단(Ctrl-C) | `try/finally`로 state를 저장하고 종료. 재실행 시 이어서 진행 |
-| `--all` 개별 실패 | 리포트 생성까지 포함해 플레이리스트 단위로 격리. 하나 실패해도 계속하되 종료 코드 1 |
+| 여러 플레이리스트 중 개별 실패 | 리포트 생성까지 포함해 플레이리스트 단위로 격리. 하나 실패해도 계속하되 종료 코드 1 |
 
-전체 실행이 중단되는 경우는 인증 실패, 플레이리스트 접근 실패, state 손상, YT 플레이리스트 소실 네 가지다. 개별 곡의 문제는 전체를 멈추지 않는다.
+전체 실행이 중단되는 경우는 Spotify 파싱 실패, YT 인증 실패, state 손상, YT 플레이리스트 소실 네 가지다. 개별 곡의 문제는 전체를 멈추지 않는다.
 
 ## 인증 셋업 (사용자 1회 수동 작업)
 
-### 사전 조건
-
-**Spotify Premium 구독이 필요하다.** Development Mode 앱은 소유자가 Premium이어야 동작한다.
-
-### Spotify
-
-1. developer.spotify.com/dashboard 에서 앱 생성
-2. Redirect URI를 `http://127.0.0.1:8888/callback`으로 등록
-3. 환경변수 설정:
-   ```bash
-   export SPOTIPY_CLIENT_ID="..."
-   export SPOTIPY_CLIENT_SECRET="..."
-   export SPOTIPY_REDIRECT_URI="http://127.0.0.1:8888/callback"
-   ```
-4. 최초 실행 시 브라우저 인증 → 토큰 캐시 생성
-
-필요 스코프: `playlist-read-private`, `playlist-read-collaborative`
-
-### YouTube Music
+Spotify 쪽은 아무 설정도 필요 없다. YouTube Music만 설정한다.
 
 `ytmusicapi browser --file ~/.claude/spotify-to-ytmusic/browser.json` 으로 설정한다. music.youtube.com에 로그인한 브라우저의 개발자 도구에서 인증된 POST 요청의 request header를 복사해 붙여넣는다.
 
 OAuth 방식 대신 browser 헤더 방식을 택한 이유는 Google Cloud 프로젝트 생성과 OAuth 클라이언트 등록이 필요 없어 진입 장벽이 낮기 때문이다. 단점은 세션 만료 시 재설정이 필요하다는 것과, ytmusicapi가 browser 방식을 유지보수 부담이 큰 경로로 보고 OAuth를 권장한다는 점이다. 세션 만료는 `check_auth.py`가 실제 호출로 감지해 재설정을 안내한다.
 
+YouTube Premium은 필요 없다. 플레이리스트 생성·수정은 무료 계정에서도 동작한다.
+
 ## 테스트 전략
 
 ### 순수 로직 단위 테스트
 
-`match.py`, `state.py`, `report.py`, 그리고 `sync_ytmusic.py`의 파싱 함수는 네트워크 의존이 없으므로 케이스 테이블로 검증한다.
+`match.py`, `state.py`, `report.py`, `fetch_spotify.py`의 파싱 함수, `sync_ytmusic.py`의 응답 검증 함수는 네트워크 의존이 없으므로 케이스 테이블로 검증한다.
+
+`fetch_spotify.parse_embed` 최소 커버 케이스:
+
+| 케이스 | 기대 결과 |
+|---|---|
+| 정상 trackList | 실측 필드가 우리 스키마로 매핑됨 |
+| `subtitle`에 아티스트 여러 명 | 쉼표로 분리 |
+| `uri`가 track이 아님 (에피소드) | 건너뛰고 skipped 증가 |
+| `title` 없음 | 건너뛰고 skipped 증가 |
+| `__NEXT_DATA__` 없음 | 예외 |
+| `trackList` 없음 | 예외 |
+| 트랙 100개 | 잘림 경고 플래그 |
 
 `match.py` 최소 커버 케이스:
 
@@ -301,36 +328,33 @@ OAuth 방식 대신 browser 헤더 방식을 택한 이유는 Google Cloud 프�
 
 `sync_playlist`는 이 스킬에서 가장 상태가 복잡한 함수인데 API에 묶여 있다는 이유로 검증을 생략하면, 단위 테스트가 전부 통과해도 dry-run 오염·중복 생성·재시도 같은 실패가 그대로 남는다. ytmusicapi 인터페이스를 흉내내는 fake 클라이언트를 만들어 검증한다.
 
-fake 클라이언트가 지원해야 하는 시나리오:
-
 | 시나리오 | 검증 내용 |
 |---|---|
 | 신규 동기화 | 플레이리스트 생성 1회, 매칭된 곡만 추가, state 기록 |
-| 재실행 | 추가 호출 0회, "변경 없음" |
+| 재실행 | 추가·검색 호출 0회, "변경 없음" |
 | 곡 1개 추가 후 재실행 | 그 곡만 검색·추가 |
-| `--dry-run` | state 파일이 생기지 않음, 추가 호출 0회 |
+| `--dry-run` | state 파일이 생기지 않음, 쓰기 호출 0회 |
 | 검색 예외 | 재시도 후 unmatched 기록, 다음 곡 진행 |
+| 실패 경로의 딜레이 | 실패해도 `sleep(delay)`가 호출됨 |
 | 추가 응답이 실패 상태 | unmatched 기록, matched에 들어가지 않음 |
 | 중복 에러 응답 | "이미 존재함"으로 matched 기록 |
 | `create_playlist`가 dict 반환 | 예외로 전환, state에 dict가 저장되지 않음 |
+| YT 플레이리스트 소실 | 예외 |
 | 처리 중 `KeyboardInterrupt` | state가 저장된 상태로 종료 |
 
 ### 통합 검증
 
-실제 API 의존이므로 자동화하지 않는다. 5~10곡짜리 **내가 소유한** 테스트 플레이리스트로 수동 스모크 테스트:
+실제 네트워크가 필요한 것은 두 가지뿐이다.
 
-1. `--dry-run` 실행 → 매칭 점수가 합리적인지 확인, state 파일이 생기지 않았는지 확인
-2. 실제 실행 → 비공개 플레이리스트 생성 및 곡 추가 확인
-3. 재실행 → "변경 없음" 출력 확인
-4. Spotify에 1곡 추가 후 재실행 → 그 곡만 추가되는지 확인
-5. 리포트 파일 렌더링 확인
+1. `fetch_spotify.py`로 실제 공유 URL을 받아 곡 수와 필드가 맞는지 확인 (인증 불필요하므로 언제든 실행 가능)
+2. YT 동기화 스모크 테스트 — 인증 설정 후 수동으로 진행
 
 ## SKILL.md 요건
 
 - frontmatter `description`은 **single-line 문자열** (README에 명시된 제약)
 - 트리거 표현: "스포티파이 플레이리스트 유튜브 뮤직으로", "플레이리스트 옮겨줘", "spotify to ytmusic", "플레이리스트 복제", "플레이리스트 이전"
-- 사전 조건에 **Premium 필요**와 **소유/협업 플레이리스트만 가능**을 명시
-- 인증 셋업 절차를 단계별로 포함
+- **Spotify 인증이 필요 없다는 점**과 **100곡 상한**을 명시
+- YT 인증 셋업 절차를 단계별로 포함
 - 매칭 임계값 기본값과 조정 방법 명시. **아티스트 게이트는 임계값을 낮춰도 유지된다는 점을 함께 적는다**
 - 미매칭 리포트를 사용자에게 한국어로 요약해 보고하라는 지시 포함
 

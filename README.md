@@ -41,6 +41,7 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [resume-checker](./resume-checker) | 한국어 이력서를 인터뷰→분석→AS-IS/TO-BE 첨삭→최종본까지 생성 | "이력서 봐줘", "이력서 첨삭해줘", "자소서 검토" |
 | [gen-report-monodeck](./gen-report-monodeck) | 구조화된 보고서를 흑백 에디토리얼 "덱" 스타일 스크롤 HTML로 렌더링 | "보고서 html", "리포트 만들어줘", "모노크롬 보고서" |
 | [gen-report-monodeck-ppt](./gen-report-monodeck-ppt) | gen-report-monodeck과 동일한 모노크롬 테마를 유지하되, 스크롤 대신 화살표 키·버튼·스와이프로 한 장씩 넘기는 PPT 형태 슬라이드 HTML로 렌더링 | "ppt 형태 html", "슬라이드로 넘기는 html", "발표자료 html", "피치덱 만들어줘" |
+| [spotify-to-ytmusic](./spotify-to-ytmusic) | 공유받은 Spotify 플레이리스트를 YouTube Music에 동일 구성으로 복제. embed 파싱이라 Spotify 인증·Premium 불필요, 재실행 시 새 곡만 증분 동기화 | "스포티파이 플레이리스트 유튜브뮤직으로", "플레이리스트 옮겨줘", "플레이리스트 복제" |
 
 ## 디렉토리 구조
 
@@ -69,6 +70,10 @@ claude-skills/
 ├── resume-checker/
 │   ├── SKILL.md
 │   └── references/
+├── spotify-to-ytmusic/
+│   ├── SKILL.md
+│   ├── requirements.txt
+│   └── scripts/
 ├── <future-skill>/
 │   ├── SKILL.md
 │   └── references/     (선택)
