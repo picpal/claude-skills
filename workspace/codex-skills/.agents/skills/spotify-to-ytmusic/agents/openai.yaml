@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spotify → YouTube Music"
+  short_description: "Spotify 플레이리스트를 YouTube Music으로 이전"
+  default_prompt: "Use $spotify-to-ytmusic to copy this Spotify playlist into YouTube Music."
