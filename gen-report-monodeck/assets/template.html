@@ -387,7 +387,8 @@
   /* status chips — solid=DONE, hatch=WIP, outline=TODO/BLOCKED */
   .chip{
     display:inline-block; font-size:10px; font-weight:700; letter-spacing:.14em;
-    text-transform:uppercase; border:1px solid currentColor; padding:3px 9px; white-space:nowrap;
+    text-transform:uppercase; border:1px solid currentColor; white-space:nowrap;
+    padding:3px 9px 6px;  /* bottom room hosts the hatch band — same box for all three fills */
   }
   .chip.solid{ background:#141414; color:#fff; border-color:#141414; }
   .slide.dark .chip.solid{ background:#f4f3ef; color:#121212; border-color:#f4f3ef; }
@@ -397,7 +398,6 @@
     background-size:100% 4px;
     background-position:bottom left;
     background-repeat:repeat-x;
-    padding-bottom:6px;
   }
 
   /* severity scale ■■■□□ — filled squares = level */
@@ -492,6 +492,9 @@
     text-transform:uppercase; color:var(--muted);
   }
   .matrix .q .it{ display:flex; gap:8px; align-items:baseline; font-size:12.5px; margin:5px 0; }
+  /* long unbroken tokens (티켓키·브랜치명) wrap inside the quadrant instead of
+     escaping the frame — label span ONLY, or the .no numbers break vertically */
+  .matrix .q .it > span:last-child{ min-width:0; overflow-wrap:anywhere; }
   .matrix .q .it .no{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:800; font-size:11px; }
   .matrix-axis-x{
     display:flex; justify-content:space-between; margin-top:8px;
@@ -505,7 +508,7 @@
      shrinking. Never size a diagram by letting width:100% rescale it. */
   .diagramwrap{ overflow-x:auto; margin-top:26px; }
   .diagramwrap figure{ margin:0; }
-  .diagramwrap svg{ display:block; width:100%; height:auto; }
+  .diagramwrap svg{ display:block; width:100%; height:auto; margin-inline:auto; }
   .diagramwrap figcaption{ margin-top:12px; font-size:12px; color:var(--muted); }
 
   /* screen mock — mono wireframe + numbered event annotations */
@@ -540,6 +543,13 @@
   .mock .ui-btn.primary .marker{ box-shadow:0 0 0 1.5px #ffffff; }
   .slide.dark .mock .ui-btn.primary .marker{ box-shadow:0 0 0 1.5px #121212; }
   .mock-notes .list .marker{ margin-top:2px; }
+
+  /* Korean wraps at word boundaries (not mid-syllable) in narrow label cells;
+     overflow-wrap still breaks unbroken tokens so boxes never overflow */
+  .flow-node h5, .flow-node p, .bar-row .l, .gantt-row .l, .seq h4, .seq p,
+  .matrix .q .it > span:last-child{
+    word-break:keep-all; overflow-wrap:anywhere;
+  }
 
   /* hatch fill = series #2 (비교군/잠정/WIP). Keep LAST so it overrides solid fills. */
   .hatch{
@@ -592,7 +602,7 @@
     .deck{ padding-right:72px; }
   }
   @media (max-width:720px){
-    .deck{ padding-right:56px; }
+    .deck{ padding-right:44px; }  /* mobile quicknav is numbers-only (~42px) */
     .slide{ padding:34px 24px; }
     .cover{ min-height:360px; }
     .split, .action-grid, .ba{ grid-template-columns:1fr; }
@@ -616,7 +626,7 @@
     .action-head .bignum{ order:1; }
     .action-head .tag{ order:2; margin-left:auto; }
     .action-head .action-title{ order:3; flex:1 1 100%; }
-    .bar-row{ grid-template-columns:112px 1fr 48px; gap:10px; }
+    .bar-row{ grid-template-columns:100px 1fr 44px; gap:8px; }
     .bar-row .l{ line-height:1.35; }
     .gantt-row{ grid-template-columns:92px 1fr; gap:10px; }
     .gantt-axis{ margin-left:102px; }
@@ -935,8 +945,10 @@
        means viewBox width +300 AND the <svg>'s inline min-width/max-width
        raised to match (e.g. 1160px for 4 actors) — otherwise width:100%
        squeezes the wider viewBox into the same slide width and every label and
-       hairline shrinks (5 actors → 7px type). Fewer than 3 actors: keep the
-       860 width and spread the lifelines; never let a narrow viewBox stretch.
+       hairline shrinks (5 actors → 7px type). Practical cap: 4 actors — wider
+       diagrams mostly hide behind the horizontal scroll; split the interaction
+       into two diagrams instead. Fewer than 3 actors: keep the 860 width and
+       spread the lifelines; never let a narrow viewBox stretch.
        A message that skips a lifeline must have its label nudged into an empty
        span — not the arrow midpoint, where the crossed lifeline strikes it.
        Add one activation bar per actor that holds state across rows (bar x =
