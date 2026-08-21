@@ -341,6 +341,180 @@
   a{ color:inherit; }
   :focus-visible{ outline:2px solid currentColor; outline-offset:3px; }
 
+  /* ==========================================================
+     VISUAL GRAMMAR — monochrome data/diagram components.
+     Fill encodes series: solid = 현재/확정/강조, hatch = 비교군/
+     잠정/진행중, open(hairline) = 미완/보조. Two or more fills
+     on one slide REQUIRE a .viz-legend. All components inherit
+     currentColor so they work on paper and ink slides alike.
+     ========================================================== */
+  .viz-legend{
+    display:flex; flex-wrap:wrap; gap:18px; margin-top:18px;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  }
+  .viz-legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .viz-legend i{ width:11px; height:11px; border:1px solid currentColor; }
+  .viz-legend i.solid{ background:currentColor; }
+
+  /* horizontal bar chart — width via inline style="width:NN%" */
+  .barchart{ margin-top:26px; border-top:1px solid var(--rule); }
+  .bar-row{
+    display:grid; grid-template-columns:150px 1fr 64px; gap:14px; align-items:center;
+    padding:10px 0; border-bottom:1px solid var(--rule);
+  }
+  .bar-row .l{ font-size:12.5px; font-weight:700; min-width:0; }
+  .bar-row .v{ font-size:12.5px; text-align:right; }
+  .bar-track{ height:13px; border:1px solid var(--rule); }
+  .bar-fill{ height:100%; background:currentColor; }
+
+  /* thin progress meter — inline inside Action cells / lists */
+  .meter{ display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .meter .meter-track{ flex:1; height:4px; border:1px solid var(--rule); }
+  .meter .meter-fill{ height:100%; background:currentColor; }
+  .meter .v{ font-size:11.5px; font-weight:700; }
+
+  /* status chips — solid=DONE, hatch=WIP, outline=TODO/BLOCKED */
+  .chip{
+    display:inline-block; font-size:10px; font-weight:700; letter-spacing:.14em;
+    text-transform:uppercase; border:1px solid currentColor; padding:3px 9px; white-space:nowrap;
+  }
+  .chip.solid{ background:#141414; color:#fff; border-color:#141414; }
+  .slide.dark .chip.solid{ background:#f4f3ef; color:#121212; border-color:#f4f3ef; }
+  /* chip hatch is muted-tone (not currentColor) so the label stays legible */
+  .chip.hatch{
+    background-image:repeating-linear-gradient(45deg,var(--muted) 0,var(--muted) 1px,transparent 1px,transparent 5px);
+  }
+
+  /* severity scale ■■■□□ — filled squares = level */
+  .scale{ display:inline-flex; gap:3px; vertical-align:baseline; }
+  .scale i{ width:9px; height:9px; border:1px solid currentColor; }
+  .scale i.on{ background:currentColor; }
+
+  /* delta marker under outcome stats — direction from ▲/▼ glyph, never color */
+  .delta{ display:block; margin-top:8px; font-size:12px; font-weight:700; }
+  .delta small{
+    font-weight:600; color:var(--muted); letter-spacing:.08em;
+    text-transform:uppercase; font-size:10px; margin-left:6px;
+  }
+
+  /* callout / pull-quote — ONE key sentence, editorial scale */
+  .callout{
+    border-left:3px solid currentColor; padding:4px 0 4px 24px; margin-top:30px;
+    font-size:clamp(17px,2.4vw,22px); font-weight:700; line-height:1.55;
+    letter-spacing:-.01em; text-wrap:balance; max-width:34ch;
+  }
+  .callout .src{
+    display:block; margin-top:10px; font-size:11px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+  }
+
+  /* mono diff — add: left bar + chip bg / del: hatched + muted */
+  .diffwrap{ overflow-x:auto; margin-top:26px; border:1px solid var(--rule); }
+  .diff{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:12.5px; line-height:1.75; min-width:480px; padding:12px 0;
+  }
+  .diff .ln{ display:block; white-space:pre; padding:0 18px; }
+  .diff .meta{ color:var(--muted); }
+  .diff .add{ background:var(--chipbg); box-shadow:inset 3px 0 0 currentColor; }
+  .diff .del{
+    color:var(--muted);
+    background-image:repeating-linear-gradient(45deg,var(--rule) 0,var(--rule) 1px,transparent 1px,transparent 6px);
+  }
+
+  /* linear flow — boxes joined by hairline arrows; .now = current step */
+  .flow{ display:flex; align-items:stretch; margin-top:26px; }
+  .flow-node{
+    flex:1; min-width:0; border:1px solid currentColor;
+    padding:14px 16px; text-align:center; align-self:center;
+  }
+  .flow-node h5{ margin:0; font-size:13px; font-weight:800; line-height:1.4; }
+  .flow-node p{ margin:4px 0 0; font-size:11.5px; color:var(--muted); max-width:none; }
+  .flow-node.now{ border-width:2px; }
+  .flow-node.now h5::before{ content:"● "; font-size:9px; vertical-align:2px; }
+  .flow-arrow{
+    flex:0 0 30px; align-self:center; height:1px;
+    background:currentColor; position:relative; margin:0 2px;
+  }
+  .flow-arrow::after{
+    content:""; position:absolute; right:-1px; top:-3.5px;
+    border-left:6px solid currentColor;
+    border-top:4px solid transparent; border-bottom:4px solid transparent;
+  }
+
+  /* timeline / gantt — bar position inline style="left:NN%;width:NN%" */
+  .gantt{ margin-top:26px; border-top:1px solid var(--rule); }
+  .gantt-row{
+    display:grid; grid-template-columns:150px 1fr; gap:14px; align-items:center;
+    padding:9px 0; border-bottom:1px solid var(--rule);
+  }
+  .gantt-row .l{ font-size:12.5px; font-weight:700; }
+  .gantt-lane{ position:relative; height:15px; }
+  .gantt-bar{ position:absolute; top:0; bottom:0; background:currentColor; }
+  .gantt-axis{
+    display:flex; justify-content:space-between; padding:8px 0 0; margin-left:164px;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+  }
+
+  /* 2x2 matrix — quadrant frame; items are numbered like their Action slides */
+  .matrix-axis-y{
+    font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--muted); margin:26px 0 8px;
+  }
+  .matrix{ display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:170px; border:1px solid currentColor; }
+  .matrix .q{ padding:12px 14px; overflow:hidden; }
+  .matrix .q:nth-child(2){ border-left:1px solid var(--rule); }
+  .matrix .q:nth-child(3){ border-top:1px solid var(--rule); }
+  .matrix .q:nth-child(4){ border-top:1px solid var(--rule); border-left:1px solid var(--rule); }
+  .matrix .q h5{
+    margin:0 0 10px; font-size:10px; font-weight:700; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .matrix .q .it{ display:flex; gap:8px; align-items:baseline; font-size:12.5px; margin:5px 0; }
+  .matrix .q .it .no{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:800; font-size:11px; }
+  .matrix-axis-x{
+    display:flex; justify-content:space-between; margin-top:8px;
+    font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
+  }
+
+  /* SVG diagrams (sequence / branching flow) — viewBox scales, wide ones scroll */
+  .diagramwrap{ overflow-x:auto; margin-top:26px; }
+  .diagramwrap figure{ margin:0; }
+  .diagramwrap svg{ display:block; min-width:640px; width:100%; height:auto; }
+  .diagramwrap figcaption{ margin-top:12px; font-size:12px; color:var(--muted); }
+
+  /* screen mock — mono wireframe + numbered event annotations */
+  .mockgrid{ display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:26px; align-items:start; }
+  .mock{ border:1px solid currentColor; }
+  .mock-bar{ display:flex; gap:6px; padding:10px 12px; border-bottom:1px solid var(--rule); }
+  .mock-bar i{ width:8px; height:8px; border:1px solid currentColor; border-radius:50%; }
+  .mock-body{ padding:18px; display:flex; flex-direction:column; gap:12px; }
+  .mock .ui-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .mock .ui-btn{
+    display:inline-block; border:1px solid currentColor; padding:7px 14px;
+    font-size:12px; font-weight:700; position:relative;
+  }
+  .mock .ui-btn.primary{ background:#141414; color:#fff; border-color:#141414; }
+  .slide.dark .mock .ui-btn.primary{ background:#f4f3ef; color:#121212; border-color:#f4f3ef; }
+  .mock .ui-input{ flex:1; min-width:0; border:1px solid var(--rule); padding:7px 12px; font-size:12px; color:var(--muted); }
+  .mock .ui-text{ font-size:12.5px; }
+  .mock .ui-line{ height:7px; background:var(--chipbg); }
+  .marker{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px; border-radius:50%; flex:0 0 auto;
+    background:#141414; color:#fff; font-size:10px; font-weight:800;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  }
+  .slide.dark .marker{ background:#f4f3ef; color:#121212; }
+  .mock .marker{ position:absolute; top:-9px; right:-9px; }
+  .mock-notes .list .k{ margin-top:0; }
+
+  /* hatch fill = series #2 (비교군/잠정/WIP). Keep LAST so it overrides solid fills. */
+  .hatch{
+    background-color:transparent;
+    background-image:repeating-linear-gradient(45deg,currentColor 0,currentColor 1px,transparent 1px,transparent 5px);
+  }
+
   /* ---------- quick nav (fixed slide navigator, bottom-right) ---------- */
   .deck section[id]{ scroll-margin-top:26px; }
   .quicknav{
@@ -399,6 +573,22 @@
     .toc .d{ grid-column:2; }
     .quicknav{ right:10px; bottom:10px; padding:8px 6px; max-height:50vh; }
     .quicknav .t{ display:none; }  /* numbers only on mobile */
+    .bar-row{ grid-template-columns:92px 1fr 52px; gap:10px; }
+    .gantt-row{ grid-template-columns:92px 1fr; gap:10px; }
+    .gantt-axis{ margin-left:102px; }
+    .flow{ flex-direction:column; }
+    .flow-node{ align-self:stretch; }
+    .flow-arrow{
+      flex:0 0 auto; width:1px; height:26px; align-self:center;
+      margin:2px 0; background:currentColor;
+    }
+    .flow-arrow::after{
+      right:auto; left:-3.5px; top:auto; bottom:-1px;
+      border-left:4px solid transparent; border-right:4px solid transparent;
+      border-top:6px solid currentColor; border-bottom:0;
+    }
+    .matrix{ grid-auto-rows:140px; }
+    .mockgrid{ grid-template-columns:1fr; gap:24px; }
   }
   @media (prefers-reduced-motion: no-preference){
     html{ scroll-behavior:smooth; }
@@ -530,11 +720,22 @@
       </div>
     </div>
     <p class="eyebrow" style="margin-top:34px;">{{OUTCOME_EYEBROW}}</p>
+    <!-- .delta = 변화 방향(▲ 증가 / ▼ 감소). 방향은 글리프가 전달, 색 금지.
+         아래 ▲/▼는 예시 배치일 뿐 — 지표별 실제 방향에 맞춰 글리프를 바꿀 것.
+         변화량이 없으면 .delta 줄을 지운다. -->[MASK-1]
     <div class="outcome num">
-      <div><div class="v">{{STAT_1_VALUE}}</div><div class="l">{{STAT_1_LABEL}}</div></div>
-      <div><div class="v">{{STAT_2_VALUE}}</div><div class="l">{{STAT_2_LABEL}}</div></div>
-      <div><div class="v">{{STAT_3_VALUE}}</div><div class="l">{{STAT_3_LABEL}}</div></div>
+      <div><div class="v">{{STAT_1_VALUE}}</div><span class="delta">▲ {{STAT_1_DELTA}}<small>{{STAT_1_DELTA_LABEL}}</small></span><div class="l">{{STAT_1_LABEL}}</div></div>
+      <div><div class="v">{{STAT_2_VALUE}}</div><span class="delta">▼ {{STAT_2_DELTA}}<small>{{STAT_2_DELTA_LABEL}}</small></span><div class="l">{{STAT_2_LABEL}}</div></div>
+      <div><div class="v">{{STAT_3_VALUE}}</div><span class="delta">▲ {{STAT_3_DELTA}}<small>{{STAT_3_DELTA_LABEL}}</small></span><div class="l">{{STAT_3_LABEL}}</div></div>
     </div>
+    <!-- OPTIONAL: paired bar chart when the before/after claim is numeric.
+         solid = After, hatch = Before; widths inline (max value = 100%).
+         Legend is REQUIRED whenever solid+hatch coexist. Delete if unused. -->
+    <div class="barchart num">
+      <div class="bar-row"><span class="l">{{BAR_LABEL}} · Before</span><div class="bar-track"><div class="bar-fill hatch" style="width:{{BAR_BEFORE_PCT}}%"></div></div><span class="v">{{BAR_BEFORE_VALUE}}</span></div>
+      <div class="bar-row"><span class="l">{{BAR_LABEL}} · After</span><div class="bar-track"><div class="bar-fill" style="width:{{BAR_AFTER_PCT}}%"></div></div><span class="v">{{BAR_AFTER_VALUE}}</span></div>
+    </div>
+    <div class="viz-legend"><span><i class="solid"></i>After</span><span><i class="hatch"></i>Before</span></div>
   </section>
 
   <!-- AS-IS / TO-BE TABLE — wrapper enables horizontal scroll on mobile -->
@@ -583,6 +784,236 @@
     </div>
   </section>
 
+  <!-- 2x2 MATRIX — priority frame (예: 영향도 x 노력). Item numbers reference
+       the matching Action slides so the deck's ordering reads as coordinates.
+       빈 사분면은 지우지 말고 "—  항목 없음"으로 표기 — 비어 있다는 사실도 정보다. -->
+  <section class="slide dark" id="matrix">
+    <p class="eyebrow">{{MATRIX_EYEBROW}}</p>
+    <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{MATRIX_TITLE}}</h3>
+    <p class="matrix-axis-y">↑ {{MATRIX_Y_HIGH}}</p>
+    <div class="matrix num">
+      <div class="q">
+        <h5>{{MATRIX_Q1_LABEL}}</h5>
+        <div class="it"><span class="no">01</span><span>{{MATRIX_Q1_ITEM}}</span></div>
+      </div>
+      <div class="q">
+        <h5>{{MATRIX_Q2_LABEL}}</h5>
+        <div class="it"><span class="no">02</span><span>{{MATRIX_Q2_ITEM}}</span></div>
+      </div>
+      <div class="q">
+        <h5>{{MATRIX_Q3_LABEL}}</h5>
+        <div class="it"><span class="no">03</span><span>{{MATRIX_Q3_ITEM}}</span></div>
+      </div>
+      <div class="q">
+        <h5>{{MATRIX_Q4_LABEL}}</h5>
+        <div class="it"><span class="no">04</span><span>{{MATRIX_Q4_ITEM}}</span></div>
+      </div>
+    </div>
+    <div class="matrix-axis-x"><span>← {{MATRIX_X_LOW}}</span><span>{{MATRIX_X_HIGH}} →</span></div>
+  </section>
+
+  <!-- TIMELINE / GANTT — bar position inline: left:NN%;width:NN% (전체 기간=100%).
+       solid = 확정, hatch = 잠정. Legend REQUIRED when both fills appear. -->
+  <section class="slide" id="timeline">
+    <p class="eyebrow">{{TIMELINE_EYEBROW}}</p>
+    <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{TIMELINE_TITLE}}</h3>
+    <div class="gantt num">
+      <div class="gantt-row"><span class="l">{{TASK_1_LABEL}}</span><div class="gantt-lane"><div class="gantt-bar" style="left:0%;width:30%"></div></div></div>
+      <div class="gantt-row"><span class="l">{{TASK_2_LABEL}}</span><div class="gantt-lane"><div class="gantt-bar" style="left:25%;width:35%"></div></div></div>
+      <div class="gantt-row"><span class="l">{{TASK_3_LABEL}}</span><div class="gantt-lane"><div class="gantt-bar hatch" style="left:55%;width:45%"></div></div></div>
+    </div>
+    <div class="gantt-axis num"><span>{{AXIS_START}}</span><span>{{AXIS_MID}}</span><span>{{AXIS_END}}</span></div>
+    <div class="viz-legend"><span><i class="solid"></i>{{LEGEND_CONFIRMED}}</span><span><i class="hatch"></i>{{LEGEND_TENTATIVE}}</span></div>
+  </section>
+
+  <!-- FLOW — linear process; .now marks the current step (진행중 계획 리포트).
+       Branching flow: use the SVG figure below instead. Keep ONE of the two;
+       delete the unused one. SVG def ids (flowarr/flowhatch) must stay unique
+       across the whole page. -->
+  <section class="slide" id="flow">
+    <p class="eyebrow">{{FLOW_EYEBROW}}</p>
+    <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{FLOW_TITLE}}</h3>
+    <div class="flow">
+      <div class="flow-node"><h5>{{FLOW_1_TITLE}}</h5><p>{{FLOW_1_DESC}}</p></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node now"><h5>{{FLOW_2_TITLE}}</h5><p>{{FLOW_2_DESC}}</p></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><h5>{{FLOW_3_TITLE}}</h5><p>{{FLOW_3_DESC}}</p></div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node"><h5>{{FLOW_4_TITLE}}</h5><p>{{FLOW_4_DESC}}</p></div>
+    </div>
+
+    <!-- OPTIONAL branching flow (SVG). Adjust viewBox W/H to content;
+         hatched box = 예외/보조 경로. -->
+    <div class="diagramwrap">
+      <figure>
+        <svg viewBox="0 0 860 240" role="img" aria-label="{{FLOW_SVG_ARIA}}">
+          <defs>
+            <marker id="flowarr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0L8 4L0 8z" fill="currentColor"/>
+            </marker>
+            <pattern id="flowhatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="5" stroke="currentColor" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <g fill="none" stroke="currentColor">
+            <rect x="10" y="95" width="150" height="50"/>
+            <path d="M300 95 L360 120 L300 145 L240 120 Z"/>
+            <rect x="480" y="25" width="150" height="50"/>
+            <rect x="480" y="165" width="150" height="50" fill="url(#flowhatch)"/>
+            <line x1="160" y1="120" x2="232" y2="120" marker-end="url(#flowarr)"/>
+            <path d="M300 95 L300 50 L472 50" marker-end="url(#flowarr)"/>
+            <path d="M300 145 L300 190 L472 190" marker-end="url(#flowarr)"/>
+          </g>
+          <g fill="currentColor" font-size="13" font-weight="700" text-anchor="middle">
+            <text x="85" y="124">{{NODE_A}}</text>
+            <text x="300" y="124" font-size="12">{{DECISION}}</text>
+            <text x="555" y="54">{{NODE_B}}</text>
+            <text x="555" y="194">{{NODE_C}}</text>
+          </g>
+          <g fill="currentColor" font-size="11" opacity=".65" text-anchor="middle">
+            <text x="390" y="42">{{BRANCH_YES}}</text>
+            <text x="390" y="182">{{BRANCH_NO}}</text>
+          </g>
+        </svg>
+        <figcaption>{{FLOW_SVG_CAPTION}}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- SEQUENCE DIAGRAM — actor lifelines + messages (inline SVG).
+       solid arrow = 요청, dashed = 응답. Scaling: one message row = +50 viewBox
+       height; one extra actor = +300 viewBox width (lifelines are 300 apart).
+       Def ids (seqarr/seqhatch) must stay unique across the page. -->
+  <section class="slide dark" id="seq-diagram">
+    <p class="eyebrow">{{SEQDIA_EYEBROW}}</p>
+    <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{SEQDIA_TITLE}}</h3>
+    <div class="diagramwrap">
+      <figure>
+        <svg viewBox="0 0 860 320" role="img" aria-label="{{SEQDIA_ARIA}}">
+          <defs>
+            <marker id="seqarr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0L8 4L0 8z" fill="currentColor"/>
+            </marker>
+            <pattern id="seqhatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="5" stroke="currentColor" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <!-- actors -->
+          <g fill="none" stroke="currentColor">
+            <rect x="60" y="10" width="140" height="36"/>
+            <rect x="360" y="10" width="140" height="36"/>
+            <rect x="660" y="10" width="140" height="36"/>
+          </g>
+          <g fill="currentColor" font-size="13" font-weight="700" text-anchor="middle">
+            <text x="130" y="33">{{ACTOR_1}}</text>
+            <text x="430" y="33">{{ACTOR_2}}</text>
+            <text x="730" y="33">{{ACTOR_3}}</text>
+          </g>
+          <!-- lifelines -->
+          <g stroke="currentColor" stroke-dasharray="3 4" opacity=".55">
+            <line x1="130" y1="46" x2="130" y2="305"/>
+            <line x1="430" y1="46" x2="430" y2="305"/>
+            <line x1="730" y1="46" x2="730" y2="305"/>
+          </g>
+          <!-- activation bar on the busy actor -->
+          <rect x="426" y="82" width="8" height="166" fill="url(#seqhatch)" stroke="currentColor"/>
+          <!-- messages -->
+          <g stroke="currentColor" fill="none">
+            <line x1="130" y1="90" x2="418" y2="90" marker-end="url(#seqarr)"/>
+            <line x1="434" y1="140" x2="722" y2="140" marker-end="url(#seqarr)"/>
+            <line x1="722" y1="190" x2="442" y2="190" stroke-dasharray="4 4" marker-end="url(#seqarr)"/>
+            <line x1="418" y1="240" x2="138" y2="240" stroke-dasharray="4 4" marker-end="url(#seqarr)"/>
+          </g>
+          <g fill="currentColor" font-size="12" text-anchor="middle">
+            <text x="274" y="82">{{MSG_1}}</text>
+            <text x="578" y="132">{{MSG_2}}</text>
+            <text x="582" y="182" opacity=".7">{{MSG_3}}</text>
+            <text x="278" y="232" opacity=".7">{{MSG_4}}</text>
+          </g>
+        </svg>
+        <figcaption>{{SEQDIA_CAPTION}}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- SCREEN MOCK — mono wireframe + numbered event annotations.
+       Static only: 마커 ①②가 우측 목록의 "클릭/입력 시 발생 이벤트"와 매핑.
+       Never add real interactivity — this deck stays a static document. -->
+  <section class="slide" id="screen-mock">
+    <p class="eyebrow">{{MOCK_EYEBROW}}</p>
+    <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{MOCK_TITLE}}</h3>
+    <div class="mockgrid">
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i></div>
+        <div class="mock-body">
+          <p class="ui-text">{{MOCK_CONTEXT_TEXT}}</p>
+          <div class="ui-line" style="width:70%"></div>
+          <div class="ui-row">
+            <span class="ui-input">{{MOCK_INPUT_PLACEHOLDER}}</span>
+          </div>
+          <div class="ui-row">
+            <span class="ui-btn primary">{{MOCK_PRIMARY_BTN}}<span class="marker num">1</span></span>
+            <span class="ui-btn">{{MOCK_SECONDARY_BTN}}<span class="marker num">2</span></span>
+          </div>
+        </div>
+      </div>
+      <div class="mock-notes">
+        <h4 style="margin:0 0 14px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;">{{MOCK_NOTES_TITLE}}</h4>
+        <ul class="list">
+          <li><span class="marker num">1</span><span>{{MOCK_EVENT_1}}</span></li>
+          <li><span class="marker num">2</span><span>{{MOCK_EVENT_2}}</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VIZ LIBRARY — small insert blocks (chips, severity, meter,
+       callout, diff). COPY what you need into content slides, then
+       DELETE this whole slide AND its quicknav entry.
+       Never ship a deck with #viz-library present.
+       ============================================================ -->
+  <section class="slide" id="viz-library">
+    <p class="eyebrow">Insert Blocks</p>
+    <h3 class="display" style="font-size:clamp(26px,4vw,38px);">Copy, Then Delete This Slide</h3>
+
+    <!-- status chips: solid=DONE, hatch=WIP, outline=TODO/BLOCKED -->
+    <div style="margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;">
+      <span class="chip solid">Done</span>
+      <span class="chip hatch">In Progress</span>
+      <span class="chip">Blocked</span>
+    </div>
+
+    <!-- severity scale: filled squares = level; always pair with a text label -->
+    <p style="margin-top:18px;font-size:13px;">
+      <span class="scale"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span>
+      <span class="muted" style="font-size:12px;margin-left:8px;">{{SEVERITY_LABEL}}</span>
+    </p>
+
+    <!-- progress meter: 완료기준/커버리지 등 Action cell 안에 삽입 -->
+    <div class="meter num" style="max-width:340px;">
+      <div class="meter-track"><div class="meter-fill" style="width:60%"></div></div>
+      <span class="v">{{METER_VALUE}}</span>
+    </div>
+
+    <!-- callout / pull-quote: 덱 전체에서 핵심 문장 하나만 -->
+    <blockquote class="callout">
+      {{CALLOUT_SENTENCE}}
+      <span class="src">{{CALLOUT_SOURCE}}</span>
+    </blockquote>
+
+    <!-- mono diff: add = 좌측 굵은 룰 + 칩 배경 / del = 해칭 + muted -->
+    <div class="diffwrap">
+      <div class="diff">
+        <span class="ln meta">@@ {{DIFF_CONTEXT}} @@</span>
+        <span class="ln del">- {{DIFF_REMOVED_LINE}}</span>
+        <span class="ln add">+ {{DIFF_ADDED_LINE}}</span>
+        <span class="ln">  {{DIFF_UNCHANGED_LINE}}</span>
+      </div>
+    </div>
+  </section>
+
   <!-- CLOSING — one large statement + footer meta -->
   <section class="slide dark closing" id="closing">
     <h2 class="display">{{CLOSING_LINE_1}}<br>{{CLOSING_LINE_2}}</h2>
@@ -607,7 +1038,13 @@
     <li><a href="#before-after"><span class="no num">05</span><span class="t">Before/After</span></a></li>
     <li><a href="#asis-tobe"><span class="no num">06</span><span class="t">As-Is/To-Be</span></a></li>
     <li><a href="#sequence"><span class="no num">07</span><span class="t">Sequence</span></a></li>
-    <li><a href="#closing"><span class="no num">08</span><span class="t">Closing</span></a></li>
+    <li><a href="#matrix"><span class="no num">08</span><span class="t">Matrix</span></a></li>
+    <li><a href="#timeline"><span class="no num">09</span><span class="t">Timeline</span></a></li>
+    <li><a href="#flow"><span class="no num">10</span><span class="t">Flow</span></a></li>
+    <li><a href="#seq-diagram"><span class="no num">11</span><span class="t">Seq Diagram</span></a></li>
+    <li><a href="#screen-mock"><span class="no num">12</span><span class="t">Screen Mock</span></a></li>
+    <li><a href="#viz-library"><span class="no num">13</span><span class="t">Viz Library</span></a></li>
+    <li><a href="#closing"><span class="no num">14</span><span class="t">Closing</span></a></li>
   </ol>
 </nav>
 

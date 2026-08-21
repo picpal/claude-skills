@@ -6,8 +6,9 @@ description: >-
   before/after comparisons, audits, or decision write-ups. Triggers on Korean
   requests like '보고서 html', '리포트 만들어줘', '덱 스타일 보고서', '검토 리포트',
   '수정계획 리포트', '분석 리포트 html', '모노크롬 보고서', '슬라이드 형식 보고서',
-  '흑백 에디토리얼 보고서', 'as-is to-be 보고서', 'before after 리포트' and English
-  equivalents. For static, publishable reports — NOT interactive dashboards or tools.
+  '흑백 에디토리얼 보고서', 'as-is to-be 보고서', 'before after 리포트', '다이어그램 포함
+  보고서', '플로우/시퀀스 다이어그램 리포트' and English equivalents. For static,
+  publishable reports — NOT interactive dashboards or tools.
 ---
 
 # Mono Deck Report
@@ -18,9 +19,12 @@ Turn a structured written report into a black-and-white **editorial deck** — a
 vertical stack of full-bleed "slides" alternating ink (#121212) and paper (#fff)
 grounds, set in condensed uppercase display type with Korean body text. The look
 is a print keynote, not a web app: hairline rules, tabular numerals, zero color
-accents. Publish via the Artifact tool.
+accents. Flows, comparisons, and timelines are drawn, not just written — the
+template ships a monochrome visual grammar (charts, diagrams, mock screens)
+that follows the same hairline/ink system. Publish via the Artifact tool.
 
-**Core principle:** conclusion first, monochrome always, self-contained HTML.
+**Core principle:** conclusion first, monochrome always, self-contained HTML,
+and a visual for every mechanism prose alone can't carry.
 
 ## When to use
 
@@ -71,10 +75,61 @@ rules do the work color usually does.
 - Keep display type English/short; keep explanatory prose Korean. Mixing a long
   Korean string into `.display` breaks the condensed-caps look.
 
+## Visual grammar (monochrome charts & diagrams)
+
+Color normally separates series; here **fill texture** does. Three fills, fixed
+semantics, everywhere:
+
+| Fill | Meaning |
+|---|---|
+| **Solid** (`background:currentColor`) | 현재 / 확정 / After / DONE |
+| **Hatch** (`.hatch` 45° 빗금) | 비교군 / 잠정 / Before / WIP |
+| **Open** (hairline outline only) | 미완 / 보조 / TODO·BLOCKED |
+
+Rules:
+
+- **A visual must earn its place.** 3+ step flow or actor interaction → diagram;
+  numeric comparison → bars; schedule → gantt; priority argument → 2×2 matrix.
+  If a sentence says it faster, write the sentence. Never decorate.
+- **Legend required** (`.viz-legend`) the moment solid and hatch coexist on one
+  slide — texture semantics are not self-evident.
+- Everything inherits `currentColor`, so every component works unchanged on
+  paper and ink slides. Never hard-code a gray, never add a hue.
+- **Delta direction comes from the glyph** (`▲`/`▼`), never from color.
+- **No mermaid.** Its rendered output ignores this design system; hand-drawn
+  SVG and the CSS components below are the only sanctioned visuals.
+
+**Inline SVG (sequence / branching flow):** size with `viewBox` only
+(`width:100%; height:auto` comes from `.diagramwrap svg`), keep the figure
+inside `.diagramwrap` (min-width + horizontal scroll = the `.tablewrap` pattern
+for mobile), stroke/fill `currentColor`, arrowheads via `<marker>`, hatch via
+`<pattern>`. Give every `<svg>` `role="img"` + `aria-label` and a
+`<figcaption>`. **Def ids must be page-unique** — duplicating a diagram means
+renaming `seqarr`/`seqhatch`/`flowarr`/`flowhatch` copies.
+
+### Insert blocks (copy into any content slide)
+
+Small components live in the template's **`#viz-library` slide** — copy what
+you need into content slides, then **delete `#viz-library` and its quicknav
+entry**. Shipping it is a defect.
+
+| Block | Use for | Typical host slide |
+|---|---|---|
+| `.barchart` | 수치 비교 (paired: hatch=Before, solid=After). 라벨은 짧게(한글 ~6자) — 단위·수치는 값 칼럼에 | Before/After |
+| `.delta` | outcome 큰 숫자의 변화 방향·폭 | Before/After stats |
+| `.meter` | 진행률·커버리지 얇은 게이지 | Action 완료기준 cell |
+| `.chip` (solid/hatch/outline) | 상태 표기 DONE/WIP/BLOCKED | Action, tables |
+| `.scale` (■■■□□) | 심각도·우선순위 레벨 | Summary, Action |
+| `.callout` | 핵심 문장 풀쿼트 — **덱 전체에 1개** | Summary 근처 |
+| `.diffwrap` | 코드 변경 (add=굵은 좌측 룰, del=해칭) | As-Is/To-Be 대신 |
+
 ## Slide catalog
 
 Pick and order slides to fit the content; alternate paper/ink. Every type exists
-as a block in `assets/template.html`.
+as a block in `assets/template.html`. **Alternation governs**: the template's
+`.dark` assignments are only a starting point — after deciding the final slide
+order, reassign `.dark` so grounds alternate, keeping Cover and Closing dark.
+The Contents TOC lists 4–6 **thematic groups**, not one row per slide.
 
 | Slide | Use for |
 |---|---|
@@ -85,6 +140,12 @@ as a block in `assets/template.html`.
 | **Before / After + Outcome** | Two-column before/after list, then a 3-up stat row (`.outcome` big figures) for target metrics. |
 | **As-Is / To-Be table** | Section-by-section change mapping. MUST stay inside `.tablewrap` (`overflow-x:auto`) with `min-width` so it scrolls, never squashes, on mobile. |
 | **Sequence** | 4 ordered steps (Step 1–4) for execution order / timeline. |
+| **Matrix** | 2×2 priority frame (예: 영향도×노력). Item numbers mirror the Action slides so ordering reads as coordinates. |
+| **Timeline** | Gantt rows — bar position via inline `left/width %`; solid=확정, hatch=잠정; axis labels below. |
+| **Flow** | Process flow. Linear → CSS `.flow` boxes+arrows (`.now`=현재 단계 마커); branching → the SVG figure. Keep one, delete the other. |
+| **Sequence Diagram** | Actor lifelines + messages (inline SVG). Solid arrow=요청, dashed=응답, hatch bar=activation. |
+| **Screen Mock** | Mono wireframe (창 크롬+버튼·입력) with numbered `.marker`s mapped to an event list — "이 버튼을 누르면 무슨 일이 일어나는가". Static only. |
+| **Viz Library** | Insert-block source. Copy blocks out, then **delete this slide** — never ship it. |
 | **Closing** | One large display statement + footer meta. Usually `.dark`. |
 
 ## Quick nav (fixed slide navigator)
@@ -131,18 +192,24 @@ slide (smooth-scroll, gated behind `prefers-reduced-motion`).
 
 1. **Design the structure first.** Map the report's content onto slides: which
    items are actions (one Action slide each), what the verdict is (summary),
-   what changed (Before/After + table), in what order (Sequence). Decide the
-   ink/paper alternation.
+   what changed (Before/After + table), in what order (Sequence). **Then map
+   the visuals**: every multi-step flow, actor interaction, numeric comparison,
+   schedule, or priority argument gets the matching visual component — a deck
+   with zero visuals on flow-heavy content is as wrong as one decorated with
+   unearned charts. Decide the ink/paper alternation.
 2. **Copy the template.** Duplicate `assets/template.html` into the scratchpad
    (or the user's requested path) and fill every `{{PLACEHOLDER}}`. Delete
-   unused slide blocks; duplicate Action blocks per item; keep the `<style>`
+   unused slide blocks; duplicate Action blocks per item; copy needed insert
+   blocks out of `#viz-library`, then delete that slide; keep the `<style>`
    block verbatim.
 3. **Sync the quick nav.** Rebuild the `.quicknav` list to mirror the final
    slide set: one entry per remaining slide, sequential numbering, every
    `href` pointing at a real `<section id>`. Keep the inline script.
 4. **Publish.** Save the filled file, then call the **Artifact** tool with its
    path, a stable `<title>`, a one-line `description`, and a monochrome-friendly
-   `favicon` emoji. Redeploy to the same path to update in place.
+   `favicon` emoji. Redeploy to the same path to update in place. (If the user
+   asked for a raw HTML file only, stop after saving — publishing is the
+   default, not a hard requirement.)
 
 ## Common mistakes
 
@@ -159,3 +226,15 @@ slide (smooth-scroll, gated behind `prefers-reduced-motion`).
   ids must be unique (`action-1`, `action-2`, …).
 - Deleting the quicknav block or its inline script → the deck loses navigation;
   the nav is a required part of every deck.
+- Shipping `#viz-library` in the final deck → it's a parts bin, not content;
+  copy blocks out and delete it (and its nav entry).
+- Solid + hatch on one slide without `.viz-legend` → texture semantics are
+  unreadable; add the legend.
+- Mermaid, or color inside SVG/charts → breaks the design system; only
+  currentColor CSS components and hand-drawn SVG.
+- Fixed pixel `width`/`height` on `<svg>` instead of `viewBox` → overflows
+  mobile; keep diagrams in `.diagramwrap` and size via viewBox.
+- Duplicated SVG `<defs>` ids (`seqarr`, `flowhatch`, …) after copying a
+  diagram → markers render from the wrong def; rename per copy.
+- Visuals as decoration — a chart restating a 2-item list, a flow for 2 steps →
+  delete it; the visual must carry something prose can't.
