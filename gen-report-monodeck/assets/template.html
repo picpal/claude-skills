@@ -48,6 +48,8 @@
     --rule:#e3e1dc;
     --muted:#71706b;
     --chipbg:#f4f3f0;
+    --fg:#141414;
+    --ground:#ffffff;
   }
   .slide.dark{
     background:var(--ink);
@@ -56,6 +58,8 @@
     --rule:#2e2e2e;
     --muted:#9b9994;
     --chipbg:#1e1e1e;
+    --fg:#f4f3ef;
+    --ground:#121212;
   }
 
   /* ---------- type ---------- */
@@ -353,8 +357,13 @@
     font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
   }
   .viz-legend span{ display:inline-flex; align-items:center; gap:7px; }
-  .viz-legend i{ width:11px; height:11px; border:1px solid currentColor; }
+  /* swatches use --fg (full contrast) so they match the actual fills,
+     while the labels stay muted; denser hatch so the texture reads at 12px */
+  .viz-legend i{ width:12px; height:12px; border:1px solid currentColor; color:var(--fg); }
   .viz-legend i.solid{ background:currentColor; }
+  .viz-legend i.hatch{
+    background-image:repeating-linear-gradient(45deg,currentColor 0,currentColor 1px,transparent 1px,transparent 3.5px);
+  }
 
   /* horizontal bar chart — width via inline style="width:NN%" */
   .barchart{ margin-top:26px; border-top:1px solid var(--rule); }
@@ -364,12 +373,14 @@
   }
   .bar-row .l{ font-size:12.5px; font-weight:700; min-width:0; }
   .bar-row .v{ font-size:12.5px; text-align:right; }
-  .bar-track{ height:13px; border:1px solid var(--rule); }
+  /* track outlines carry information (the 100% frame) — use --muted, not the
+     hairline token, so they survive on ink slides */
+  .bar-track{ height:13px; border:1px solid var(--muted); }
   .bar-fill{ height:100%; background:currentColor; }
 
   /* thin progress meter — inline inside Action cells / lists */
   .meter{ display:flex; align-items:center; gap:10px; margin-top:8px; }
-  .meter .meter-track{ flex:1; height:4px; border:1px solid var(--rule); }
+  .meter .meter-track{ flex:1; height:4px; border:1px solid var(--muted); }
   .meter .meter-fill{ height:100%; background:currentColor; }
   .meter .v{ font-size:11.5px; font-weight:700; }
 
@@ -380,9 +391,13 @@
   }
   .chip.solid{ background:#141414; color:#fff; border-color:#141414; }
   .slide.dark .chip.solid{ background:#f4f3ef; color:#121212; border-color:#f4f3ef; }
-  /* chip hatch is muted-tone (not currentColor) so the label stays legible */
+  /* chip hatch = bottom texture band only, so the 10px label stays clean */
   .chip.hatch{
-    background-image:repeating-linear-gradient(45deg,var(--muted) 0,var(--muted) 1px,transparent 1px,transparent 5px);
+    background-image:repeating-linear-gradient(45deg,currentColor 0,currentColor 1px,transparent 1px,transparent 4px);
+    background-size:100% 4px;
+    background-position:bottom left;
+    background-repeat:repeat-x;
+    padding-bottom:6px;
   }
 
   /* severity scale ■■■□□ — filled squares = level */
@@ -412,7 +427,9 @@
   .diffwrap{ overflow-x:auto; margin-top:26px; border:1px solid var(--rule); }
   .diff{
     font-family:ui-monospace,"SF Mono",Menlo,monospace;
-    font-size:12.5px; line-height:1.75; min-width:480px; padding:12px 0;
+    font-size:12.5px; line-height:1.75;
+    width:max-content; min-width:100%;  /* line boxes span the longest line, so add/del fills survive h-scroll */
+    padding:12px 0;
   }
   .diff .ln{ display:block; white-space:pre; padding:0 18px; }
   .diff .meta{ color:var(--muted); }
@@ -424,9 +441,11 @@
 
   /* linear flow — boxes joined by hairline arrows; .now = current step */
   .flow{ display:flex; align-items:stretch; margin-top:26px; }
+  /* flex column (not align-self:center) so multi-line nodes keep equal heights */
   .flow-node{
     flex:1; min-width:0; border:1px solid currentColor;
-    padding:14px 16px; text-align:center; align-self:center;
+    padding:14px 16px; text-align:center;
+    display:flex; flex-direction:column; justify-content:center;
   }
   .flow-node h5{ margin:0; font-size:13px; font-weight:800; line-height:1.4; }
   .flow-node p{ margin:4px 0 0; font-size:11.5px; color:var(--muted); max-width:none; }
@@ -451,6 +470,8 @@
   .gantt-row .l{ font-size:12.5px; font-weight:700; }
   .gantt-lane{ position:relative; height:15px; }
   .gantt-bar{ position:absolute; top:0; bottom:0; background:currentColor; }
+  /* hatched (잠정) bars need an outline — their start/end edges ARE the dates */
+  .gantt-bar.hatch{ border:1px solid currentColor; }
   .gantt-axis{
     display:flex; justify-content:space-between; padding:8px 0 0; margin-left:164px;
     font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
@@ -461,8 +482,8 @@
     font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
     color:var(--muted); margin:26px 0 8px;
   }
-  .matrix{ display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:170px; border:1px solid currentColor; }
-  .matrix .q{ padding:12px 14px; overflow:hidden; }
+  .matrix{ display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:minmax(170px,auto); border:1px solid currentColor; }
+  .matrix .q{ padding:12px 14px; }
   .matrix .q:nth-child(2){ border-left:1px solid var(--rule); }
   .matrix .q:nth-child(3){ border-top:1px solid var(--rule); }
   .matrix .q:nth-child(4){ border-top:1px solid var(--rule); border-left:1px solid var(--rule); }
@@ -477,10 +498,14 @@
     font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted);
   }
 
-  /* SVG diagrams (sequence / branching flow) — viewBox scales, wide ones scroll */
+  /* SVG diagrams (sequence / branching flow) — each <svg> carries inline
+     min-width/max-width EQUAL to its viewBox width, so 1 viewBox unit = 1px
+     everywhere (12px labels, 1px hairlines on desktop and mobile alike);
+     diagrams wider than the slide scroll inside .diagramwrap instead of
+     shrinking. Never size a diagram by letting width:100% rescale it. */
   .diagramwrap{ overflow-x:auto; margin-top:26px; }
   .diagramwrap figure{ margin:0; }
-  .diagramwrap svg{ display:block; min-width:640px; width:100%; height:auto; }
+  .diagramwrap svg{ display:block; width:100%; height:auto; }
   .diagramwrap figcaption{ margin-top:12px; font-size:12px; color:var(--muted); }
 
   /* screen mock — mono wireframe + numbered event annotations */
@@ -490,9 +515,13 @@
   .mock-bar i{ width:8px; height:8px; border:1px solid currentColor; border-radius:50%; }
   .mock-body{ padding:18px; display:flex; flex-direction:column; gap:12px; }
   .mock .ui-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  /* every mock UI element is position:relative so a .marker pinned to it
+     anchors to the element itself (the slide's rise animation makes .slide a
+     containing block — a static parent would fling the marker to the slide corner) */
+  .mock .ui-btn, .mock .ui-input, .mock .ui-line, .mock .ui-text{ position:relative; }
   .mock .ui-btn{
     display:inline-block; border:1px solid currentColor; padding:7px 14px;
-    font-size:12px; font-weight:700; position:relative;
+    font-size:12px; font-weight:700;
   }
   .mock .ui-btn.primary{ background:#141414; color:#fff; border-color:#141414; }
   .slide.dark .mock .ui-btn.primary{ background:#f4f3ef; color:#121212; border-color:#f4f3ef; }
@@ -507,7 +536,10 @@
   }
   .slide.dark .marker{ background:#f4f3ef; color:#121212; }
   .mock .marker{ position:absolute; top:-9px; right:-9px; }
-  .mock-notes .list .k{ margin-top:0; }
+  /* ground-colored ring so a marker over the (same-colored) primary button reads as a badge */
+  .mock .ui-btn.primary .marker{ box-shadow:0 0 0 1.5px #ffffff; }
+  .slide.dark .mock .ui-btn.primary .marker{ box-shadow:0 0 0 1.5px #121212; }
+  .mock-notes .list .marker{ margin-top:2px; }
 
   /* hatch fill = series #2 (비교군/잠정/WIP). Keep LAST so it overrides solid fills. */
   .hatch{
@@ -553,7 +585,14 @@
     letter-spacing:.06em;
   }
 
+  /* quicknav sits over the deck's right edge below ~1265px viewport width —
+     shrink it to numbers and reserve deck padding so it never covers content */
+  @media (min-width:721px) and (max-width:1265px){
+    .quicknav .t{ display:none; }
+    .deck{ padding-right:72px; }
+  }
   @media (max-width:720px){
+    .deck{ padding-right:56px; }
     .slide{ padding:34px 24px; }
     .cover{ min-height:360px; }
     .split, .action-grid, .ba{ grid-template-columns:1fr; }
@@ -573,7 +612,12 @@
     .toc .d{ grid-column:2; }
     .quicknav{ right:10px; bottom:10px; padding:8px 6px; max-height:50vh; }
     .quicknav .t{ display:none; }  /* numbers only on mobile */
-    .bar-row{ grid-template-columns:92px 1fr 52px; gap:10px; }
+    .action-head{ flex-wrap:wrap; gap:12px; }
+    .action-head .bignum{ order:1; }
+    .action-head .tag{ order:2; margin-left:auto; }
+    .action-head .action-title{ order:3; flex:1 1 100%; }
+    .bar-row{ grid-template-columns:112px 1fr 48px; gap:10px; }
+    .bar-row .l{ line-height:1.35; }
     .gantt-row{ grid-template-columns:92px 1fr; gap:10px; }
     .gantt-axis{ margin-left:102px; }
     .flow{ flex-direction:column; }
@@ -587,7 +631,7 @@
       border-left:4px solid transparent; border-right:4px solid transparent;
       border-top:6px solid currentColor; border-bottom:0;
     }
-    .matrix{ grid-auto-rows:140px; }
+    .matrix{ grid-auto-rows:minmax(140px,auto); }
     .mockgrid{ grid-template-columns:1fr; gap:24px; }
   }
   @media (prefers-reduced-motion: no-preference){
@@ -722,7 +766,7 @@
     <p class="eyebrow" style="margin-top:34px;">{{OUTCOME_EYEBROW}}</p>
     <!-- .delta = 변화 방향(▲ 증가 / ▼ 감소). 방향은 글리프가 전달, 색 금지.
          아래 ▲/▼는 예시 배치일 뿐 — 지표별 실제 방향에 맞춰 글리프를 바꿀 것.
-         변화량이 없으면 .delta 줄을 지운다. -->[MASK-1]
+         변화량이 없으면 .delta 줄을 지운다. -->
     <div class="outcome num">
       <div><div class="v">{{STAT_1_VALUE}}</div><span class="delta">▲ {{STAT_1_DELTA}}<small>{{STAT_1_DELTA_LABEL}}</small></span><div class="l">{{STAT_1_LABEL}}</div></div>
       <div><div class="v">{{STAT_2_VALUE}}</div><span class="delta">▼ {{STAT_2_DELTA}}<small>{{STAT_2_DELTA_LABEL}}</small></span><div class="l">{{STAT_2_LABEL}}</div></div>
@@ -786,7 +830,8 @@
 
   <!-- 2x2 MATRIX — priority frame (예: 영향도 x 노력). Item numbers reference
        the matching Action slides so the deck's ordering reads as coordinates.
-       빈 사분면은 지우지 말고 "—  항목 없음"으로 표기 — 비어 있다는 사실도 정보다. -->
+       빈 사분면은 지우지 말고 muted로 표기 — 비어 있다는 사실도 정보다:
+       <div class="it muted"><span class="no">—</span><span>항목 없음</span></div> -->
   <section class="slide dark" id="matrix">
     <p class="eyebrow">{{MATRIX_EYEBROW}}</p>
     <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{MATRIX_TITLE}}</h3>
@@ -843,11 +888,12 @@
       <div class="flow-node"><h5>{{FLOW_4_TITLE}}</h5><p>{{FLOW_4_DESC}}</p></div>
     </div>
 
-    <!-- OPTIONAL branching flow (SVG). Adjust viewBox W/H to content;
-         hatched box = 예외/보조 경로. -->
+    <!-- OPTIONAL branching flow (SVG). Adjust viewBox W/H to content AND the
+         inline min/max-width to match (1 unit = 1px). hatched box = 예외/보조
+         경로 — the figcaption MUST state what the hatch means. -->
     <div class="diagramwrap">
       <figure>
-        <svg viewBox="0 0 860 240" role="img" aria-label="{{FLOW_SVG_ARIA}}">
+        <svg viewBox="0 0 640 240" style="min-width:640px;max-width:640px" role="img" aria-label="{{FLOW_SVG_ARIA}}">
           <defs>
             <marker id="flowarr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M0 0L8 4L0 8z" fill="currentColor"/>
@@ -869,9 +915,10 @@
             <text x="85" y="124">{{NODE_A}}</text>
             <text x="300" y="124" font-size="12">{{DECISION}}</text>
             <text x="555" y="54">{{NODE_B}}</text>
-            <text x="555" y="194">{{NODE_C}}</text>
+            <!-- ground-colored halo (paint-order) knocks the hatch out from under the label -->
+            <text x="555" y="194" style="paint-order:stroke;stroke:var(--ground);stroke-width:3px;stroke-linejoin:round">{{NODE_C}}</text>
           </g>
-          <g fill="currentColor" font-size="11" opacity=".65" text-anchor="middle">
+          <g fill="currentColor" font-size="11" opacity=".8" text-anchor="middle">
             <text x="390" y="42">{{BRANCH_YES}}</text>
             <text x="390" y="182">{{BRANCH_NO}}</text>
           </g>
@@ -882,15 +929,24 @@
   </section>
 
   <!-- SEQUENCE DIAGRAM — actor lifelines + messages (inline SVG).
-       solid arrow = 요청, dashed = 응답. Scaling: one message row = +50 viewBox
-       height; one extra actor = +300 viewBox width (lifelines are 300 apart).
-       Def ids (seqarr/seqhatch) must stay unique across the page. -->
+       solid arrow = 요청, dashed = 응답.
+       Scaling: one message row = +50 viewBox height (safe — height:auto follows
+       the aspect ratio). Actors: lifelines are 300 apart, so an extra actor
+       means viewBox width +300 AND the <svg>'s inline min-width/max-width
+       raised to match (e.g. 1160px for 4 actors) — otherwise width:100%
+       squeezes the wider viewBox into the same slide width and every label and
+       hairline shrinks (5 actors → 7px type). Fewer than 3 actors: keep the
+       860 width and spread the lifelines; never let a narrow viewBox stretch.
+       A message that skips a lifeline must have its label nudged into an empty
+       span — not the arrow midpoint, where the crossed lifeline strikes it.
+       Add one activation bar per actor that holds state across rows (bar x =
+       lifelineX − 4). Def ids (seqarr/seqhatch) must stay page-unique. -->
   <section class="slide dark" id="seq-diagram">
     <p class="eyebrow">{{SEQDIA_EYEBROW}}</p>
     <h3 class="display" style="font-size:clamp(26px,4vw,38px);">{{SEQDIA_TITLE}}</h3>
     <div class="diagramwrap">
       <figure>
-        <svg viewBox="0 0 860 320" role="img" aria-label="{{SEQDIA_ARIA}}">
+        <svg viewBox="0 0 860 320" style="min-width:860px;max-width:860px" role="img" aria-label="{{SEQDIA_ARIA}}">
           <defs>
             <marker id="seqarr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
               <path d="M0 0L8 4L0 8z" fill="currentColor"/>
@@ -918,12 +974,13 @@
           </g>
           <!-- activation bar on the busy actor -->
           <rect x="426" y="82" width="8" height="166" fill="url(#seqhatch)" stroke="currentColor"/>
-          <!-- messages -->
+          <!-- messages — incoming arrow tips touch the activation bar edge
+               (426/434); outgoing lines start exactly at the bar edge -->
           <g stroke="currentColor" fill="none">
-            <line x1="130" y1="90" x2="418" y2="90" marker-end="url(#seqarr)"/>
+            <line x1="130" y1="90" x2="425" y2="90" marker-end="url(#seqarr)"/>
             <line x1="434" y1="140" x2="722" y2="140" marker-end="url(#seqarr)"/>
-            <line x1="722" y1="190" x2="442" y2="190" stroke-dasharray="4 4" marker-end="url(#seqarr)"/>
-            <line x1="418" y1="240" x2="138" y2="240" stroke-dasharray="4 4" marker-end="url(#seqarr)"/>
+            <line x1="722" y1="190" x2="435" y2="190" stroke-dasharray="4 4" marker-end="url(#seqarr)"/>
+            <line x1="426" y1="240" x2="138" y2="240" stroke-dasharray="4 4" marker-end="url(#seqarr)"/>
           </g>
           <g fill="currentColor" font-size="12" text-anchor="middle">
             <text x="274" y="82">{{MSG_1}}</text>

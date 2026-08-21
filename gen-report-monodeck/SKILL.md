@@ -91,21 +91,29 @@ Rules:
 - **A visual must earn its place.** 3+ step flow or actor interaction → diagram;
   numeric comparison → bars; schedule → gantt; priority argument → 2×2 matrix.
   If a sentence says it faster, write the sentence. Never decorate.
-- **Legend required** (`.viz-legend`) the moment solid and hatch coexist on one
-  slide — texture semantics are not self-evident.
+- **Legend required** (`.viz-legend`) the moment hatch coexists with solid OR
+  open fills on one slide — texture semantics are not self-evident.
+- **Exception — SVG diagrams:** an outlined box in a diagram is a neutral node
+  frame, not a TODO marker; the fill table governs data marks (bars, chips,
+  gantt), while in diagrams only hatch carries meaning (예외/보조/activation) —
+  which is why a hatched diagram still needs the legend — its `<figcaption>`
+  stating what the hatch means (예: "빗금 막대는 활성 구간") satisfies it.
 - Everything inherits `currentColor`, so every component works unchanged on
   paper and ink slides. Never hard-code a gray, never add a hue.
 - **Delta direction comes from the glyph** (`▲`/`▼`), never from color.
 - **No mermaid.** Its rendered output ignores this design system; hand-drawn
   SVG and the CSS components below are the only sanctioned visuals.
 
-**Inline SVG (sequence / branching flow):** size with `viewBox` only
-(`width:100%; height:auto` comes from `.diagramwrap svg`), keep the figure
-inside `.diagramwrap` (min-width + horizontal scroll = the `.tablewrap` pattern
-for mobile), stroke/fill `currentColor`, arrowheads via `<marker>`, hatch via
-`<pattern>`. Give every `<svg>` `role="img"` + `aria-label` and a
-`<figcaption>`. **Def ids must be page-unique** — duplicating a diagram means
-renaming `seqarr`/`seqhatch`/`flowarr`/`flowhatch` copies.
+**Inline SVG (sequence / branching flow):** 1 viewBox unit = 1px, always. Each
+`<svg>` carries inline `min-width`/`max-width` **equal to its viewBox width**;
+growing a diagram means raising viewBox width AND those two values together.
+That keeps labels at 12px and hairlines at 1px on every device — a wide
+diagram scrolls inside `.diagramwrap` (the `.tablewrap` pattern) instead of
+shrinking, and a narrow one never stretches. Stroke/fill `currentColor`,
+arrowheads via `<marker>`, hatch via `<pattern>`. Give every `<svg>`
+`role="img"` + `aria-label` and a `<figcaption>`. **Def ids must be
+page-unique** — duplicating a diagram means renaming
+`seqarr`/`seqhatch`/`flowarr`/`flowhatch` copies.
 
 ### Insert blocks (copy into any content slide)
 
@@ -115,7 +123,7 @@ entry**. Shipping it is a defect.
 
 | Block | Use for | Typical host slide |
 |---|---|---|
-| `.barchart` | 수치 비교 (paired: hatch=Before, solid=After). 라벨은 짧게(한글 ~6자) — 단위·수치는 값 칼럼에 | Before/After |
+| `.barchart` | 수치 비교 (paired: hatch=Before, solid=After). 라벨은 짧게(한글 ~4자 + ` · Before/After` 접미사까지가 예산) — 단위·수치는 값 칼럼에 | Before/After |
 | `.delta` | outcome 큰 숫자의 변화 방향·폭 | Before/After stats |
 | `.meter` | 진행률·커버리지 얇은 게이지 | Action 완료기준 cell |
 | `.chip` (solid/hatch/outline) | 상태 표기 DONE/WIP/BLOCKED | Action, tables |
@@ -228,12 +236,13 @@ slide (smooth-scroll, gated behind `prefers-reduced-motion`).
   the nav is a required part of every deck.
 - Shipping `#viz-library` in the final deck → it's a parts bin, not content;
   copy blocks out and delete it (and its nav entry).
-- Solid + hatch on one slide without `.viz-legend` → texture semantics are
-  unreadable; add the legend.
+- Hatch mixed with solid or open fills on one slide without `.viz-legend` →
+  texture semantics are unreadable; add the legend (SVG diagrams included).
 - Mermaid, or color inside SVG/charts → breaks the design system; only
   currentColor CSS components and hand-drawn SVG.
-- Fixed pixel `width`/`height` on `<svg>` instead of `viewBox` → overflows
-  mobile; keep diagrams in `.diagramwrap` and size via viewBox.
+- `<svg>` min/max-width out of sync with its viewBox width → the diagram
+  rescales (wider viewBox = smaller type, 5-actor labels shrink to 7px);
+  keep the three values identical and let `.diagramwrap` scroll.
 - Duplicated SVG `<defs>` ids (`seqarr`, `flowhatch`, …) after copying a
   diagram → markers render from the wrong def; rename per copy.
 - Visuals as decoration — a chart restating a 2-item list, a flow for 2 steps →
