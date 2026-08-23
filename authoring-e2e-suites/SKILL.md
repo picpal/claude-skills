@@ -1,0 +1,54 @@
+---
+name: authoring-e2e-suites
+description: Use when creating or extending a per-screen browser E2E test suite for a web app (Playwright spec files, 화면 테스트, screen regression, screenshot evidence/증적), when asked to "E2E 테스트 만들어줘/화면 테스트 자동화", or when an existing E2E suite is flaky, passes alone but fails in the full run, or cascades into 401/login redirects mid-suite.
+---
+
+# 화면별 E2E 스위트 작성 (Playwright)
+
+## 개요
+
+화면 단위 Playwright spec을 "다음에 실행만 하면 그대로 재검증되는" 회귀 자산으로 만든다.
+핵심 원칙: **재실행 가능성 > 커버리지.** 하네스가 결정적이지 않으면 spec은 자산이 아니라 부채다.
+
+## 절차 (순서 고정 — 게이트 통과 전 다음 단계 금지)
+
+1. **매핑**: 화면 인벤토리·셀렉터 후보·인증/시딩 API·기동 방법을 **코드에서** 수집. 문서·통념은 뒤처진다 — 라우팅 코드가 화면 목록의 단일 진실, 인증 필터/미들웨어가 접근 모델의 단일 진실.
+2. **환경 결정** (아래 결정표 4개를 spec 작성 전에 전부 확정).
+3. **하네스 구축**: 서버 기동과 상태 리셋은 Playwright `webServer` 커맨드(스크립트) 안에서 — globalSetup과의 실행 순서에 의존하지 않는 유일한 위치다. 기존 설정 파일(러너 config·워크스페이스·패키지 매니저 설정)은 **존재 확인 → 읽고 병합**, 신규 생성 금지. 유닛 러너의 glob(`*.spec.*`)이 e2e 파일을 삼키지 않는지 확인.
+4. **파일럿 1화면**: 하네스 전 구간(기동·리셋·인증·셀렉터·증적)을 관통하는 화면 — 보통 로그인/진입 화면.
+5. **3단 게이트**: 파일럿 **2연속 그린** → 화면군 확장, 그룹별 2연속 그린 → **전체 합주 2연속 그린**. 단독 그린은 합주 그린을 보증하지 않는다(공유 상태·세션 수명·실행 순서는 합주에서만 드러난다).
+6. **lessons 루프**: 한 번이라도 레드였던 원인은 스위트 옆 lessons.md에 기록하고 다음 spec 작성 전에 재독.
+
+## 환경 결정표
+
+| 결정 | 기본값 | 대안·기준 |
+|---|---|---|
+| 서빙 | **프로덕션 빌드 서빙** | dev 서버는 기능 플래그가 다르게 뜨는 앱이 흔하다. "어떤 빌드가 모든 화면을 노출하는가"를 먼저 확인 |
+| 상태 리셋 | 매 실행 초기화 (파일 DB 삭제 / `docker compose down -v` / 리셋 API·마이그레이션 재실행) | 리셋 불가(공유 스테이징 등)면 실행별 계정·네임스페이스 격리로 폴백 |
+| 인증 | 폼 로그인: setup 프로젝트에서 UI 로그인 1회 → `storageState` 저장, 본 프로젝트가 `dependencies`로 상속 | OAuth/SSO·MFA 강제: 테스트 계정으로 storageState 생성이 가능한지 **spec 작성 전에** 확보. 불가하면 세션 주입 API 등 테스트 전용 경로가 선행 조건 — 없으면 작업을 멈추고 보고 |
+| 격리 | 포트 파라미터(예: E2E_PORT) 하나로 DB·storageState·리포트 경로를 전부 스코프 | 병렬 실행·서브에이전트 투입 **전에** 하네스에 넣는다 |
+
+## 철칙
+
+- **공유 세션은 불변 자원.** 세션을 변이시키는 시나리오(로그아웃·재로그인·비번 변경·2FA)는 빈 storageState 전용 컨텍스트에서 자체 로그인 후 수행. API 시딩 컨텍스트도 빈 storageState를 명시하라 — 기본값이 공유 세션을 상속한다.
+- **전역 설정을 변이하는 테스트는 원복 강제**: beforeAll에서 원본 캡처, afterAll에서 무조건 원복(중간 실패에도 누출 방지).
+- **assertion은 사용자 가시 결과**(URL·문구·토스트). 낙관적 UI 앱은 reload 검증 전에 해당 mutation 응답을 `waitForResponse`로 대기.
+- **증적 산출물**: 기본은 `screenshot/trace: on-failure`. "통과 화면 증적"이 요구되면 `screenshot: "on"` — 테스트당 종료 시점 1장이 HTML 리포트에 첨부된다.
+- **셀렉터 우선순위**: testid > role+이름 > placeholder/title > 텍스트+클래스. 동일 문구가 다른 역할로 중복되는지(strict mode 위반) 확인.
+- **headless에서 보증 불가**: OS 단축키·클립보드. 같은 코드 경로의 가시 UI 클릭·API 응답으로 대체.
+- 테스트 데이터는 유일 이름(타임스탬프 접미사) + 앱의 자동 반응(PII 스캐너류)을 트리거하지 않는 중립 문자열.
+
+## Red Flags — 이 생각이 들면 멈춰라
+
+| 생각 | 현실 |
+|---|---|
+| "단독으로 통과했으니 합주도 되겠지" | 합주 게이트를 돌기 전엔 모른다 — 실패 파일의 실행 순서 비대칭이 전역 상태 파괴자의 단서 |
+| "이 설정 파일은 없을 테니 새로 생성" | 존재 확인 없이 Write하면 기존 설정(보안 override 등)을 날린다 |
+| "로그아웃/비번 변경은 공유 세션으로 하면 간단" | 그 시점부터 이후 spec 전멸 |
+| "dev 서버로 먼저 짜고 나중에 빌드로 옮기지" | 화면 절반이 없는 채로 셀렉터를 쓴다 |
+| "record(codegen)로 뜬 셀렉터 그대로 쓰지" | codegen은 탐색용 — 우선순위 규칙으로 재작성해야 자산이 된다 |
+
+## 참조
+
+- `references/pitfalls.md` — 실전 함정 사전(증상→원인→교정), 병렬 서브에이전트 운용 규칙 포함
+- `templates/` — playwright.config.ts · start-server.sh · auth.setup.ts 골격 (프로젝트에 맞게 치환)
