@@ -42,6 +42,7 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [gen-report-monodeck](./gen-report-monodeck) | 구조화된 보고서를 흑백 에디토리얼 "덱" 스타일 스크롤 HTML로 렌더링 | "보고서 html", "리포트 만들어줘", "모노크롬 보고서" |
 | [gen-report-monodeck-ppt](./gen-report-monodeck-ppt) | gen-report-monodeck과 동일한 모노크롬 테마를 유지하되, 스크롤 대신 화살표 키·버튼·스와이프로 한 장씩 넘기는 PPT 형태 슬라이드 HTML로 렌더링 | "ppt 형태 html", "슬라이드로 넘기는 html", "발표자료 html", "피치덱 만들어줘" |
 | [spotify-to-ytmusic](./spotify-to-ytmusic) | 공유받은 Spotify 플레이리스트를 YouTube Music에 동일 구성으로 복제. embed 파싱이라 Spotify 인증·Premium 불필요, 재실행 시 새 곡만 증분 동기화 | "스포티파이 플레이리스트 유튜브뮤직으로", "플레이리스트 옮겨줘", "플레이리스트 복제" |
+| [authoring-e2e-suites](./authoring-e2e-suites) | 화면별 Playwright E2E 스위트를 "실행만 하면 재검증되는" 회귀 자산으로 작성. 하네스(프로덕션 빌드 서빙·상태 리셋·storageState 인증·포트 스코프 격리) 확정 후 파일럿 → 화면군 → 전체 합주 3단 그린 게이트 | "E2E 테스트 만들어줘", "화면 테스트 자동화", "단독은 통과하는데 합주에서 401 터져" |
 
 ## 디렉토리 구조
 
@@ -74,6 +75,10 @@ claude-skills/
 │   ├── SKILL.md
 │   ├── requirements.txt
 │   └── scripts/
+├── authoring-e2e-suites/
+│   ├── SKILL.md
+│   ├── references/
+│   └── templates/
 ├── <future-skill>/
 │   ├── SKILL.md
 │   └── references/     (선택)
