@@ -43,6 +43,8 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [gen-report-monodeck-ppt](./gen-report-monodeck-ppt) | gen-report-monodeck과 동일한 모노크롬 테마를 유지하되, 스크롤 대신 화살표 키·버튼·스와이프로 한 장씩 넘기는 PPT 형태 슬라이드 HTML로 렌더링 | "ppt 형태 html", "슬라이드로 넘기는 html", "발표자료 html", "피치덱 만들어줘" |
 | [spotify-to-ytmusic](./spotify-to-ytmusic) | 공유받은 Spotify 플레이리스트를 YouTube Music에 동일 구성으로 복제. embed 파싱이라 Spotify 인증·Premium 불필요, 재실행 시 새 곡만 증분 동기화 | "스포티파이 플레이리스트 유튜브뮤직으로", "플레이리스트 옮겨줘", "플레이리스트 복제" |
 | [authoring-e2e-suites](./authoring-e2e-suites) | 화면별 Playwright E2E 스위트를 "실행만 하면 재검증되는" 회귀 자산으로 작성. 하네스(프로덕션 빌드 서빙·상태 리셋·storageState 인증·포트 스코프 격리) 확정 후 파일럿 → 화면군 → 전체 합주 3단 그린 게이트 | "E2E 테스트 만들어줘", "화면 테스트 자동화", "단독은 통과하는데 합주에서 401 터져" |
+| [notion-archive](./notion-archive) | 터미널에 출력된 긴 분석·설계·전략 논의를 콜아웃·토글·표로 재배치한 풀 비주얼 Notion 페이지로 '분석·설계 아카이브' DB에 저장 (요약이 아니라 재배치 — 논점·수치 보존) | "노션에 정리해줘", "방금 답변 노션에", "아카이브에 넣어줘" |
+| [youtube-study-notes](./youtube-study-notes) | YouTube 자막을 Chrome 쿠키 인증으로 추출(멤버십·로그인 영상 포함), 라이브 누적 자막 중복을 정제해 원본 .txt + 학습노트 .md 생성 | "유튜브 강의 정리해줘", "자막 추출", "멤버십 영상 학습 노트" |
 
 ## 디렉토리 구조
 
@@ -79,6 +81,11 @@ claude-skills/
 │   ├── SKILL.md
 │   ├── references/
 │   └── templates/
+├── notion-archive/
+│   └── SKILL.md
+├── youtube-study-notes/
+│   ├── SKILL.md
+│   └── scripts/
 ├── <future-skill>/
 │   ├── SKILL.md
 │   └── references/     (선택)
