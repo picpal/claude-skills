@@ -3,7 +3,8 @@ vision
 
 A fork of cathrynlavery/diagram-design v2.6 (MIT), retoned for Korean-language use.
 Upstream: https://github.com/cathrynlavery/diagram-design
-Upstream license: MIT — see LICENSE (retained unchanged).
+Upstream license: MIT. LICENSE carries the upstream copyright notice verbatim,
+with this fork's own copyright line added below it — the fork is MIT too.
 
 The 39 layout grammars, the §6 connector rules, the complexity budget and the
 accessibility contract are upstream work and are unmodified. This fork changes
