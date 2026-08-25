@@ -20,9 +20,13 @@ Usage:
 
 import html
 import json
+import os
 import pathlib
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -83,7 +87,7 @@ def card(t):
     if i["ko"]: badges.append('<i class="b">KO</i>')
     if not (i["dark"] or i["full"]): badges.append('<i class="b b-one">single</i>')
     return f'''          <button class="card" data-type="{t}" data-name="{html.escape(LABEL[t])}">
-            <span class="shot"><iframe data-src="example-{t}.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-{t}.html"></span>
             <span class="cap"><span class="nm">{LABEL[t]}</span><span class="bs">{"".join(badges)}</span></span>
           </button>'''
 
@@ -263,7 +267,8 @@ TEMPLATE = r"""<!doctype html>
   .ghost:hover { border-color: var(--ink); color: var(--ink); }
   .note { color: var(--soft); font-size: 0.6875rem; }
   .note[hidden] { display: none; }
-  .stage iframe { width: 100%; height: 100%; border: 0; background: var(--paper); }
+  .stagebody { min-height: 0; }
+  .stagebody iframe { display: block; width: 100%; height: 100%; border: 0; background: var(--paper); }
 
   @media (max-width: 720px) {
     :root { --rail: 0px; }
@@ -318,7 +323,7 @@ TEMPLATE = r"""<!doctype html>
       <a class="ghost" id="stage-raw" href="#" target="_blank" rel="noreferrer">Open file</a>
       <button class="ghost" id="stage-close">Close</button>
     </div>
-    <iframe id="stage-frame" title="Diagram preview"></iframe>
+    <div class="stagebody" id="stage-body"></div>
   </div>
 
 <script>
@@ -331,20 +336,40 @@ TEMPLATE = r"""<!doctype html>
      Fifty-two live pages at once is a lot of layout for a browser to hold,
      and most of them are off screen at any moment. Each frame is created
      when its card scrolls into view and never torn down after. */
-  const fit = (frame) => {
-    const box = frame.parentElement.getBoundingClientRect();
-    if (box.width) frame.style.transform = `scale(${box.width / 1280})`;
+  /* Assigning `.src` to an iframe already in the document pushes a session
+     history entry, so browser Back walks the FRAME's history: the stage
+     toolbar stays up while the frame reloads whatever it showed before, or
+     about:blank. That is the white screen. An iframe inserted with its src
+     already set navigates by replacement, so building a fresh element each
+     time keeps history to exactly the entries this page pushes itself. */
+  function frameInto(host, url, opts) {
+    const el = document.createElement("iframe");
+    el.title = (opts && opts.title) || "";
+    if (opts && opts.decorative) {
+      el.tabIndex = -1;
+      el.setAttribute("aria-hidden", "true");
+    }
+    if (opts && opts.onload) el.addEventListener("load", () => opts.onload(el), { once: true });
+    el.src = url;
+    host.replaceChildren(el);
+    return el;
+  }
+  const fit = (el) => {
+    const box = el.parentElement.getBoundingClientRect();
+    if (box.width) el.style.transform = `scale(${box.width / 1280})`;
   };
-  const mount = (frame) => {
-    if (frame.src) return;
-    fit(frame);
-    frame.addEventListener("load", () => frame.classList.add("in"), { once: true });
-    frame.src = frame.dataset.src;
+  const mount = (shot) => {
+    if (!shot || shot.dataset.mounted) return;
+    shot.dataset.mounted = "1";
+    fit(frameInto(shot, shot.dataset.src, {
+      decorative: true,
+      onload: (f) => f.classList.add("in"),
+    }));
   };
   const io = new IntersectionObserver(
     (entries, obs) => entries.forEach((e) => {
       if (!e.isIntersecting) return;
-      mount(e.target.querySelector("iframe"));
+      mount(e.target.querySelector(".shot"));
       obs.unobserve(e.target);
     }),
     { root: document.getElementById("sheet"), rootMargin: "400px 0px" },
@@ -366,7 +391,7 @@ TEMPLATE = r"""<!doctype html>
           card.dataset.name.toLowerCase().includes(needle) ||
           card.dataset.type.includes(needle);
         card.hidden = !hit;
-        if (hit) { visible += 1; mount(card.querySelector("iframe")); }
+        if (hit) { visible += 1; mount(card.querySelector(".shot")); }
       });
       fam.hidden = visible === 0;
       shown += visible;
@@ -375,22 +400,35 @@ TEMPLATE = r"""<!doctype html>
   });
 
   /* --- rail: highlight the family currently under the reader ----------- */
+  /* An observer reports which sections *touch* a band, and the previous family
+     keeps touching it long after its heading has scrolled past, so the rail sat
+     a whole section behind the reader. What the rail should name is the last
+     heading to have crossed the top — a position question, not an intersection
+     one. */
   const links = [...document.querySelectorAll("#families a")];
-  const spy = new IntersectionObserver(
-    (entries) => {
-      const top = entries.filter((e) => e.isIntersecting)
-                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (!top) return;
-      links.forEach((a) =>
-        a.setAttribute("aria-current", String(a.dataset.family === top.target.dataset.family)));
-    },
-    { root: document.getElementById("sheet"), rootMargin: "0px 0px -70% 0px" },
-  );
-  document.querySelectorAll(".fam").forEach((f) => spy.observe(f));
+  const sheet = document.getElementById("sheet");
+  const fams = [...document.querySelectorAll(".fam")];
+  function spy() {
+    // A quarter down the reading area: a heading that has reached the top of
+    // the sheet is what the reader is on, and a fixed pixel offset gets that
+    // wrong on short windows.
+    const line = sheet.getBoundingClientRect().top + sheet.clientHeight * 0.25;
+    let current = null;
+    for (const f of fams) {
+      if (f.hidden) continue;
+      if (f.getBoundingClientRect().top <= line || !current) current = f;
+    }
+    if (!current) return;
+    links.forEach((a) =>
+      a.setAttribute("aria-current", String(a.dataset.family === current.dataset.family)));
+  }
+  sheet.addEventListener("scroll", spy, { passive: true });
+  addEventListener("resize", spy);
+  spy();
 
   /* --- focus stage ----------------------------------------------------- */
   const stage = document.getElementById("stage");
-  const frame = document.getElementById("stage-frame");
+  const body = document.getElementById("stage-body");
   const nameEl = document.getElementById("stage-name");
   const idxEl = document.getElementById("stage-idx");
   const noteEl = document.getElementById("stage-note");
@@ -426,14 +464,19 @@ TEMPLATE = r"""<!doctype html>
     else noteEl.hidden = true;
 
     const src = `example-${state.type}${state.lang}${state.variant}.html`;
-    frame.src = src;
+    frameInto(body, src, { title: `${LABEL[state.type]} preview` });
     rawEl.href = src;
     nameEl.textContent = LABEL[state.type];
     idxEl.textContent = `${ORDER.indexOf(state.type) + 1} / ${ORDER.length}`;
+    history.replaceState({ stage: state.type }, "");
   }
 
-  function open(type, from) {
-    opener = from || null;
+  /* Back closes the stage, which is what a full-screen overlay should do — and
+     what the browser was doing to the frame instead. Opening pushes one entry;
+     everything done inside the stage replaces it, so a type stepped through ten
+     times still costs a single Back to leave. */
+  function show(type, from) {
+    if (from) opener = from;
     state.type = type;
     state.variant = "";
     state.lang = "";
@@ -441,19 +484,32 @@ TEMPLATE = r"""<!doctype html>
     render();
     document.getElementById("stage-close").focus();
   }
-  function close() {
+  function openStage(type, from) {
+    // Push BEFORE rendering: render() ends with replaceState, so rendering
+    // first would stamp the stage onto the entry the grid sits on, and Back
+    // would land on a grid entry that believes a diagram is open.
+    if (stage.hidden) history.pushState({ stage: type }, "");
+    show(type, from);
+  }
+  function hideStage() {
     stage.hidden = true;
-    frame.removeAttribute("src");
-    if (opener) opener.focus();
+    body.replaceChildren();
+    if (opener) { opener.focus(); opener = null; }
   }
   function step(delta) {
     const i = ORDER.indexOf(state.type);
-    open(ORDER[(i + delta + ORDER.length) % ORDER.length], opener);
+    show(ORDER[(i + delta + ORDER.length) % ORDER.length]);
   }
 
+  addEventListener("popstate", (e) => {
+    const wanted = e.state && e.state.stage;
+    if (wanted && INFO[wanted]) show(wanted);
+    else if (!stage.hidden) hideStage();
+  });
+
   document.querySelectorAll(".card").forEach((card) =>
-    card.addEventListener("click", () => open(card.dataset.type, card)));
-  document.getElementById("stage-close").addEventListener("click", close);
+    card.addEventListener("click", () => openStage(card.dataset.type, card)));
+  document.getElementById("stage-close").addEventListener("click", () => history.back());
   document.getElementById("variant-seg").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b && !b.disabled) { state.variant = b.dataset.variant; render(); }
@@ -465,7 +521,7 @@ TEMPLATE = r"""<!doctype html>
 
   addEventListener("keydown", (e) => {
     if (!stage.hidden) {
-      if (e.key === "Escape") { e.preventDefault(); close(); }
+      if (e.key === "Escape") { e.preventDefault(); history.back(); }
       if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
       if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
       return;
@@ -499,6 +555,39 @@ out = (TEMPLATE.replace("<!--RAIL-->", "\n".join(railitems))
           .replace("/*LABELS*/", json.dumps({t: LABEL[t] for t in info}, separators=(",", ":"), sort_keys=True))
           .replace("<!--NTYPES-->", str(len(info)))
           .replace("<!--NFILES-->", str(len(names))))
+
+def verify(page):
+    """Structural checks on the generated page.
+
+    Both times this generator broke, it broke by *duplicating* a block rather
+    than replacing it — which produces a page that still looks plausible and a
+    script that dies on `const` redeclaration before a single handler binds.
+    Nothing on screen says so: the grid renders, and only the interactive parts
+    quietly do nothing. So the invariants are asserted here rather than trusted.
+    """
+    for token, want in (("<!doctype html>", 1), ("<script>", 1), ("</script>", 1),
+                        ("const links", 1), ("const io =", 1), ("function frameInto", 1)):
+        got = page.count(token)
+        assert got == want, f"{token!r} appears {got}x, expected {want}"
+
+    script = re.search(r"<script>(.*?)</script>", page, re.S)
+    assert script, "no script block"
+    node = shutil.which("node")
+    if node:
+        with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as fh:
+            fh.write(script.group(1))
+            path = fh.name
+        try:
+            proc = subprocess.run([node, "--check", path], capture_output=True, text=True)
+            assert proc.returncode == 0, f"generated JS does not parse:\n{proc.stderr}"
+        finally:
+            os.unlink(path)
+    else:
+        print("note: node not found — generated JS was not syntax-checked", file=sys.stderr)
+
+
+verify(out)
+
 target = ASSETS / "index.html"
 if "--check" in sys.argv:
     current = target.read_text() if target.exists() else ""

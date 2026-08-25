@@ -286,6 +286,49 @@ recorded next to it.
 
 ---
 
+## An iframe you navigate by `.src` hijacks the Back button
+
+**Broke.** In the gallery, Back from the focus view showed a **white page** with
+the toolbar still up. Assigning `.src` to an `<iframe>` that is already in the
+document pushes a session history entry, so the browser's Back walked the
+*frame's* history — reloading whatever that frame showed before, or
+`about:blank` — while the overlay around it stayed exactly where it was.
+
+**Rule.** Build a fresh `<iframe>` with its `src` already set and insert it; that
+navigation replaces rather than pushes, and the page's history stays whatever the
+page pushed itself. Then give the overlay real history: `pushState` on open,
+`popstate` closes it, and everything done inside it `replaceState`s. Push
+**before** the first render — a render that ends in `replaceState` would
+otherwise stamp the overlay onto the entry the grid is sitting on, and Back would
+land on a grid that thinks a diagram is open. Verified: opening a card, switching
+language and stepping four types costs exactly one Back to leave.
+
+**Guard.** None automatic. The check is manual and takes ten seconds: from a
+*fresh* tab, open the overlay, press Back once (the grid returns), press Back
+again (the page is gone). A tab you have already navigated a few times has its
+own entries and will tell you nothing.
+
+---
+
+## A generator that duplicates instead of replacing fails silently
+
+**Broke.** Twice while editing the gallery template, an index-based splice
+(`t[:start] + new + t[end:]`) left the *old* block in place as well as the new
+one. The page still rendered — masthead, rail, every thumbnail — but the script
+had `const links` twice, so it threw on parse and **not one handler ever bound**.
+Nothing on screen said so; the gallery just quietly stopped responding.
+
+**Rule.** Edit generated templates with exact-match replacements that assert they
+matched exactly once. Never splice by index: `str.index` finds the first
+occurrence, and after one bad edit there are two.
+
+**Guard.** `tools/build-gallery.py` runs `verify()` on its own output — token
+counts for `<script>`, `<!doctype>` and each top-level `const`, plus `node
+--check` on the extracted script when node is present, and it says so when it is
+not.
+
+---
+
 ## Every new detector over-fires first
 
 **Broke.** Twice.

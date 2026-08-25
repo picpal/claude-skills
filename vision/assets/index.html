@@ -173,7 +173,8 @@
   .ghost:hover { border-color: var(--ink); color: var(--ink); }
   .note { color: var(--soft); font-size: 0.6875rem; }
   .note[hidden] { display: none; }
-  .stage iframe { width: 100%; height: 100%; border: 0; background: var(--paper); }
+  .stagebody { min-height: 0; }
+  .stagebody iframe { display: block; width: 100%; height: 100%; border: 0; background: var(--paper); }
 
   @media (max-width: 720px) {
     :root { --rail: 0px; }
@@ -219,35 +220,35 @@
         </header>
         <div class="grid">
           <button class="card" data-type="architecture" data-name="Architecture">
-            <span class="shot"><iframe data-src="example-architecture.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-architecture.html"></span>
             <span class="cap"><span class="nm">Architecture</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="high-level" data-name="High-level stack">
-            <span class="shot"><iframe data-src="example-high-level.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-high-level.html"></span>
             <span class="cap"><span class="nm">High-level stack</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="high-level-vertical" data-name="High-level · parametric">
-            <span class="shot"><iframe data-src="example-high-level-vertical.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-high-level-vertical.html"></span>
             <span class="cap"><span class="nm">High-level · parametric</span><span class="bs"></span></span>
           </button>
           <button class="card" data-type="datalake" data-name="Data lake">
-            <span class="shot"><iframe data-src="example-datalake.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-datalake.html"></span>
             <span class="cap"><span class="nm">Data lake</span><span class="bs"></span></span>
           </button>
           <button class="card" data-type="deployment" data-name="Deployment">
-            <span class="shot"><iframe data-src="example-deployment.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-deployment.html"></span>
             <span class="cap"><span class="nm">Deployment</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="dp-integration" data-name="DP integration">
-            <span class="shot"><iframe data-src="example-dp-integration.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-dp-integration.html"></span>
             <span class="cap"><span class="nm">DP integration</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="it-state" data-name="IT current state">
-            <span class="shot"><iframe data-src="example-it-state.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-it-state.html"></span>
             <span class="cap"><span class="nm">IT current state</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="layers" data-name="Layer stack">
-            <span class="shot"><iframe data-src="example-layers.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-layers.html"></span>
             <span class="cap"><span class="nm">Layer stack</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
         </div>
@@ -260,43 +261,43 @@
         </header>
         <div class="grid">
           <button class="card" data-type="flowchart" data-name="Flowchart">
-            <span class="shot"><iframe data-src="example-flowchart.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-flowchart.html"></span>
             <span class="cap"><span class="nm">Flowchart</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="sequence" data-name="Sequence">
-            <span class="shot"><iframe data-src="example-sequence.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-sequence.html"></span>
             <span class="cap"><span class="nm">Sequence</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="sequence-oauth" data-name="Sequence · OAuth">
-            <span class="shot"><iframe data-src="example-sequence-oauth.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-sequence-oauth.html"></span>
             <span class="cap"><span class="nm">Sequence · OAuth</span><span class="bs"></span></span>
           </button>
           <button class="card" data-type="state" data-name="State machine">
-            <span class="shot"><iframe data-src="example-state.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-state.html"></span>
             <span class="cap"><span class="nm">State machine</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="swimlane" data-name="Swimlane">
-            <span class="shot"><iframe data-src="example-swimlane.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-swimlane.html"></span>
             <span class="cap"><span class="nm">Swimlane</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="process" data-name="Process">
-            <span class="shot"><iframe data-src="example-process.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-process.html"></span>
             <span class="cap"><span class="nm">Process</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="data-flow" data-name="Data flow">
-            <span class="shot"><iframe data-src="example-data-flow.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-data-flow.html"></span>
             <span class="cap"><span class="nm">Data flow</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="journey" data-name="User journey">
-            <span class="shot"><iframe data-src="example-journey.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-journey.html"></span>
             <span class="cap"><span class="nm">User journey</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="loop" data-name="Loop · flywheel">
-            <span class="shot"><iframe data-src="example-loop.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-loop.html"></span>
             <span class="cap"><span class="nm">Loop · flywheel</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="loop-terminal" data-name="Loop · terminal">
-            <span class="shot"><iframe data-src="example-loop-terminal.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-loop-terminal.html"></span>
             <span class="cap"><span class="nm">Loop · terminal</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
         </div>
@@ -309,35 +310,35 @@
         </header>
         <div class="grid">
           <button class="card" data-type="tree" data-name="Tree">
-            <span class="shot"><iframe data-src="example-tree.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-tree.html"></span>
             <span class="cap"><span class="nm">Tree</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="org-chart" data-name="Org chart">
-            <span class="shot"><iframe data-src="example-org-chart.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-org-chart.html"></span>
             <span class="cap"><span class="nm">Org chart</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="nested" data-name="Nested">
-            <span class="shot"><iframe data-src="example-nested.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-nested.html"></span>
             <span class="cap"><span class="nm">Nested</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="dependency" data-name="Dependency graph">
-            <span class="shot"><iframe data-src="example-dependency.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-dependency.html"></span>
             <span class="cap"><span class="nm">Dependency graph</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="uml-class" data-name="UML class">
-            <span class="shot"><iframe data-src="example-uml-class.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-uml-class.html"></span>
             <span class="cap"><span class="nm">UML class</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="er" data-name="ER model">
-            <span class="shot"><iframe data-src="example-er.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-er.html"></span>
             <span class="cap"><span class="nm">ER model</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="db-schema" data-name="Database schema">
-            <span class="shot"><iframe data-src="example-db-schema.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-db-schema.html"></span>
             <span class="cap"><span class="nm">Database schema</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="medallion" data-name="Medallion">
-            <span class="shot"><iframe data-src="example-medallion.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-medallion.html"></span>
             <span class="cap"><span class="nm">Medallion</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
         </div>
@@ -350,23 +351,23 @@
         </header>
         <div class="grid">
           <button class="card" data-type="timeline" data-name="Timeline">
-            <span class="shot"><iframe data-src="example-timeline.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-timeline.html"></span>
             <span class="cap"><span class="nm">Timeline</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="gantt" data-name="Gantt">
-            <span class="shot"><iframe data-src="example-gantt.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-gantt.html"></span>
             <span class="cap"><span class="nm">Gantt</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="kanban" data-name="Kanban">
-            <span class="shot"><iframe data-src="example-kanban.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-kanban.html"></span>
             <span class="cap"><span class="nm">Kanban</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="story-map" data-name="Story map">
-            <span class="shot"><iframe data-src="example-story-map.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-story-map.html"></span>
             <span class="cap"><span class="nm">Story map</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="wardley" data-name="Wardley map">
-            <span class="shot"><iframe data-src="example-wardley.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-wardley.html"></span>
             <span class="cap"><span class="nm">Wardley map</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
         </div>
@@ -379,31 +380,31 @@
         </header>
         <div class="grid">
           <button class="card" data-type="quadrant" data-name="Quadrant">
-            <span class="shot"><iframe data-src="example-quadrant.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-quadrant.html"></span>
             <span class="cap"><span class="nm">Quadrant</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="quadrant-consultant" data-name="Quadrant · consultant">
-            <span class="shot"><iframe data-src="example-quadrant-consultant.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-quadrant-consultant.html"></span>
             <span class="cap"><span class="nm">Quadrant · consultant</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
           <button class="card" data-type="radar" data-name="Radar">
-            <span class="shot"><iframe data-src="example-radar.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-radar.html"></span>
             <span class="cap"><span class="nm">Radar</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="polar" data-name="Polar">
-            <span class="shot"><iframe data-src="example-polar.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-polar.html"></span>
             <span class="cap"><span class="nm">Polar</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="venn" data-name="Venn">
-            <span class="shot"><iframe data-src="example-venn.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-venn.html"></span>
             <span class="cap"><span class="nm">Venn</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="pyramid" data-name="Pyramid · funnel">
-            <span class="shot"><iframe data-src="example-pyramid.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-pyramid.html"></span>
             <span class="cap"><span class="nm">Pyramid · funnel</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="fishbone" data-name="Fishbone">
-            <span class="shot"><iframe data-src="example-fishbone.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-fishbone.html"></span>
             <span class="cap"><span class="nm">Fishbone</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
         </div>
@@ -416,39 +417,39 @@
         </header>
         <div class="grid">
           <button class="card" data-type="bar" data-name="Bar">
-            <span class="shot"><iframe data-src="example-bar.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-bar.html"></span>
             <span class="cap"><span class="nm">Bar</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="line" data-name="Line">
-            <span class="shot"><iframe data-src="example-line.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-line.html"></span>
             <span class="cap"><span class="nm">Line</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="ridgeline" data-name="Line · ridgeline">
-            <span class="shot"><iframe data-src="example-ridgeline.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-ridgeline.html"></span>
             <span class="cap"><span class="nm">Line · ridgeline</span><span class="bs"></span></span>
           </button>
           <button class="card" data-type="slopegraph" data-name="Line · slopegraph">
-            <span class="shot"><iframe data-src="example-slopegraph.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-slopegraph.html"></span>
             <span class="cap"><span class="nm">Line · slopegraph</span><span class="bs"></span></span>
           </button>
           <button class="card" data-type="scatter" data-name="Scatter">
-            <span class="shot"><iframe data-src="example-scatter.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-scatter.html"></span>
             <span class="cap"><span class="nm">Scatter</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="bubble" data-name="Scatter · bubble">
-            <span class="shot"><iframe data-src="example-bubble.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-bubble.html"></span>
             <span class="cap"><span class="nm">Scatter · bubble</span><span class="bs"></span></span>
           </button>
           <button class="card" data-type="treemap" data-name="Treemap">
-            <span class="shot"><iframe data-src="example-treemap.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-treemap.html"></span>
             <span class="cap"><span class="nm">Treemap</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="sankey" data-name="Sankey">
-            <span class="shot"><iframe data-src="example-sankey.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-sankey.html"></span>
             <span class="cap"><span class="nm">Sankey</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
           <button class="card" data-type="dp-security-matrix" data-name="DP security matrix">
-            <span class="shot"><iframe data-src="example-dp-security-matrix.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-dp-security-matrix.html"></span>
             <span class="cap"><span class="nm">DP security matrix</span><span class="bs"><i class="b">KO</i></span></span>
           </button>
         </div>
@@ -461,23 +462,23 @@
         </header>
         <div class="grid">
           <button class="card" data-type="import-drawio" data-name="Import · draw.io">
-            <span class="shot"><iframe data-src="example-import-drawio.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-import-drawio.html"></span>
             <span class="cap"><span class="nm">Import · draw.io</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
           <button class="card" data-type="import-mermaid" data-name="Import · Mermaid">
-            <span class="shot"><iframe data-src="example-import-mermaid.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-import-mermaid.html"></span>
             <span class="cap"><span class="nm">Import · Mermaid</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
           <button class="card" data-type="policy-trace-animated" data-name="Policy trace · motion">
-            <span class="shot"><iframe data-src="example-policy-trace-animated.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-policy-trace-animated.html"></span>
             <span class="cap"><span class="nm">Policy trace · motion</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
           <button class="card" data-type="queue-animated" data-name="Fan-in queue · motion">
-            <span class="shot"><iframe data-src="example-queue-animated.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-queue-animated.html"></span>
             <span class="cap"><span class="nm">Fan-in queue · motion</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
           <button class="card" data-type="paved-road-animated" data-name="Paved road · motion">
-            <span class="shot"><iframe data-src="example-paved-road-animated.html" tabindex="-1" aria-hidden="true" title=""></iframe></span>
+            <span class="shot" data-src="example-paved-road-animated.html"></span>
             <span class="cap"><span class="nm">Paved road · motion</span><span class="bs"><i class="b b-one">single</i></span></span>
           </button>
         </div>
@@ -504,7 +505,7 @@
       <a class="ghost" id="stage-raw" href="#" target="_blank" rel="noreferrer">Open file</a>
       <button class="ghost" id="stage-close">Close</button>
     </div>
-    <iframe id="stage-frame" title="Diagram preview"></iframe>
+    <div class="stagebody" id="stage-body"></div>
   </div>
 
 <script>
@@ -517,20 +518,40 @@
      Fifty-two live pages at once is a lot of layout for a browser to hold,
      and most of them are off screen at any moment. Each frame is created
      when its card scrolls into view and never torn down after. */
-  const fit = (frame) => {
-    const box = frame.parentElement.getBoundingClientRect();
-    if (box.width) frame.style.transform = `scale(${box.width / 1280})`;
+  /* Assigning `.src` to an iframe already in the document pushes a session
+     history entry, so browser Back walks the FRAME's history: the stage
+     toolbar stays up while the frame reloads whatever it showed before, or
+     about:blank. That is the white screen. An iframe inserted with its src
+     already set navigates by replacement, so building a fresh element each
+     time keeps history to exactly the entries this page pushes itself. */
+  function frameInto(host, url, opts) {
+    const el = document.createElement("iframe");
+    el.title = (opts && opts.title) || "";
+    if (opts && opts.decorative) {
+      el.tabIndex = -1;
+      el.setAttribute("aria-hidden", "true");
+    }
+    if (opts && opts.onload) el.addEventListener("load", () => opts.onload(el), { once: true });
+    el.src = url;
+    host.replaceChildren(el);
+    return el;
+  }
+  const fit = (el) => {
+    const box = el.parentElement.getBoundingClientRect();
+    if (box.width) el.style.transform = `scale(${box.width / 1280})`;
   };
-  const mount = (frame) => {
-    if (frame.src) return;
-    fit(frame);
-    frame.addEventListener("load", () => frame.classList.add("in"), { once: true });
-    frame.src = frame.dataset.src;
+  const mount = (shot) => {
+    if (!shot || shot.dataset.mounted) return;
+    shot.dataset.mounted = "1";
+    fit(frameInto(shot, shot.dataset.src, {
+      decorative: true,
+      onload: (f) => f.classList.add("in"),
+    }));
   };
   const io = new IntersectionObserver(
     (entries, obs) => entries.forEach((e) => {
       if (!e.isIntersecting) return;
-      mount(e.target.querySelector("iframe"));
+      mount(e.target.querySelector(".shot"));
       obs.unobserve(e.target);
     }),
     { root: document.getElementById("sheet"), rootMargin: "400px 0px" },
@@ -552,7 +573,7 @@
           card.dataset.name.toLowerCase().includes(needle) ||
           card.dataset.type.includes(needle);
         card.hidden = !hit;
-        if (hit) { visible += 1; mount(card.querySelector("iframe")); }
+        if (hit) { visible += 1; mount(card.querySelector(".shot")); }
       });
       fam.hidden = visible === 0;
       shown += visible;
@@ -561,22 +582,35 @@
   });
 
   /* --- rail: highlight the family currently under the reader ----------- */
+  /* An observer reports which sections *touch* a band, and the previous family
+     keeps touching it long after its heading has scrolled past, so the rail sat
+     a whole section behind the reader. What the rail should name is the last
+     heading to have crossed the top — a position question, not an intersection
+     one. */
   const links = [...document.querySelectorAll("#families a")];
-  const spy = new IntersectionObserver(
-    (entries) => {
-      const top = entries.filter((e) => e.isIntersecting)
-                         .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-      if (!top) return;
-      links.forEach((a) =>
-        a.setAttribute("aria-current", String(a.dataset.family === top.target.dataset.family)));
-    },
-    { root: document.getElementById("sheet"), rootMargin: "0px 0px -70% 0px" },
-  );
-  document.querySelectorAll(".fam").forEach((f) => spy.observe(f));
+  const sheet = document.getElementById("sheet");
+  const fams = [...document.querySelectorAll(".fam")];
+  function spy() {
+    // A quarter down the reading area: a heading that has reached the top of
+    // the sheet is what the reader is on, and a fixed pixel offset gets that
+    // wrong on short windows.
+    const line = sheet.getBoundingClientRect().top + sheet.clientHeight * 0.25;
+    let current = null;
+    for (const f of fams) {
+      if (f.hidden) continue;
+      if (f.getBoundingClientRect().top <= line || !current) current = f;
+    }
+    if (!current) return;
+    links.forEach((a) =>
+      a.setAttribute("aria-current", String(a.dataset.family === current.dataset.family)));
+  }
+  sheet.addEventListener("scroll", spy, { passive: true });
+  addEventListener("resize", spy);
+  spy();
 
   /* --- focus stage ----------------------------------------------------- */
   const stage = document.getElementById("stage");
-  const frame = document.getElementById("stage-frame");
+  const body = document.getElementById("stage-body");
   const nameEl = document.getElementById("stage-name");
   const idxEl = document.getElementById("stage-idx");
   const noteEl = document.getElementById("stage-note");
@@ -612,14 +646,19 @@
     else noteEl.hidden = true;
 
     const src = `example-${state.type}${state.lang}${state.variant}.html`;
-    frame.src = src;
+    frameInto(body, src, { title: `${LABEL[state.type]} preview` });
     rawEl.href = src;
     nameEl.textContent = LABEL[state.type];
     idxEl.textContent = `${ORDER.indexOf(state.type) + 1} / ${ORDER.length}`;
+    history.replaceState({ stage: state.type }, "");
   }
 
-  function open(type, from) {
-    opener = from || null;
+  /* Back closes the stage, which is what a full-screen overlay should do — and
+     what the browser was doing to the frame instead. Opening pushes one entry;
+     everything done inside the stage replaces it, so a type stepped through ten
+     times still costs a single Back to leave. */
+  function show(type, from) {
+    if (from) opener = from;
     state.type = type;
     state.variant = "";
     state.lang = "";
@@ -627,19 +666,32 @@
     render();
     document.getElementById("stage-close").focus();
   }
-  function close() {
+  function openStage(type, from) {
+    // Push BEFORE rendering: render() ends with replaceState, so rendering
+    // first would stamp the stage onto the entry the grid sits on, and Back
+    // would land on a grid entry that believes a diagram is open.
+    if (stage.hidden) history.pushState({ stage: type }, "");
+    show(type, from);
+  }
+  function hideStage() {
     stage.hidden = true;
-    frame.removeAttribute("src");
-    if (opener) opener.focus();
+    body.replaceChildren();
+    if (opener) { opener.focus(); opener = null; }
   }
   function step(delta) {
     const i = ORDER.indexOf(state.type);
-    open(ORDER[(i + delta + ORDER.length) % ORDER.length], opener);
+    show(ORDER[(i + delta + ORDER.length) % ORDER.length]);
   }
 
+  addEventListener("popstate", (e) => {
+    const wanted = e.state && e.state.stage;
+    if (wanted && INFO[wanted]) show(wanted);
+    else if (!stage.hidden) hideStage();
+  });
+
   document.querySelectorAll(".card").forEach((card) =>
-    card.addEventListener("click", () => open(card.dataset.type, card)));
-  document.getElementById("stage-close").addEventListener("click", close);
+    card.addEventListener("click", () => openStage(card.dataset.type, card)));
+  document.getElementById("stage-close").addEventListener("click", () => history.back());
   document.getElementById("variant-seg").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b && !b.disabled) { state.variant = b.dataset.variant; render(); }
@@ -651,7 +703,7 @@
 
   addEventListener("keydown", (e) => {
     if (!stage.hidden) {
-      if (e.key === "Escape") { e.preventDefault(); close(); }
+      if (e.key === "Escape") { e.preventDefault(); history.back(); }
       if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
       if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
       return;
