@@ -394,6 +394,84 @@ is on the baseline and add the derivative if so.
 
 ---
 
+## Refining a heavy element is a contrast cut in disguise
+
+**Broke.** The high-level phase banner was five opaque navy chevrons with
+reversed-out paper labels. Retoning it to a light ink wash with ink labels —
+the whole point of the change — dropped the highlighted labels to 3.98–4.47:1.
+The design read better and had quietly fallen below WCAG AA. The version it
+replaced was at 11.82:1.
+
+**Why.** "More refined" and "more legible" pull in opposite directions here.
+Reversed-out white on a dark slab is the highest-contrast combination
+available; almost anything quieter is a step down. The failure is invisible by
+eye, because 4.2:1 at `font-size=7` still *looks* perfectly readable — you only
+find it by computing it.
+
+**Rule.** Any pass that lightens, softens or "refines" an element that carried
+text: compute the contrast before and after. If the before-number was high, the
+burden is on the new design to still clear 4.5:1 — not to merely look fine.
+
+**Guard.** `type-high-level.md` §7 #14. Nothing computes it automatically;
+`verify-text.py` measures geometry, not colour.
+
+---
+
+## A tint under its own label is a ceiling, not a choice
+
+**Broke.** The first amber picked for the `alert` token, `#a16207`, was chosen
+by eye from a hue-interval argument. It measured 4.52:1 on paper — meaning it
+could carry a highlight wash of exactly **zero** opacity and still pass AA. The
+0.06 wash it was supposed to sit on put it at 3.98:1.
+
+**Why.** When the highlight colour is used for both the wash *and* the label on
+that wash, the two are not independent: raising the wash raises the background
+luminance toward the label's own, and contrast collapses toward 1:1. The wash
+opacity is therefore *derived* from the label's on-paper contrast, not picked
+alongside it.
+
+**Rule.** Solve, don't choose. For a label of colour `C` on a wash of `C` at
+opacity `a` over paper `P`: composite `C` onto `P` at `a`, and take the largest
+`a` that keeps `contrast(C, result) >= 4.5`. If that `a` is near zero, the
+colour is too light — pick a darker one. `#8a5a12` (5.42:1 on paper) tops out at
+0.06; `accent` (5.02:1) at 0.06; their dark-mode pairs at 0.075–0.10.
+
+**Guard.** `style-guide.md` documents both tint ceilings as ceilings, and
+`type-high-level.md` §2.2 states the derivation for any custom override.
+
+---
+
+## The one hue interval to avoid is the near-complement
+
+**Broke.** `Security` chevrons and Identity bars used rust-red `#b85450`
+alongside teal `#0f766e`. At slab size it was merely loud; at hairline weights
+(1px notches, 7px labels) the two edges visibly buzz against each other.
+
+**Why.** `#b85450` sits 173° from teal — within a few degrees of its exact
+complement, the interval with maximum simultaneous contrast. That is the one
+place on the wheel to avoid when both colours must coexist at small size.
+
+**Rule.** A second concern colour goes at a split-complement interval, not the
+complement. `alert` `#8a5a12` is 139° away. Check the angle before the hex.
+
+**Note.** Eight other type references still specify `#b85450` for the same
+role. Those are node and bar fills — larger areas, weaker effect — so they were
+left alone and the inconsistency is recorded in `style-guide.md`.
+
+---
+
+## A stroke on the viewBox edge is half a stroke
+
+**Broke.** The right strip spans `x = 972..1000` and the viewBox ends at 1000.
+A 1px hairline centred on `x=1000` renders at half weight, because the outer
+half is outside the canvas.
+
+**Rule.** Inset any edge-hugging stroke by half its width — `999.5`, not `1000`.
+
+**Guard.** `type-high-level.md` §7 #15.
+
+---
+
 ## Inherited defects worth knowing
 
 Not introduced here; recorded so they are not mistaken for fork damage.

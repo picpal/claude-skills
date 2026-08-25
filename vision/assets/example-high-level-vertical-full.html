@@ -58,30 +58,36 @@
         <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55"/>
 
         <!-- Horizontal chevron banner -->
-        <polygon points="0,4 180,4 192,18 180,32 0,32" fill="#2d3142"/>
-        <polygon points="192,4 372,4 384,18 372,32 192,32 204,18" fill="#3d4460"/>
-        <polygon points="384,4 564,4 576,18 564,32 384,32 396,18" fill="#2d3142"/>
-        <polygon points="576,4 756,4 768,18 756,32 576,32 588,18" fill="#3d4460"/>
-        <polygon points="768,4 964,4 964,32 768,32 780,18" fill="#2d3142"/>
-        <text x="96"  y="21" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle">DATA SOURCES</text>
-        <text x="288" y="21" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle">INGESTION</text>
-        <text x="480" y="21" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle">STORAGE</text>
-        <text x="672" y="21" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle">TRANSFORM</text>
-        <text x="866" y="21" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle">VISUALIZATION</text>
+        <rect x="0" y="4" width="964" height="28" fill="rgba(45,49,66,0.045)"/>
+        <path d="M372,4 H564 L576,18 L564,32 H372 L384,18 Z" fill="rgba(15,118,110,0.06)"/>
+        <line x1="0" y1="4" x2="964" y2="4" stroke="rgba(45,49,66,0.14)" stroke-width="1"/>
+        <line x1="0" y1="32" x2="964" y2="32" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+        <polyline points="180,4 192,18 180,32" fill="none" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+        <polyline points="372,4 384,18 372,32" fill="none" stroke="rgba(15,118,110,0.45)" stroke-width="1"/>
+        <polyline points="564,4 576,18 564,32" fill="none" stroke="rgba(15,118,110,0.45)" stroke-width="1"/>
+        <polyline points="756,4 768,18 756,32" fill="none" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+        <text x="96" y="21" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="500" letter-spacing="0.14em" text-anchor="middle">DATA SOURCES</text>
+        <text x="288" y="21" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="500" letter-spacing="0.14em" text-anchor="middle">INGESTION</text>
+        <text x="480" y="21" fill="#0f766e" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" letter-spacing="0.14em" text-anchor="middle">STORAGE</text>
+        <text x="672" y="21" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="500" letter-spacing="0.14em" text-anchor="middle">TRANSFORM</text>
+        <text x="866" y="21" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="500" letter-spacing="0.14em" text-anchor="middle">VISUALIZATION</text>
 
         <!-- Right strip — 3 vertical chevrons (Orchestration / Security / Observability) -->
-        <polygon points="972,40 1000,40 1000,172 986,184 972,172" fill="#2d3142"/>
-        <text x="986" y="112" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle" transform="rotate(-90 986 112)">ORCHESTRATION</text>
-        <polygon points="972,184 986,196 1000,184 1000,316 986,328 972,316" fill="#b85450"/>
-        <text x="986" y="256" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle" transform="rotate(-90 986 256)">SECURITY</text>
-        <polygon points="972,328 986,340 1000,328 1000,472 972,472" fill="#2d3142"/>
-        <text x="986" y="400" fill="#f5f5f5" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle" transform="rotate(-90 986 400)">OBSERVABILITY</text>
+        <rect x="972" y="40" width="28" height="432" fill="rgba(45,49,66,0.045)"/>
+        <path d="M972,184 L986,196 L1000,184 V316 L986,328 L972,316 Z" fill="rgba(138,90,18,0.06)"/>
+        <line x1="972" y1="40" x2="972" y2="472" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+        <line x1="999.5" y1="40" x2="999.5" y2="472" stroke="rgba(45,49,66,0.14)" stroke-width="1"/>
+        <polyline points="972,184 986,196 1000,184" fill="none" stroke="rgba(138,90,18,0.45)" stroke-width="1"/>
+        <polyline points="972,328 986,340 1000,328" fill="none" stroke="rgba(138,90,18,0.45)" stroke-width="1"/>
+        <text x="986" y="112" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="500" letter-spacing="0.14em" text-anchor="middle" transform="rotate(-90 986 112)">ORCHESTRATION</text>
+        <text x="986" y="256" fill="#8a5a12" font-size="7" font-family="'Geist Mono', monospace" font-weight="600" letter-spacing="0.14em" text-anchor="middle" transform="rotate(-90 986 256)">SECURITY</text>
+        <text x="986" y="400" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" font-weight="500" letter-spacing="0.14em" text-anchor="middle" transform="rotate(-90 986 400)">OBSERVABILITY</text>
 
         <!-- Zones -->
         <rect x="4" y="40" width="184" height="336" rx="6" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.20)" stroke-width="0.8" stroke-dasharray="6,3"/>
         <text x="96" y="52" fill="#4f5d75" font-size="7" font-family="'Geist Mono', monospace" letter-spacing="0.14em" text-anchor="middle">SOURCES</text>
         <rect x="196" y="40" width="768" height="336" rx="8" fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.18)" stroke-width="1.2"/>
-        <rect x="4" y="388" width="960" height="40" rx="6" fill="rgba(184,84,80,0.06)" stroke="rgba(184,84,80,0.35)" stroke-width="0.8"/>
+        <rect x="4" y="388" width="960" height="40" rx="6" fill="rgba(138,90,18,0.06)" stroke="rgba(138,90,18,0.35)" stroke-width="0.8"/>
 
         <!-- Arrows -->
         <path d="M 184,92  H 196 Q 200,92  200,96  V 128 Q 200,132 204,132 H 212" fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
@@ -172,9 +178,9 @@
         <svg x="212" y="348" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4f5d75" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809-.443 1.555-1.158 1.948l-6.75 3.98a2.5 2.5 0 0 1-2.184 0l-6.75-3.98a2.225 2.225 0 0 1-1.158-1.948v-7.284c0-.809.443-1.555 1.158-1.948l6.75-3.98a2.5 2.5 0 0 1 2.184 0z"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="21"/><line x1="20.2" y1="7.5" x2="14.9" y2="10.5"/><line x1="9.1" y1="13.5" x2="3.8" y2="16.5"/><line x1="20.2" y1="16.5" x2="14.9" y2="13.5"/><line x1="9.1" y1="10.5" x2="3.8" y2="7.5"/></svg>
         <text x="236" y="362" fill="#4f5d75" font-size="8" font-weight="500" font-family="'Pretendard', 'Noto Sans KR', sans-serif">Kubernetes</text>
 
-        <!-- Cross-cutting bar #1 — Identity (color=#b85450 rust-red) -->
-        <svg x="16" y="398" width="20" height="20" viewBox="0 0 24 24" fill="#b85450" aria-hidden="true"><path d="M12.0001.0036C5.376.0036 0 5.3796 0 12.0036c0 6.6276 5.376 12 12.0001 12 6.6275 0 12-5.3724 12-12 0-6.624-5.3725-12-12-12zm5.532 17.0496c-.612 0-3.972-3.144-5.532-5.046C10.452 13.9356 7.092 17.0796 6.48 17.0796c-1.788 0-2.052-3.564-2.052-5.076 0-1.512.264-5.076 2.052-5.076.612 0 3.972 3.144 5.5201 5.046 1.548-1.932 4.908-5.046 5.532-5.046 1.788 0 2.052 3.564 2.052 5.076 0 1.512-.264 5.076-2.052 5.076z"/></svg>
-        <text x="484" y="410" fill="#b85450" font-size="10" font-weight="600" font-family="'Pretendard', 'Noto Sans KR', sans-serif" text-anchor="middle">Identity Manager</text>
+        <!-- Cross-cutting bar #1 — Identity (color=#8a5a12 deep-ochre) -->
+        <svg x="16" y="398" width="20" height="20" viewBox="0 0 24 24" fill="#8a5a12" aria-hidden="true"><path d="M12.0001.0036C5.376.0036 0 5.3796 0 12.0036c0 6.6276 5.376 12 12.0001 12 6.6275 0 12-5.3724 12-12 0-6.624-5.3725-12-12-12zm5.532 17.0496c-.612 0-3.972-3.144-5.532-5.046C10.452 13.9356 7.092 17.0796 6.48 17.0796c-1.788 0-2.052-3.564-2.052-5.076 0-1.512.264-5.076 2.052-5.076.612 0 3.972 3.144 5.5201 5.046 1.548-1.932 4.908-5.046 5.532-5.046 1.788 0 2.052 3.564 2.052 5.076 0 1.512-.264 5.076-2.052 5.076z"/></svg>
+        <text x="484" y="410" fill="#8a5a12" font-size="10" font-weight="600" font-family="'Pretendard', 'Noto Sans KR', sans-serif" text-anchor="middle">Identity Manager</text>
         <text x="484" y="422" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">(Keycloak · LDAP · OIDC)</text>
 
         <!-- Cross-cutting bar #2 — Monitoring -->
@@ -238,7 +244,7 @@
           <li>Multiple <em>cross-cutting</em> bars stack below the cluster, one row per concern (44 px each)</li>
           <li>Each crosscut pairs 1:1 with a vertical chevron in the right strip (count constraint)</li>
           <li>Bars emit no individual connectors — semantic is "applies to everything above"</li>
-          <li>Components carry an optional <code>color</code> override (Identity Manager rendered in rust-red here) — applies to border, icon, and name; connectors stay topology-driven</li>
+          <li>Components carry an optional <code>color</code> override (Identity Manager rendered in deep-ochre here) — applies to border, icon, and name; connectors stay topology-driven</li>
         </ul>
       </div>
     </div>

@@ -26,6 +26,12 @@ Every token is referred to by **semantic role**, not by its hex value. Type refe
 | `accent` | Focal / 1–2 max per diagram | `#0f766e` (deep-teal) | `#14b8a6` |
 | `accent-tint` | Fill for accent-bordered boxes | `rgba(15,118,110,0.08)` | `rgba(20,184,166,0.10)` |
 | `link` | HTTP/API calls, external arrows | `#4c1d95` | `#a78bfa` |
+| `alert` | A cross-cutting concern that must read apart from `accent` — Security / Identity columns | `#8a5a12` (deep-ochre) | `#d9a441` |
+| `alert-tint` | Wash behind an `alert` label | `rgba(138,90,18,0.06)` | `rgba(217,164,65,0.10)` |
+
+> **Why `alert` is ochre, not red:** a second concern colour has to be legible next to `accent`, not fight it. The earlier rust-red `#b85450` sat 173° from teal — a near-complement, the one interval that visibly vibrates at hairline weights. `#8a5a12` sits 139° away (a split complement) and matches `accent` for contrast: 5.42:1 on paper light, 5.73:1 dark. Both tints above are *ceilings*, solved rather than picked — an `alert`/`accent` label sits on its own tint, so the tint may only be as strong as still leaves that label at WCAG AA. `accent-tint` drops to `rgba(15,118,110,0.06)` / `rgba(20,184,166,0.075)` when it is used that way (see `type-high-level.md` §2.2).
+
+> **Migration note:** `alert` currently lands only in `type-high-level.md`. Eight other type references (`data-flow`, `process`, `medallion`, `it-state`, `dp-integration`, `dp-security-matrix`, `import-drawio`, and the examples built from them) still name rust-red `#b85450` for the same Security / Identity / Governance role. Those uses are node and bar *fills*, where the vibration against `accent` is far less pronounced than it is at hairline weights — so they are not wrong today, just inconsistent. Prefer `alert` in new work.
 
 > **Brand palette source:** this skin keeps four of the five upstream brand colors — `jet-black #2d3142`, `silver #bfc0c0`, `white-smoke #f5f5f5`, `blue-slate #4f5d75` — and replaces the fifth (atomic-tangerine) with `deep-teal #0f766e`. Teal sits only 43° from blue-slate in hue, so `link` was moved out of the blue family to `#4c1d95` (violet, 88° from accent) to keep the three arrow markers distinguishable at 8×6px. `accent` clears WCAG AA on paper (5.02:1 light, 5.18:1 dark); the upstream tangerine did not (2.86:1).
 

@@ -63,15 +63,33 @@ Known limitations of this fork
 All 149 upstream assets were recoloured to the teal skin and rebranded, so
 `--all` works and is green:
 
-    python3 tools/lint-skin.py        --all --baseline   # 186 checked, 23 skipped
+    python3 tools/lint-skin.py        --all --baseline   # 186 checked, 16 skipped
     python3 tools/verify-geometry.py  --all              # 188 checked
     python3 tools/verify-connectors.py --all             # 188 checked
     python3 tools/verify-spacing.py   --all              # 188 checked
     python3 scripts/self_check.py     <file>
 
-23 files stay excluded from colour/font linting via `tools/lint-skin-baseline.txt`
+16 files stay excluded from colour/font linting via `tools/lint-skin-baseline.txt`
 — that exclusion is upstream's, carried over, plus the Korean derivatives of
-three excluded originals.
+three excluded originals. It was 23: the seven `high-level` files came off the
+list when their phase banner was retoned (below), because the slab fills were
+the only reason they were on it.
+
+The `high-level` phase banner and right strip were rebuilt. Upstream draws them
+as opaque navy chevrons (`#2d3142` / `#3d4460` alternating) with reversed-out
+paper labels — a banner that outweighs the nodes it is a legend for. This fork
+draws one ink wash at 4.5% with hairline notch dividers and `muted` labels, and
+marks the focal phase with an `accent` wash instead. Geometry is unchanged, so
+the `node_cx == chevron_cx` contract and every existing checker still hold.
+
+The rust-red `#b85450` that flagged the Security / Identity column was replaced
+by a new `alert` token, deep-ochre `#8a5a12` (`#d9a441` dark), documented in
+`references/style-guide.md`. Rust-red sits 173° from teal — effectively its
+complement, which visibly vibrates at hairline weights. Both highlight-wash
+opacities are derived, not chosen: the label sits on its own wash, so the wash
+may only be as strong as still leaves that label at WCAG AA. Eight other type
+references still name `#b85450` for the same role; those are node and bar fills
+and were left alone, with the inconsistency recorded in `style-guide.md`.
 
 Two checkers are new here and have no upstream counterpart:
 
