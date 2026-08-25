@@ -75,8 +75,13 @@ three excluded originals.
 
 Two checkers are new here and have no upstream counterpart:
 
-  verify-connectors.py   an arrow-bearing segment running collinear with a node
-                         border (SKILL.md §6 rule 5's most visible member)
+  verify-connectors.py   BORDER: an arrow-bearing segment running collinear
+                         with a node border (§6 rule 5's most visible member).
+                         PLATE: a label plate that swallows the end of a
+                         connector it crosses, so the stroke goes under the
+                         plate and does not re-emerge (§6 rule 2). Crossing a
+                         line is the convention; landing on its turn is the
+                         defect.
   verify-spacing.py      node boxes sharing a border, overlapping, or closer
                          than the §7 minimum
 
@@ -135,3 +140,13 @@ they are not mistaken for fork damage:
   width, or routing rule for the reject/return edge. Derive from §6/§7.
 - SKILL.md §6 mandates quarter-arc `r=8` corners; the formula it points at in
   `type-architecture.md` uses quadratic `Q` corners instead.
+- Label plates are sized to their text with no padding. db-schema's
+  `ON DELETE CASCADE` plate was 88px for 85.7px of ink; it was widened to 104px
+  here. Others may be equally tight — nothing measures text. See lessons.md.
+
+Connector defects fixed in this fork (routing only, no token change):
+`architecture` (connector leaving its own box's top border), `tree` (siblings
+sharing a border; ROOT/CAT boxes too short for their content), `deployment`
+(riser running 8px alongside the target box's border), `db-schema`,
+`import-drawio`, `import-mermaid`, `dependency` (label plate landing on a
+connector's turn).

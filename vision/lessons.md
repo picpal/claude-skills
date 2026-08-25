@@ -142,36 +142,83 @@ labels stay put, and move the connector endpoints with the box.
 
 ---
 
-## A label plate can break a connector two different ways
+## A label plate must not land on the turn
 
-**Broke.** `example-deployment.html`: the `HTTPS:443` plate was 64px wide and the
-horizontal run it labelled was 64px long — the plate covered 100% of it. The eye
-left the Cloudflare box, hit a white plate, and picked the line up again further
-right and above. Rerouted to exit Cloudflare's top edge, giving a 152px run for
-the same 64px plate.
+**Broke.** `example-db-schema.html`: the `ON DELETE CASCADE` plate spans
+x 648-736 at y 392-404. The sessions FK riser runs up x=716 and **ends at
+y=400 — four pixels inside the plate**. The line went under the plate and never
+came out; the connector read as two unrelated pieces. Three more instances
+shipped: `import-drawio` (VERIFY covered 12px of a 20px riser),
+`import-mermaid` (REQUEST landed on the corner), `dependency` (CYCLE started
+exactly on it).
 
-**Why two ways.** The `verify-connectors` plate check then surfaced 37 more, and
-triage split them:
+**Why it is not "plates must not cross lines".** A plate sitting *across* a
+connector is the convention, not the bug — eleven shipped examples do it
+(flowchart branch labels, state transitions, UML multiplicities) and all read
+correctly. The eye bridges the gap because the stroke re-emerges on the far
+side. The defect is the plate landing on the **end** of a run: the corner where
+the connector turns away, or its endpoint.
 
-- **False (state ×4).** A plate sitting over a straight arrow that ends in its
-  own arrowhead reads fine — the line is never occluded and the arrowhead gives
-  the eye somewhere to land. Fixed by checking **non-terminal runs only**: a run
-  that bends away is where the connector goes missing.
-- **Real, different cause (db-schema).** The `ON DELETE CASCADE` plate does not
-  cover its own run — it **intersects an unrelated vertical connector** and
-  severs it. Same symptom, opposite mechanism.
+**Rule.** A plate crossing a connector must leave stroke visible on **both**
+sides: 6px minimum — §6 rule 2's own number, so a plate never leaves less clear
+stroke than the rule already demands clear space. A tail at the arrowhead end
+only has to be non-negative; the 8x6px marker is itself what the eye lands on,
+so 4px of stroke plus a head reads fine.
 
-**Rule.** Two distinct predicates, don't conflate them:
-1. a plate must not cover most of a **non-terminal** run (the run gets too short
-   to read);
-2. a plate must not **intersect** any connector stroke, including ones it does
-   not label.
+Fixing one means moving the plate out of the turn, or moving the turn out from
+under the plate. When the gutter has no lane wide enough for either — db-schema
+packs three risers into 120px — move the label to the connector's other end.
 
-**Guard.** `tools/verify-connectors.py` implements (1) only, on non-terminal
-runs. (2) is unimplemented — the message it prints for db-schema names the wrong
-cause. Outstanding: `db-schema`, `import-drawio`, `import-mermaid` (25 findings).
+**Guard.** `tools/verify-connectors.py`, PLATE check. Four positive self-tests
+(the four real defects) against eight negatives (plates legitimately crossing
+their own line).
 
 ---
+
+## A checker that fires on the file you fixed is not thereby validated
+
+**Broke.** The first plate check measured *coverage*: it flagged a plate wider
+than ~80% of the run it labels. It fired on `example-deployment.html`, the file
+whose broken arrow had just been fixed, so it looked validated and shipped.
+
+Triaged against renders, its eight findings were **five false positives**:
+plates offset above their run read perfectly no matter how wide they are, and a
+plate twice the width of its run sitting in an empty gutter is not a defect at
+all. Worse, the three it got right, it got right by accident — the actual
+mechanism was the plate landing on a corner, which coverage does not measure.
+And it never had a true positive to begin with: deployment's real defect was a
+riser running 8px from the target box's border, a routing fault the coverage
+number happened to correlate with.
+
+Two plates with **identical** coverage geometry — `deployment`'s HTTPS:443 and
+`import-mermaid`'s WRITES, both a plate exactly as long as its non-terminal run
+— sat on opposite sides of the verdict. A measure that cannot separate those two
+is not measuring the defect.
+
+**Rule.** Before believing a new checker, open every finding as a picture, not
+just the one that motivated it. A predicate whose false-positive rate is over
+half is worse than nothing: it trains you to skim its output. Retire it rather
+than tuning its threshold — the threshold was never the problem.
+
+**Guard.** None; this is a review habit. Crop each finding's region from a real
+render at 3x and look, as in the `PLATE` triage above.
+
+---
+
+## A plate sized to its text has no padding
+
+**Broke.** db-schema's `ON DELETE CASCADE` plate was 88px wide; measured from a
+render, the text ink spans 85.7px. In its original position that hid in open
+gutter, but moved next to a table border the glyphs read as touching it. The
+sibling `ON DELETE RESTRICT` plates use 112px for a *longer* string.
+
+**Rule.** A mask plate is `text ink + 6px each side`, minimum. Geist Mono at
+`font-size="8"` with `letter-spacing="0.06em"` runs about **5.05px per
+character** — 17 characters need ~86px of ink and a ~104px plate. Measure, do
+not estimate: the ink extent is recoverable from a render by scanning the pixel
+row for the label colour.
+
+**Guard.** None — no checker measures text. See *No checker measures text*.
 
 ## Every new detector over-fires first
 
@@ -190,6 +237,9 @@ to the row axis only**; vertical spacing is per-type grammar.
 **Rule.** Before believing a new checker, run it against the file you already
 fixed *and* its pre-fix copy. It must flag the second and clear the first. Then
 write self-tests where the majority of cases are ones that must **not** fire.
+That test is necessary, not sufficient — see *A checker that fires on the file
+you fixed is not thereby validated* for a predicate that passed it and was
+still measuring the wrong thing.
 
 **Guard.** Both checkers ship `--self-test` with more negative than positive
 cases.

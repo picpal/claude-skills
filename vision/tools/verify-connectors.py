@@ -1,17 +1,30 @@
 #!/usr/bin/env python3
-"""Flag connectors that run along a node's own border.
+"""Flag connectors that vanish into a node border or under a label plate.
 
-The upstream design system has no checker for §6 connector rules 3/4/5.
-This covers the most visible member of that family: an axis-aligned connector
-segment that is COLLINEAR with a node edge and overlaps it, so the stroke
-disappears into the box outline and the arrow appears to sprout from a corner.
+The upstream design system has no checker for SKILL.md §6 connector rules 3/4/5.
+This covers two members of that family, both of which make an arrow read as
+broken:
 
-Canonical example (upstream example-architecture.html, now fixed):
+  BORDER   an axis-aligned connector segment COLLINEAR with a node edge, so the
+           stroke disappears into the box outline and the arrow appears to
+           sprout from a corner. Canonical case, upstream example-architecture:
 
-    <rect x="416" y="240" width="160" height="64" .../>   <!-- node -->
-    <path d="M 496,240 H 692 ..."/>                       <!-- starts ON y=240 -->
+               <rect x="416" y="240" width="160" height="64" .../>
+               <path d="M 496,240 H 692 ..."/>     <!-- starts ON y=240 -->
 
-The horizontal run from x=496 to x=576 lies exactly on the node's top border.
+  PLATE    a label plate that swallows the END of a connector it crosses. A
+           plate sitting ACROSS a line is the normal convention — the eye reads
+           line, label, line — but only while the line re-emerges on both sides.
+           When a plate covers the corner where a connector turns, the line goes
+           in and never comes out. Canonical case, example-db-schema:
+
+               <path d="M 640,408 H 708 Q 716,400 ... V 88 ..."/>
+               <rect x="648" y="392" width="88" height="12" .../>
+
+           The vertical at x=716 ends at y=400, four pixels INSIDE the plate.
+
+Both are geometric, not aesthetic: a defect is a connector whose stroke is not
+visible where the reader needs it.
 
 Usage:
     python3 tools/verify-connectors.py <file.html> [...]
@@ -39,14 +52,18 @@ LINE_RE = re.compile(r"<line\b([^>]*)>", re.S)
 # arrow doing it is the defect. Marker presence is the discriminator.
 MARKER_RE = re.compile(r"\bmarker-(?:end|start|mid)\s*=", re.I)
 
-# A label mask is the opaque plate painted behind an arrow label (§6). When it is
-# nearly as long as the segment it annotates, the connector survives only as a
-# sliver above or below the plate and the arrow reads as broken — that is what
-# happened to example-deployment.html, where a 64px HTTPS:443 plate sat over a
-# 64px run. Masks are unstroked paper-filled rects 10-14px tall.
+# A label mask is the opaque plate painted behind an arrow label (§6 rule 2).
+# Masks are unstroked paper-filled rects 10-14px tall, drawn AFTER the connectors
+# so they knock a hole in whatever runs behind them.
+#
+# MIN_TAIL is how much straight stroke must stay visible on each side of a plate
+# the connector crosses. 6px is §6 rule 2's own number — the gap it already
+# requires between a label and its line — so a plate may never leave less clear
+# stroke than the rule demands clear space. A tail at the ARROWHEAD end is
+# exempt from the minimum and only has to be non-negative: the 8x6px marker is
+# itself the thing the eye lands on, so 4px of stroke plus a head reads fine.
 MASK_H = (10.0, 14.0)
-MASK_COVER_MAX = 0.8      # plate may cover at most this share of its segment
-MASK_GAP_MAX = 20.0       # how far a plate can sit from the line it labels
+MIN_TAIL = 6.0
 ATTR_RE = re.compile(r'([\w:-]+)\s*=\s*"([^"]*)"')
 
 TOL = 1.5          # collinear if within this many px of the edge
@@ -196,28 +213,44 @@ def check(text):
                             findings.append(
                                 f"vertical segment at x={x1:g} runs {ov:.0f}px along the "
                                 f"{name} border of node ({nx:g},{ny:g},{nw:g}x{nh:g})")
-    # Label plate swallowing its own segment
-    # Only NON-terminal runs matter: a plate over the final run still leaves the
-    # arrowhead for the eye to land on, which is why state-machine transition
-    # labels sitting over their whole arrow read fine. A plate over a run that
-    # bends away is where the connector goes missing.
-    horiz = [s for s in sg if abs(s[1] - s[3]) < 0.01 and not s[4]]
+    # A label plate that swallows the end of a connector it crosses.
+    #
+    # Crossing a line is what a mask is FOR: the plate knocks a hole in the
+    # stroke so the label is legible, and the eye bridges the gap because the
+    # line re-emerges on the far side. The defect is the plate landing on the
+    # END of a run — the corner where the connector turns away. There the line
+    # goes under the plate and never comes out, so the connector reads as two
+    # unrelated pieces. Measured as the straight stroke left visible on each
+    # side; an arrowhead end only has to clear the plate, since the marker is
+    # itself what the eye lands on.
     for (mx, my, mw, mh) in masks(text, paper_colors(text)):
-        for (x1, y1, x2, _y2, _t) in horiz:
-            gap_below = y1 - (my + mh)      # line under the plate
-            gap_above = my - y1             # line over the plate
-            gap = gap_below if gap_below >= 0 else gap_above
-            if not (0 <= gap <= MASK_GAP_MAX):
+        for (x1, y1, x2, y2, term) in sg:
+            if abs(y1 - y2) < 0.01:                       # horizontal
+                if not (my < y1 < my + mh):
+                    continue
+                lo, hi, plo, phi = min(x1, x2), max(x1, x2), mx, mx + mw
+                head_at_hi = term and x2 > x1
+                axis = f"horizontal run at y={y1:g}"
+            elif abs(x1 - x2) < 0.01:                     # vertical
+                if not (mx < x1 < mx + mw):
+                    continue
+                lo, hi, plo, phi = min(y1, y2), max(y1, y2), my, my + mh
+                head_at_hi = term and y2 > y1
+                axis = f"vertical run at x={x1:g}"
+            else:
                 continue
-            ov = overlap(mx, mx + mw, x1, x2)
-            if ov <= 0:
+            if min(hi, phi) - max(lo, plo) <= 0:          # plate misses the run
                 continue
-            seg = abs(x2 - x1)
-            if seg > 0 and mw / seg > MASK_COVER_MAX:
+            for tail, is_head, side in ((plo - lo, term and not head_at_hi, "before"),
+                                        (hi - phi, head_at_hi, "after")):
+                floor = 0.0 if is_head else MIN_TAIL
+                if tail >= floor:
+                    continue
                 findings.append(
-                    f"label plate {mw:g}px wide covers {mw / seg * 100:.0f}% of the "
-                    f"{seg:g}px segment at y={y1:g} — the connector reads as broken; "
-                    f"lengthen the run or shorten the label")
+                    f"label plate ({mx:g},{my:g} {mw:g}x{mh:g}) leaves {tail:g}px of the "
+                    f"{axis} visible {side} it — the connector disappears under the plate "
+                    f"and does not re-emerge; move the plate clear of the turn "
+                    f"(§6 rule 2 wants {MIN_TAIL:g}px)")
     return sorted(set(findings))
 
 
@@ -239,21 +272,63 @@ SELF_TEST = [
      '<path d="M 616,128 H 780" marker-end="url(#arrow)"/>', 0, "zone container is painted first"),
     ('<rect x="416" y="240" width="160" height="64" stroke="#000" fill="#fff"/>'
      '<path d="M 416,200 V 340" marker-end="url(#arrow)"/>', 1, "vertical along left border"),
+    # --- PLATE: a plate must not swallow the end of a run it crosses ---------
+    # Positives are the four real defects found in the shipped corpus; the
+    # negatives outnumber them, and every one is a plate that legitimately sits
+    # ACROSS its own connector — the convention this check must not break.
     ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
-     '<rect x="304" y="80" width="232" height="84" stroke="#000" fill="#fff"/>'
-     '<path d="M 224,196 H 288 Q 296,196 296,188 V 128" marker-end="url(#a)"/>'
-     '<rect x="224" y="176" width="64" height="12" fill="#f5f5f5"/>',
-     1, "label plate as long as its segment (the deployment defect)"),
+     '<path d="M 640,408 H 708 A8,8 0 0 0 716,400 V 88 A8,8 0 0 1 724,80 H 760" marker-end="url(#a)"/>'
+     '<rect x="648" y="392" width="88" height="12" fill="#f5f5f5"/>',
+     1, "PLATE: plate ends 4px past the corner it covers (example-db-schema)"),
     ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
-     '<rect x="304" y="80" width="232" height="84" stroke="#000" fill="#fff"/>'
-     '<path d="M 144,156 V 128 Q 144,120 152,120 H 304" marker-end="url(#a)"/>'
-     '<rect x="196" y="100" width="64" height="12" fill="#f5f5f5"/>',
-     0, "label plate on a run long enough to stay readable"),
+     '<path d="M560,192 H592 A8,8 0 0 0 600,184 V164 A8,8 0 0 1 608,156 H640" marker-end="url(#a)"/>'
+     '<rect x="568" y="172" width="44" height="12" fill="#f5f5f5"/>',
+     1, "PLATE: plate covers 12px of a 20px riser (example-import-drawio VERIFY)"),
     ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
-     '<rect x="340" y="176" width="160" height="48" stroke="#000" fill="#fff"/>'
-     '<line x1="280" y1="200" x2="340" y2="200" marker-end="url(#a)"/>'
-     '<rect x="280" y="184" width="60" height="12" fill="#f5f5f5"/>',
-     0, "plate over a straight arrow that ends in its arrowhead (state transitions)"),
+     '<path d="M208,296 H264 A8,8 0 0 0 272,288 V200 A8,8 0 0 1 280,192 H328" marker-end="url(#a)"/>'
+     '<rect x="220" y="276" width="56" height="12" fill="#f5f5f5"/>',
+     1, "PLATE: plate lands on the turn (example-import-mermaid REQUEST)"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M432,508 H204 A8,8 0 0 1 196,500 V320" marker-end="url(#a)"/>'
+     '<rect x="204" y="504" width="40" height="12" fill="#f5f5f5"/>',
+     1, "PLATE: plate starts exactly on the corner (example-dependency CYCLE)"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 500,288 V 328" marker-end="url(#a)"/>'
+     '<rect x="484" y="298" width="32" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: branch label sits across its own line, 10px tail each side"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 640,240 V 300" marker-end="url(#a)"/>'
+     '<rect x="612" y="264" width="56" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: state transition label centred on its arrow"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 640,400 V 432" marker-end="url(#a)"/>'
+     '<rect x="620" y="416" width="40" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: 4px tail is fine when the arrowhead lands there"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 220,288 H 168" marker-end="url(#a)"/>'
+     '<rect x="172" y="278" width="32" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: same, running leftward into its head"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 260,480 H 380" marker-end="url(#a)"/>'
+     '<rect x="288" y="474" width="12" height="12" fill="#f5f5f5"/>'
+     '<rect x="348" y="474" width="24" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: two multiplicity plates on one association line"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 876,320 H 480" marker-end="url(#a)"/>'
+     '<rect x="660" y="314" width="36" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: plate mid-way along a long run"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M220,164 H272 A8,8 0 0 1 280,172 V192 A8,8 0 0 0 288,200 H360" marker-end="url(#a)"/>'
+     '<rect x="228" y="144" width="44" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: plate offset 8px above its run, wider than the run"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M 400,104 H 348 Q 340,104 340,112 Q 340,120 332,120 H 280" marker-end="url(#a)"/>'
+     '<rect x="284" y="82" width="112" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: plate twice the width of its run, sitting in an empty gutter"),
+    ('<rect width="100%" height="100%" fill="#f5f5f5"/>'
+     '<path d="M752,336 V352 A8,8 0 0 1 744,360 H696 A8,8 0 0 0 688,368 V384" marker-end="url(#a)"/>'
+     '<rect x="696" y="340" width="48" height="12" fill="#f5f5f5"/>',
+     0, "PLATE: plate exactly as long as its run, but clear of both turns"),
     ('<rect x="99" y="192" width="72" height="228" stroke="#000" fill="#fff"/>'
      '<line x1="80" y1="420" x2="960" y2="420"/>', 0, "chart baseline under bars carries no arrow"),
     ('<rect x="120" y="144" width="840" height="64" stroke="#000" fill="#fff"/>'

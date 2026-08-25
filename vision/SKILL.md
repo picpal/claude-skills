@@ -281,6 +281,8 @@ These six rules are **non-negotiable**. Run the pre-output checklist (§9) to ve
 
 2. **Label-to-connector margin: 6–10px gap, always.** A label must never sit *on* its arrow — the connector must remain visible. Place the label centered above (or beside, for vertical segments) the line with a **minimum 6px gap** between the bottom of the label's mask rect and the connector stroke. The opaque mask rect prevents the arrow from bleeding through, but the *visible* gap between mask edge and line preserves the reader's ability to trace the connection. If the label is large enough that 6px feels cramped, push it to 8–10px. Never let the mask rect touch or overlap the stroke.
 
+   **When a plate must cross a connector.** The 6–10px gap governs the label's *own* line. Other connectors will sometimes run behind the plate, and that is allowed — the mask knocks a hole in the stroke, the reader bridges it, and eleven of this skill's examples do exactly that. What is never allowed is the plate landing on the **end** of a run: the corner where a connector turns away, or its endpoint. There the line goes under the plate and does not come out, and the connector reads as two unrelated pieces. Leave **≥6px of visible stroke on both sides** of any plate a connector crosses; an arrowhead end only has to clear the plate, since the marker is what the eye lands on. If the gutter has no lane wide enough, move the label to the connector's other end rather than shrinking the gap. Verify with `python3 <skill-root>/tools/verify-connectors.py <file>`.
+
 3. **No overlapping connectors.** Two connectors must never share the same stroke path, run parallel on top of each other, or be drawn on top of each other for any segment. When two orthogonal arrows must cross at a single point, apply the **bridge / hop** primitive (see `references/type-architecture.md` § Crossing arrows). When two arrows naturally want to overlap, offset their routing by ≥12px so each line is independently traceable. If you find yourself stacking connectors, redesign the layout — it means two nodes are too close, or the diagram is over budget (split into overview + detail).
 
 4. **Shared edge → fan the attach points.** When two or more connectors enter or exit the *same edge* of a box, each must have its own distinct attach point along that edge — **no two connectors may share a single point on a box**. Spread the attach points evenly along the edge with **≥12px** between adjacent points (8px minimum for very small boxes). Routing rules:
@@ -469,7 +471,7 @@ Run before producing any diagram.
 ```bash
 python3 tools/lint-skin.py        <file>   # palette, fonts, a11y, external assets
 python3 tools/verify-geometry.py  <file>   # label masks vs nodes painted after them
-python3 tools/verify-connectors.py <file>  # arrows running along a node border
+python3 tools/verify-connectors.py <file>  # arrows lost in a border or under a plate
 python3 tools/verify-spacing.py   <file>   # boxes sharing a border or crowded
 ```
 
@@ -507,6 +509,8 @@ four green — see [`lessons.md`](lessons.md) § *No checker measures text*.
 - [ ] Arrows drawn before boxes?
 - [ ] **Every connector between off-axis nodes uses a rounded right-angle elbow (`r=8`)? No diagonal `<line>` slants?**
 - [ ] **Every arrow label has a visible 6–10px gap above its connector? (Mask rect not touching the stroke.)**
+- [ ] **No label mask lands on a connector's corner or endpoint? (≥6px of stroke visible either side of any plate a connector crosses — §6 rule 2. Run `python3 <skill-root>/tools/verify-connectors.py <file>`.)**
+- [ ] **Every mask rect is wider than its text? (Text ink + 6px each side. Geist Mono at 8px with 0.06em tracking runs ~5.05px per character.)**
 - [ ] **No two connectors overlap, share a stroke path, or run on top of each other? Crossings use the bridge/hop primitive?**
 - [ ] **When several connectors enter or exit the same edge of a box, each has its own attach point (≥12px apart)? No connector hides another?**
 - [ ] **No connector passes behind a non-endpoint box, except the unavoidable-intervening-box case (§6 rule 5) — and in that case, the stroke is dashed and the label sits at the visible end?**
