@@ -30,6 +30,9 @@ xdg-open <skill-root>/assets/index.html    # Linux
 start    <skill-root>\assets\index.html    # Windows
 ```
 
+Not installed yet, or asked for a link to share — the same contact sheet is
+published at <https://picpal.github.io/claude-skills/vision/assets/index.html>.
+
 One self-contained page: 52 examples in seven families — systems, flow,
 structure, planning, analysis, quantities, and sources & motion. Each thumbnail
 is the real file in a frame, not an exported picture, so a diagram fixed on disk

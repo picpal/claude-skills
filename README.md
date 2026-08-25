@@ -31,6 +31,9 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 
 ## 스킬 목록
 
+> **설치 전에 보기** — [vision 예시 갤러리 ↗](https://picpal.github.io/claude-skills/vision/assets/index.html)
+> 52종 다이어그램(아키텍처·시퀀스·Sankey·Wardley 등)을 브라우저에서 바로 넘겨볼 수 있다. 클론·설치 불필요.
+
 | 스킬 | 설명 | 트리거 예시 |
 |------|------|------------|
 | [terminal-dev-setup](./terminal-dev-setup) | Ghostty, tmux 터미널 개발환경 설정 | "터미널 설정해줘", "ghostty 테마 바꿔줘", "tmux 세팅" |
@@ -46,7 +49,7 @@ cp -r /tmp/claude-skills/<skill-name> ~/.claude/skills/
 | [spotify-to-ytmusic](./spotify-to-ytmusic) | 공유받은 Spotify 플레이리스트를 YouTube Music에 동일 구성으로 복제. embed 파싱이라 Spotify 인증·Premium 불필요, 재실행 시 새 곡만 증분 동기화 | "스포티파이 플레이리스트 유튜브뮤직으로", "플레이리스트 옮겨줘", "플레이리스트 복제" |
 | [authoring-e2e-suites](./authoring-e2e-suites) | 화면별 Playwright E2E 스위트를 "실행만 하면 재검증되는" 회귀 자산으로 작성. 하네스(프로덕션 빌드 서빙·상태 리셋·storageState 인증·포트 스코프 격리) 확정 후 파일럿 → 화면군 → 전체 합주 3단 그린 게이트 | "E2E 테스트 만들어줘", "화면 테스트 자동화", "단독은 통과하는데 합주에서 401 터져" |
 | [youtube-study-notes](./youtube-study-notes) | YouTube 자막을 Chrome 쿠키 인증으로 추출(멤버십·로그인 영상 포함), 라이브 누적 자막 중복을 정제해 원본 .txt + 학습노트 .md 생성 | "유튜브 강의 정리해줘", "자막 추출", "멤버십 영상 학습 노트" |
-| [vision](./vision) | 39종 에디토리얼 다이어그램(아키텍처·시퀀스·스윔레인·Sankey·Wardley 등)을 self-contained HTML/SVG로 생성. `cathrynlavery/diagram-design` v2.6 포크 — deep-teal 스킨 + Pretendard로 한글 라벨 지원, 52종 예시를 담은 모노톤 컨택트시트 갤러리("갤러리 보여줘"로 호출), §6 커넥터 규칙·간격·렌더링된 텍스트 폭 검사기 자체 탑재 | "다이어그램 만들어줘", "아키텍처 도식화", "플로우차트 그려줘" |
+| [vision](./vision) | 39종 에디토리얼 다이어그램(아키텍처·시퀀스·스윔레인·Sankey·Wardley 등)을 self-contained HTML/SVG로 생성. `cathrynlavery/diagram-design` v2.6 포크 — deep-teal 스킨 + Pretendard로 한글 라벨 지원, 52종 예시를 담은 모노톤 컨택트시트 [갤러리](https://picpal.github.io/claude-skills/vision/assets/index.html)(설치 후에는 "갤러리 보여줘"로 호출), §6 커넥터 규칙·간격·렌더링된 텍스트 폭 검사기 자체 탑재 | "다이어그램 만들어줘", "아키텍처 도식화", "플로우차트 그려줘" |
 
 ## 디렉토리 구조
 
@@ -106,7 +109,7 @@ claude-skills/
 │   ├── LICENSE         원본 MIT
 │   ├── NOTICE          포크 출처·변경내역·제약
 │   ├── references/     39종 type-*.md + style-guide.md + primitive-*.md
-│   ├── assets/         예시 181개 (EN 142 + KO 39) + index.html 갤러리
+│   ├── assets/         예시 181개 (EN 142 + KO 39) + index.html 갤러리 (GitHub Pages로 공개)
 │   ├── scripts/        self_check.py
 │   └── tools/          lint-skin · verify-geometry · verify-connectors ·
 │                       verify-spacing · verify-text · verify-icons ·
