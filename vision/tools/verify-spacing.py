@@ -33,6 +33,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from svgstyle import effective                      # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 ASSET_DIR = ROOT / "assets"
 
@@ -44,6 +47,9 @@ GUTTERS = {
     "treemap":   (4.0,  "type-treemap.md — cells tile on the 4px grid; area is the encoding"),
     "medallion": (16.0, "type-medallion.md — tiers read as one stack"),
     "data-flow": (12.0, "type-data-flow.md — role-scoped steps read as one pipeline"),
+    "process":   (12.0, "type-process.md:89 — step_slot_w 112 with node_w 100 fixes a 12px pitch"),
+    "dp-security-matrix": (12.0,
+                 "type-dp-security-matrix.md:81,83 — comp_role_gap 12, role_col_gap 16"),
 }
 
 RECT_RE = re.compile(r"<rect\b([^>]*)>", re.S)
@@ -63,10 +69,14 @@ def slug_of(path):
 
 
 def nodes(text):
-    """Stroked rects big enough to be node boxes; zone containers excluded."""
+    """Stroked rects big enough to be node boxes; zone containers excluded.
+
+    Styling may come from a class rather than an attribute — see svgstyle.py.
+    """
+    style = effective(text)
     out = []
     for blob in RECT_RE.findall(text):
-        a = dict(ATTR_RE.findall(blob))
+        a = style(dict(ATTR_RE.findall(blob)))
         if not a.get("stroke") or a["stroke"] == "none":
             continue
         try:

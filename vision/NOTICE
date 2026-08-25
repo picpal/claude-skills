@@ -82,8 +82,16 @@ Two checkers are new here and have no upstream counterpart:
                          plate and does not re-emerge (§6 rule 2). Crossing a
                          line is the convention; landing on its turn is the
                          defect.
+                         DIAGONAL / OVERLAP / ATTACH / TRANSIT: §6 rules 1, 3,
+                         4 and 5, which had no checker anywhere.
   verify-spacing.py      node boxes sharing a border, overlapping, or closer
                          than the §7 minimum
+  verify-text.py         rendered text measured against the plate or node box
+                         behind it. Needs a browser; exits 2 rather than
+                         reporting green when it cannot find one.
+  svgstyle.py            resolves CSS-class styling so the checkers above can
+                         see nodes that carry no stroke attribute. Not a
+                         checker; twenty files were invisible without it.
 
 Per-type verifiers carried over under tools/: verify-treemap, verify-slopegraph,
 verify-ridgeline, verify-bubble, verify-dumbbell. `verify-ridgeline` and
@@ -96,8 +104,14 @@ verify-motion, verify-docs-sync, verify-plugin-package, verify-drawio-import,
 verify-mermaid-import, and the test-verify-* suites. Motion output is unverified
 here — check it by hand.
 
-Nothing measures text. All four checkers parse attributes; none calls getBBox(),
-so a label can overflow its box with every gate green. See lessons.md.
+`verify-text.py` measures text, and is the only checker that needs a browser. It
+compares each label's rendered box to the plate or node box behind it, and only
+horizontally — `getBBox()` returns the em box, so a vertical test flags every
+plate in the corpus by a fifth of a pixel. See lessons.md.
+
+It measures the fonts that actually resolve. Pretendard is not on Google Fonts,
+so where it is not installed the measurement is of Noto Sans KR, which is what a
+CI render shows anyway and is the wider of the two.
 
 
 Korean
@@ -124,15 +138,14 @@ Inherited defects — upstream, not introduced here
 Not fixed, because this fork changes tokens and typography only. Recorded so
 they are not mistaken for fork damage:
 
-- Connector rules 3, 4 and 5 (overlapping connectors, shared attach points,
-  transit behind non-endpoint boxes) have NO automated checker. `verify-geometry`
-  checks label-mask overlap only. Several shipped examples violate the rules —
-  `example-swimlane.html` uses diagonal `<line>` handoffs, an automatic fail
-  under SKILL.md rule 1, and `it-state`, `dp-integration` and `high-level` each
-  breach rule 4 or 5.
-- `lint-skin.py`'s hex scanner false-positives on HTML numeric character
-  references: `&#8594;` is reported as `color: #8594 is not in the style-guide
-  palette`. Use literal characters, not `&#NNNN;` entities.
+- Connector rules 1, 3, 4 and 5 had NO automated checker upstream, and the
+  shipped examples breached all four. Now checked, and fixed here: `swimlane`
+  (two diagonal handoffs), `high-level` and `high-level-vertical` (four risers
+  on one lane; two tails and two arrowheads on single attach points),
+  `dp-integration` (a solid connector running 82px through the Orchestrator bar).
+- `lint-skin.py`'s hex scanner false-positived on HTML numeric character
+  references — `&#8594;` was reported as `color: #8594`. Fixed here by excluding
+  a `&` before the `#`; `&#x2192;` never matched.
 - SKILL.md's own SVG snippets use `font-size="7"` and `font-size="9"`, off the
   4px grid its §7 mandates. The style guide's per-role sizes (7-9px) are the
   intended reading; §7's size list is not exhaustive for mono roles.

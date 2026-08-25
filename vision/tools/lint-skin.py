@@ -24,8 +24,12 @@ ASSET_DIR = ROOT / "assets"
 BASELINE = ROOT / "tools/lint-skin-baseline.txt"
 MOTION_TEMPLATE = ASSET_DIR / "template-motion.html"
 
+# The `&` in the lookbehind excludes HTML numeric character references: `&#8594;`
+# (a right arrow) is otherwise read as the 4-digit colour `#8594` and reported as
+# off-palette. No legitimate colour literal is ever preceded by `&`. The hex form
+# `&#x2192;` never matched, since `x` is not a hex digit.
 HEX_RE = re.compile(
-    r"(?<![\w-])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![0-9a-fA-F])"
+    r"(?<![\w&-])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})(?![0-9a-fA-F])"
 )
 RGBA_RE = re.compile(
     r"rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*([^)]+)\)",

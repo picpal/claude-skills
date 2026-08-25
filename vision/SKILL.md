@@ -471,12 +471,15 @@ Run before producing any diagram.
 ```bash
 python3 tools/lint-skin.py        <file>   # palette, fonts, a11y, external assets
 python3 tools/verify-geometry.py  <file>   # label masks vs nodes painted after them
-python3 tools/verify-connectors.py <file>  # arrows lost in a border or under a plate
+python3 tools/verify-connectors.py <file>  # §6 rules 1, 3, 4, 5 + plates over turns
 python3 tools/verify-spacing.py   <file>   # boxes sharing a border or crowded
+python3 tools/verify-text.py      <file>   # rendered labels vs the box behind them
 ```
 
-None of these measures text. A Korean or CJK label can overflow its box with all
-four green — see [`lessons.md`](lessons.md) § *No checker measures text*.
+`verify-text.py` is the only one that needs a browser, and the only one that
+measures text rather than attributes. It checks width, not height: `getBBox()`
+returns the em box, so a vertical test flags every label in the corpus. See
+[`lessons.md`](lessons.md).
 
 **Type fit:**
 

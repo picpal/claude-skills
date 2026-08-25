@@ -220,6 +220,72 @@ row for the label colour.
 
 **Guard.** None — no checker measures text. See *No checker measures text*.
 
+## A checker can be blind to a quarter of the corpus and still say green
+
+**Broke.** `verify-connectors`, `verify-spacing` and `verify-geometry` all find
+node boxes by reading `stroke="..."` off the tag. Five types — `dp-integration`,
+`dp-security-matrix`, `it-state`, `process`, `loop` — style their nodes with a
+class instead:
+
+```html
+<style>svg .node { fill:#fff; stroke:#2d3142 }</style>
+<rect class="node" x="40" y="96" width="160" height="56"/>
+```
+
+Twenty files, every one a box-and-arrow diagram, in which not a single node was
+ever looked at. All three checkers reported green on them for the same reason a
+blank page reports green.
+
+**Rule.** A checker that finds *nothing* in a file that plainly has something is
+reporting its own blindness, not the file's health. Count what a detector matched,
+not just what it flagged, and compare against a crude lower bound — a file with
+forty rects and a dozen arrows has node boxes.
+
+**Guard.** `tools/svgstyle.py` resolves classes, custom properties, `svg .cls`
+descendants and compound selectors, and the three checkers run every rect through
+it. It ships `--self-test`.
+
+---
+
+## The path parser read relative commands as absolute
+
+**Broke.** `segments()` uppercased every command letter, so a relative
+`a 8,8 0 0,0 -16,0` — the line-hop `example-dependency` uses — moved the cursor to
+the absolute point `(-16, 0)`. Every segment after it was fiction. A rule-3 probe
+reported 17 overlapping runs in that file, all at `y=0`, all imaginary; the real
+geometry after each hop had never been examined by any check.
+
+**Rule.** SVG path data is a grammar, not a token soup. Lowercase is relative;
+`M` with extra coordinate pairs continues as an implicit `L`; `Z` returns to the
+subpath start; and a path that ends on a corner fillet puts its arrowhead at the
+end of the *curve*, several pixels past the last straight run — which is why
+rule 4 could not see two arrowheads landing on the same point.
+
+**Guard.** `tools/verify-connectors.py` ships `walk()` with per-command argument
+counts, plus five self-tests covering relative commands, implicit repetition and
+`Z`.
+
+---
+
+## `getBBox()` returns the em box, so vertical text checks are meaningless
+
+**Broke.** The first version of `verify-text` compared a label's box to its
+container on both axes. It reported **170 findings**, of which 165 were the same
+thing: an 8px label measures ~10px tall — ascent to descent — whether or not the
+string has a descender, so in a 12px plate it overhangs by 0.2px in *every*
+example.
+
+**Rule.** Measure text horizontally. Width is what a font, a size, a tracking and
+a script actually change — Hangul advances about a full em where Latin advances
+half — and it is the axis translation threatens. Height is set by `font-size`,
+which translating does not change. A vertical tolerance would only have hidden
+that the ruler was wrong.
+
+**Guard.** `tools/verify-text.py`, `CHECK_VERTICALLY = False`, with the reasoning
+recorded next to it.
+
+---
+
 ## Every new detector over-fires first
 
 **Broke.** Twice.
