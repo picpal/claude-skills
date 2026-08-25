@@ -394,6 +394,28 @@ is on the baseline and add the derivative if so.
 
 ---
 
+## Retoning a shape is not redesigning it
+
+**Broke.** Asked to give the `high-level` phase banner "a different visual form,
+more refined, different colours," the first pass kept the chevron silhouette and
+inverted its tonality — navy slabs and reversed-out labels became an ink wash
+with hairline notches. Every colour changed. The verdict was
+"형태가 크게 바뀌지않았네" — the form didn't really change.
+
+**Why.** Tonality and form are separate axes, and a viewer reads form first. Ink
+wash versus navy slab is a large change *in the file* and a small one *on the
+page*, because the outline — five chevrons pointing right — was identical before
+and after. A palette pass answers "different colours"; it does not answer
+"different form."
+
+**Rule.** When the ask names the *form*, change the silhouette, not the fill.
+Here that meant separating the band into discrete chips and adding an explicit
+arrow icon per boundary — direction stated outright instead of implied by a
+notch. Test: trace the outline of both versions. If the tracings match, the form
+did not change.
+
+---
+
 ## Refining a heavy element is a contrast cut in disguise
 
 **Broke.** The high-level phase banner was five opaque navy chevrons with

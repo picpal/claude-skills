@@ -77,10 +77,12 @@ the only reason they were on it.
 
 The `high-level` phase banner and right strip were rebuilt. Upstream draws them
 as opaque navy chevrons (`#2d3142` / `#3d4460` alternating) with reversed-out
-paper labels — a banner that outweighs the nodes it is a legend for. This fork
-draws one ink wash at 4.5% with hairline notch dividers and `muted` labels, and
-marks the focal phase with an `accent` wash instead. Geometry is unchanged, so
-the `node_cx == chevron_cx` contract and every existing checker still hold.
+paper labels — a banner that outweighs the nodes it is a legend for, and whose
+direction is carried only by the chevron silhouette. This fork draws each phase
+as its own rounded chip with a 24-px gutter, `muted` labels, and a drawn arrow
+icon in every gutter; the focal phase's chip takes an `accent` fill and stroke.
+The boundaries, `chevron_cx` and the strip bands are untouched, so the
+`node_cx == chevron_cx` contract and every existing checker still hold.
 
 The rust-red `#b85450` that flagged the Security / Identity column was replaced
 by a new `alert` token, deep-ochre `#8a5a12` (`#d9a441` dark), documented in

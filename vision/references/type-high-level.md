@@ -104,31 +104,38 @@ x_boundaries       = cumulative_sum([0] + widths)                 # length sum_c
 chevron_cx(C)      = (x_boundaries[index(C)] + x_boundaries[index(C)+1]) / 2
 ```
 
-**Draw order — one band, then the notches, then the labels.** The banner is *not* five filled shapes; it is a single ink wash whose phases are separated by hairline notches. Emit in this order:
-
-1. **Band** — `<rect x=0 y=4 width=effective_w height=28>` filled `rgba(45,49,66,0.045)` (light) / `rgba(245,245,245,0.05)` (dark).
-2. **Highlight wash** (exactly one, the phase holding the `focal` node) — a chevron-outlined `<path>` over that phase's span, filled `accent-tint` at the label-safe ceiling: `rgba(15,118,110,0.06)` / `rgba(20,184,166,0.075)`. A chevron carrying a `color` override uses `alert-tint` instead.
-3. **Rules** — `y=4` at `rgba(45,49,66,0.14)` / `rgba(245,245,245,0.10)`; `y=32` at `rgba(45,49,66,0.20)` / `rgba(245,245,245,0.16)`.
-4. **Notches** — at each interior boundary `x`, `<polyline points="x-12,4 x,18 x-12,32">`, 1 px, `rgba(45,49,66,0.22)` / `rgba(245,245,245,0.22)`. The two notches bounding a washed phase take that phase's colour at 0.45 (light) / 0.55 (dark).
-5. **Labels** — `muted` mono `font-size=7`, `font-weight=500`, `letter-spacing=0.14em`, `text-anchor=middle`, centered at `chevron_cx, 21`. The washed phase's label is its wash colour at `font-weight=600`.
-
-The wash outline for phase `i` spanning `[lo, hi]` (clockwise from top-left; `first`/`last` drop the notch on the canvas edge):
+**Draw order — separated chips, then the flow arrows, then the labels.** Each phase is its own chip with a gutter to its neighbour, and every interior boundary carries a drawn arrow. Direction is *stated*, not implied by a silhouette. Emit in this order:
 
 ```
-M{lo-12},4  H{hi-12} L{hi},18 L{hi-12},32  H{lo-12} L{lo},18 Z
-first:  M0,4       H{hi-12} L{hi},18 L{hi-12},32  H0 Z
-last:   M{lo-12},4 H{effective_w} V32           H{lo-12} L{lo},18 Z
+margin  = 4      # outer inset — the diagram's own content margin
+gap     = 24     # gutter between chips; the arrow icon lives in it
+rx      = 4
+chip(i) = [ x_boundaries[i]   + (margin if i == 0     else gap/2),
+            x_boundaries[i+1] - (margin if i == last  else gap/2) ]   # y = 4, h = 28
 ```
 
-**Never fill the phases as opaque slabs.** Two alternating navy fills carry more visual weight than the nodes they label, which inverts the hierarchy — the banner is a legend, and a legend that outshouts its subject has stopped being one. Reversed-out paper labels also optically thin at `font-size=7`; ink-on-wash is both quieter and more legible.
+1. **Chips** — one `<rect rx=4 y=4 height=28>` per phase over `chip(i)`, filled `rgba(45,49,66,0.05)` (light) / `rgba(245,245,245,0.055)` (dark), 1-px stroke `rgba(45,49,66,0.14)` / `rgba(245,245,245,0.14)`.
+2. **Highlight chip** (the phase holding the `focal` node) — same rect, filled `accent-tint` at the label-safe ceiling `rgba(15,118,110,0.06)` / `rgba(20,184,166,0.075)`, stroked `rgba(15,118,110,0.45)` / `rgba(20,184,166,0.55)`. A phase carrying a `color` override uses `alert-tint` and the matching stroke.
+3. **Flow arrows** — one per interior boundary `x`, centred at `(x, 18)`:
+
+   ```
+   <path d="M{x-6},18 H{x+5} M{x+2},15 L{x+5},18 L{x+2},21" fill="none"
+         stroke="rgba(45,49,66,0.45)" stroke-width="1"
+         stroke-linecap="round" stroke-linejoin="round"/>
+   ```
+
+   12 px wide in a 24-px gutter — 6 px clearance each side. Dark mode uses `rgba(245,245,245,0.45)`. **Do not drop below 0.45:** at the minimum render width the arrow is ~4 px of visible stroke and any lighter reads as a smudge.
+4. **Labels** — `muted` mono `font-size=7`, `font-weight=500`, `letter-spacing=0.14em`, `text-anchor=middle`, at **`chevron_cx, 21`** — the boundary midpoint, *not* the chip's centre. The two end chips are 8 px asymmetric because their outer edge takes `margin` and their inner edge takes `gap/2`; the label stays on `chevron_cx` because that, not the chip, is what §7 #1 pins to the column below. The highlighted phase's label takes its chip colour at `font-weight=600`.
+
+**Never fill the phases as opaque slabs, and never let them touch.** Alternating navy fills carry more visual weight than the nodes they label, which inverts the hierarchy — the banner is a legend, and a legend that outshouts its subject has stopped being one. Reversed-out paper labels also optically thin at `font-size=7`. A continuous band, chevron-notched or not, leaves direction to be inferred from a silhouette; separated chips plus an explicit arrow state it.
 
 **Color override** (per chevron, both horizontal and vertical): a chevron may declare an optional `color: "#hex"` that gives that one phase a highlight wash of its own, in addition to the `focal` phase's. Use it to flag a phase that pairs with a custom-colored component (e.g., `Security` when the Identity bar uses `color: "#8a5a12"`). Rules:
 
 - Default to `alert` (`#8a5a12` light / `#d9a441` dark) — the palette's second concern colour. Pick a different hex only with a reason, and check it the way `alert` was checked (see the two bullets below).
-- The override drives the wash, the two bounding notches **and** the label — the label is the whole point of the highlight, so it is recoloured too. Everything else stays `muted`.
-- **The wash is a ceiling, not a choice.** The label sits on its own wash, so composite the hex onto paper at the wash opacity and confirm the label still clears WCAG AA (4.5:1) against that result. `alert` tops out at 0.06 light / 0.10 dark; `accent` at 0.06 / 0.075.
+- The override drives the chip's fill, its stroke **and** its label — the label is the whole point of the highlight, so it is recoloured too. Everything else stays `muted`.
+- **The chip fill is a ceiling, not a choice.** The label sits on its own fill, so composite the hex onto paper at that opacity and confirm the label still clears WCAG AA (4.5:1) against the result. `alert` tops out at 0.06 light / 0.10 dark; `accent` at 0.06 / 0.075.
 - **Check the hue interval against `accent`.** A hex within ~20° of teal's complement (≈355°) vibrates against it at hairline weights — this is why `alert` is ochre at 139° and not the rust-red `#b85450` at 173° that this type used through v2.6.
-- At most **2** washed phases per diagram (the `focal` phase counts as one) — §7 caps accent elements, and the banner is not exempt.
+- At most **2** highlighted chips per diagram (the `focal` phase counts as one) — §7 caps accent elements, and the banner is not exempt.
 - In dark mode use the row's dark hex; if a custom colour needs a different one, document it as a `color_dark` field on that chevron.
 - Pairing the override with the same hex on its paired bar/crosscut is what makes the column read as one concern — do it.
 
@@ -241,23 +248,27 @@ Examples:
 
 Adjacent edges share the same y (no gap), like horizontal chevrons share x at their boundary.
 
-**Draw order** — the same five steps as §2.2, rotated a quarter turn:
-
-1. **Band** — `<rect x=strip_x y=40 width=28 height=strip_h_total>`, same wash as the horizontal band.
-2. **Highlight wash** — one band-outlined `<path>` per `color`-overridden vertical (normally `Security`), filled `alert-tint`.
-3. **Rules** — a 1 px hairline down `strip_x` at the band's bottom-rule opacity, and one down `strip_x + strip_w - 0.5` at the top-rule opacity. **The right hairline is inset half a stroke on purpose:** `strip_x + strip_w` is 1000, the viewBox edge, and a stroke centred there loses its outer half to clipping.
-4. **Notches** — at each interior edge `y`, `<polyline points="strip_x,y strip_x+14,y+12 strip_x+strip_w,y">`; a washed band's two bounding notches take its colour.
-5. **Labels** — `muted` mono `font-size=7`, `font-weight=500`, `letter-spacing=0.14em`, **rotated −90°**, anchored at `(strip_x + strip_w/2, (y0+y1)/2)`; a washed band's label takes its colour at weight 600.
-
-Band outline for `[y0, y1]` (clockwise from top-left; the first band has a flat top, the last a flat bottom):
+**Draw order** — the same construction as §2.2, rotated a quarter turn. The band edges from `heights` play the part of `x_boundaries`, and the arrows point **down**:
 
 ```
-M{strip_x},{y0} L{xm},{y0+12} L{x1},{y0} V{y1-12} L{xm},{y1} L{strip_x},{y1-12} Z
-first:  M{strip_x},{y0} H{x1}                V{y1-12} L{xm},{y1} L{strip_x},{y1-12} Z
-last:   M{strip_x},{y0} L{xm},{y0+12} L{x1},{y0} V{y1} H{strip_x} Z
+strip_rect = x 972.5, width 27      # both strokes inset half a stroke: strip_x + strip_w
+                                    # is 1000, the viewBox edge, where a centred 1-px stroke
+                                    # would lose its outer half to clipping
+chip(i)    = [ edges[i]   + (margin if i == 0    else gap/2),
+               edges[i+1] - (margin if i == last else gap/2) ]
 ```
 
-where `xm = strip_x + strip_w/2` and `x1 = strip_x + strip_w`.
+1. **Chips** — one `<rect x=972.5 width=27 rx=4>` per vertical over `chip(i)`, same fill and stroke as the horizontal chips.
+2. **Highlight chip** — the `color`-overridden vertical (normally `Security`) takes `alert-tint` and the matching stroke.
+3. **Flow arrows** — one per interior edge `y`, centred at `(986, y)`:
+
+   ```
+   <path d="M986,{y-6} V{y+5} M983,{y+2} L986,{y+5} L989,{y+2}" fill="none"
+         stroke="rgba(45,49,66,0.45)" stroke-width="1"
+         stroke-linecap="round" stroke-linejoin="round"/>
+   ```
+
+4. **Labels** — `muted` mono `font-size=7`, `font-weight=500`, `letter-spacing=0.14em`, **rotated −90°**, anchored at the **chip's** midpoint `(986, (chip_lo + chip_hi)/2)`. Unlike the horizontal banner there is no column below to pin to, so the label centres on the shape it sits in. A highlighted chip's label takes its colour at weight 600.
 
 Vertical chevrons honor the per-chevron `color` override documented in §2.2, including its AA and hue-interval checks. Pair the override with the same hex on the chevron's paired bar/crosscut — that pairing is the only thing binding the two visually, now that neither is a solid slab.
 
@@ -425,14 +436,13 @@ When `dark: true`, swap these tokens:
 | Page paper | `#f5f5f5` | `#1c1f2e` |
 | Ink | `#2d3142` | `#f5f5f5` |
 | Muted text | `#4f5d75` | `rgba(245,245,245,0.65)` |
-| Banner / strip band | `rgba(45,49,66,0.045)` | `rgba(245,245,245,0.05)` |
-| Band top rule | `rgba(45,49,66,0.14)` | `rgba(245,245,245,0.10)` |
-| Band bottom rule | `rgba(45,49,66,0.20)` | `rgba(245,245,245,0.16)` |
-| Chevron notch | `rgba(45,49,66,0.22)` | `rgba(245,245,245,0.22)` |
-| Chevron label | `#4f5d75` (muted) | `#bfc0c0` (muted) |
-| Highlight wash — accent | `rgba(15,118,110,0.06)` | `rgba(20,184,166,0.075)` |
-| Highlight wash — alert | `rgba(138,90,18,0.06)` | `rgba(217,164,65,0.10)` |
-| Highlight notch / label | `#0f766e` · `#8a5a12` | `#14b8a6` · `#d9a441` |
+| Phase chip fill | `rgba(45,49,66,0.05)` | `rgba(245,245,245,0.055)` |
+| Phase chip stroke | `rgba(45,49,66,0.14)` | `rgba(245,245,245,0.14)` |
+| Flow arrow | `rgba(45,49,66,0.45)` | `rgba(245,245,245,0.45)` |
+| Chip label | `#4f5d75` (muted) | `#bfc0c0` (muted) |
+| Highlight chip — accent | `rgba(15,118,110,0.06)` fill · `0.45` stroke | `rgba(20,184,166,0.075)` · `0.55` |
+| Highlight chip — alert | `rgba(138,90,18,0.06)` fill · `0.45` stroke | `rgba(217,164,65,0.10)` · `0.55` |
+| Highlight label | `#0f766e` · `#8a5a12` | `#14b8a6` · `#d9a441` |
 | Dashed border | `rgba(45,49,66,0.20)` | `rgba(245,245,245,0.22)` |
 | Cluster border | `rgba(45,49,66,0.18)` | `rgba(245,245,245,0.18)` |
 | Node fill | white | `rgba(245,245,245,0.06)` |
@@ -460,17 +470,18 @@ Before emitting SVG, verify **every** item. If any fails, fix it — don't ship.
 10. Each vertical chevron pairs **1:1** with exactly one `bar` or `cross-cutting` component (§5 pairing rule). `len(verticals) == len(bars) + len(crosscuts)`.
 11. `viewBox_h = max(540, strip_y_bot + 112)` — grow the canvas when multiple crosscuts are declared so the legend still fits.
 12. Custom component colors (§3.4) apply only to container + icon + name; connectors stay topology-driven. Cap at 2 custom-colored components in addition to the focal.
-13. The banner and strip are **one wash plus hairline notches**, never opaque per-phase fills (§2.2). Chevron labels are `muted`, not reversed-out paper.
-14. At most 2 highlight washes across banner + strip together, and each washed label clears WCAG AA against its own wash (§2.2 override rules).
-15. The strip's right hairline is at `strip_x + strip_w - 0.5`, not `1000` — a stroke centred on the viewBox edge is half-clipped.
-16. The diagram passes SKILL.md §9 (4-px grid; ≤ 2 accent elements; mono only for technical content; hairlines; no shadows; no `rounded-2xl`).
+13. The banner and strip are **separated chips with a 24-px gutter**, never opaque per-phase fills and never a continuous band (§2.2). Chip labels are `muted`, not reversed-out paper.
+14. Every interior boundary carries a flow arrow at ≥ 0.45 opacity, and banner labels sit on `chevron_cx` — not on the chip's centre, which the end chips shift by 8 px.
+15. At most 2 highlight chips across banner + strip together, and each highlighted label clears WCAG AA against its own chip fill (§2.2 override rules).
+16. The strip chips are `x=972.5 width=27`, not `972`/`28` — a stroke centred on the viewBox edge is half-clipped.
+17. The diagram passes SKILL.md §9 (4-px grid; ≤ 2 accent elements; mono only for technical content; hairlines; no shadows; no `rounded-2xl`).
 
 ---
 
 ## 8. Anti-patterns
 
 - Chevron banner omitted — it's the key that maps visual columns to functional phases.
-- Chevron banner drawn as filled slabs — it then outweighs the nodes it labels, and a legend that outshouts its subject has stopped being one (§2.2).
+- Chevron banner drawn as filled slabs, or as one continuous band — the first outweighs the nodes it labels, the second leaves direction to be inferred from a silhouette. Separated chips plus an explicit arrow (§2.2).
 - A second concern colour picked near teal's complement (rust-red and friends) — it vibrates against `accent`; use the `alert` token (§2.2).
 - Node x-center off-chevron (§7 #1) — breaks the "banner-as-legend" contract.
 - Vertical chevron drawn on the cluster (overlay) instead of in a reserved right strip.
