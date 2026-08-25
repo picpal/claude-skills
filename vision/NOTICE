@@ -1,0 +1,137 @@
+vision
+======
+
+A fork of cathrynlavery/diagram-design v2.6 (MIT), retoned for Korean-language use.
+Upstream: https://github.com/cathrynlavery/diagram-design
+Upstream license: MIT — see LICENSE (retained unchanged).
+
+The 39 layout grammars, the §6 connector rules, the complexity budget and the
+accessibility contract are upstream work and are unmodified. This fork changes
+tokens and typography only.
+
+
+What changed
+------------
+
+Palette — every role kept except two:
+
+    accent        #eb6c36  ->  #0f766e   (light)      deep teal
+                  #f08a59  ->  #14b8a6   (dark)
+    accent-tint   rgba(235,108,54,0.08) -> rgba(15,118,110,0.08)
+                  rgba(240,138,89,0.10) -> rgba(20,184,166,0.10)
+    link          #2e5aa8  ->  #4c1d95   (light)      violet
+                  #6a95d8  ->  #a78bfa   (dark)
+
+`link` had to move. Teal sits 43 degrees from blue-slate `muted` in hue, so with
+the upstream blue `link` the three mandatory arrow markers (muted / accent /
+link) were 8x6px polygons separated by 1.22:1 contrast — indistinguishable at
+that size. Violet restores an 88-degree gap from accent.
+
+The new accent also fixes a contrast defect it inherited: `#eb6c36` on `#f5f5f5`
+is 2.86:1, below WCAG AA, and nothing upstream checks the accent (the documented
+contrast check covers `ink` and `muted` only). `#0f766e` is 5.02:1 light,
+`#14b8a6` is 5.18:1 dark.
+
+Typography — the upstream serif/sans split is collapsed to one family:
+
+    title       Instrument Serif  ->  Pretendard, Noto Sans KR  (1.75rem/600)
+    node-name   Geist             ->  Pretendard, Noto Sans KR
+    callout     Instrument Serif italic -> Pretendard italic
+    mono roles  Geist Mono        ->  unchanged
+
+Instrument Serif and Geist carry no Hangul, so Korean labels fell back to system
+fonts and broke the type system. Title and body now separate by size and weight
+rather than by family.
+
+
+Pretendard cannot be loaded as a webfont
+----------------------------------------
+
+`tools/lint-skin.py` accepts remote stylesheets from `fonts.googleapis.com` only,
+and additionally bans `@import` and every non-fragment CSS `url()`. Pretendard is
+not on Google Fonts, so linking it, self-hosting it, and embedding it as a data
+URI are all rejected. That gate was left intact.
+
+Consequence: Pretendard renders only where it is installed locally. `Noto Sans KR`
+is the loaded fallback and is what any CI-rendered screenshot will show. Always
+name both, in that order. Diagrams remain correct either way — both cover Hangul.
+
+
+Known limitations of this fork
+------------------------------
+
+All 149 upstream assets were recoloured to the teal skin and rebranded, so
+`--all` works and is green:
+
+    python3 tools/lint-skin.py        --all --baseline   # 186 checked, 23 skipped
+    python3 tools/verify-geometry.py  --all              # 188 checked
+    python3 tools/verify-connectors.py --all             # 188 checked
+    python3 tools/verify-spacing.py   --all              # 188 checked
+    python3 scripts/self_check.py     <file>
+
+23 files stay excluded from colour/font linting via `tools/lint-skin-baseline.txt`
+— that exclusion is upstream's, carried over, plus the Korean derivatives of
+three excluded originals.
+
+Two checkers are new here and have no upstream counterpart:
+
+  verify-connectors.py   an arrow-bearing segment running collinear with a node
+                         border (SKILL.md §6 rule 5's most visible member)
+  verify-spacing.py      node boxes sharing a border, overlapping, or closer
+                         than the §7 minimum
+
+Per-type verifiers carried over under tools/: verify-treemap, verify-slopegraph,
+verify-ridgeline, verify-bubble, verify-dumbbell. `verify-ridgeline` and
+`verify-bubble` had the upstream accent hardcoded and were repointed at the teal
+tokens; `verify-dumbbell`'s prose rationale was corrected (accent-on-paper is
+5.02:1 here, not 2.86:1) while its 3:1 rule was kept.
+
+Upstream scripts NOT shipped, and the references that mention them say so:
+verify-motion, verify-docs-sync, verify-plugin-package, verify-drawio-import,
+verify-mermaid-import, and the test-verify-* suites. Motion output is unverified
+here — check it by hand.
+
+Nothing measures text. All four checkers parse attributes; none calls getBBox(),
+so a label can overflow its box with every gate green. See lessons.md.
+
+
+Korean
+------
+
+39 core types ship a Korean example at `assets/example-<type>-ko.html`, selectable
+from the EN / KO toggle in `assets/index.html`. Korean covers the minimal-light
+variant only, so the gallery disables KO when a non-light variant is selected and
+vice versa.
+
+Node names, titles and legends are Korean; mono technical values stay Latin —
+ports, paths, SQL identifiers, package names and product names. That is both
+normal Korean technical practice and the reason the translations produced no
+overflow.
+
+The 13 remaining gallery entries (bubble, ridgeline, slopegraph, the import and
+animated demos, loop-terminal, sequence-oauth, quadrant-consultant,
+high-level-vertical, datalake) are variants and demos, and are EN only.
+
+
+Inherited defects — upstream, not introduced here
+-------------------------------------------------
+
+Not fixed, because this fork changes tokens and typography only. Recorded so
+they are not mistaken for fork damage:
+
+- Connector rules 3, 4 and 5 (overlapping connectors, shared attach points,
+  transit behind non-endpoint boxes) have NO automated checker. `verify-geometry`
+  checks label-mask overlap only. Several shipped examples violate the rules —
+  `example-swimlane.html` uses diagonal `<line>` handoffs, an automatic fail
+  under SKILL.md rule 1, and `it-state`, `dp-integration` and `high-level` each
+  breach rule 4 or 5.
+- `lint-skin.py`'s hex scanner false-positives on HTML numeric character
+  references: `&#8594;` is reported as `color: #8594 is not in the style-guide
+  palette`. Use literal characters, not `&#NNNN;` entities.
+- SKILL.md's own SVG snippets use `font-size="7"` and `font-size="9"`, off the
+  4px grid its §7 mandates. The style guide's per-role sizes (7-9px) are the
+  intended reading; §7's size list is not exhaustive for mono roles.
+- `type-swimlane.md` carries no layout grammar — no lane height, actor-column
+  width, or routing rule for the reject/return edge. Derive from §6/§7.
+- SKILL.md §6 mandates quarter-arc `r=8` corners; the formula it points at in
+  `type-architecture.md` uses quadratic `Q` corners instead.
