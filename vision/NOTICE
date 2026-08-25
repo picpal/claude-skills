@@ -204,9 +204,19 @@ stated in primitive-icons.md and style-guide.md: the icon says what the node
 diagram. 86 icons were swapped to stroked function icons; brand marks stay in the
 library for diagrams where the vendor is the subject.
 
-The reference was then split by cost. `primitive-icons.md` keeps the rules, a
+Thirty brand marks were then dropped (2026-08-25), leaving nine that stay
+legible at 24px: postgres, mysql, redis, sqlite, oracle, python, docker, github,
+nginx. None of the 39 was used anywhere in the corpus once the diagrams moved to
+function icons. What went: illegible tangles at node size (`sqlserver` alone was
+9,368 bytes), wordmarks needing 40px to read (`sas`, `stata`, `spss`, `pentaho`,
+`hop`), and product logos the function icons say better (`nifi`, `trino`,
+`minio`, `superset`). The `Data stack` and `Statistical tools` categories are
+gone; the brand file is 39 -> 9 icons, 84.5KB -> 16.2KB. Any of them can be
+recovered from git history. 103 -> 73 icons overall.
+
+The reference was split by cost before that. `primitive-icons.md` keeps the rules, a
 name index for all 103 icons, and the 64 stroked function icons (~10k tokens);
-`primitive-icons-brand.md` holds the 39 vendor marks (~24k). Brand marks are 72%
+`primitive-icons-brand.md` holds the vendor marks (~5k after the cull below). Brand marks are 72%
 of the original file's weight -- a filled silhouette averages 2,383 bytes against
 385 for a stroked icon, and `sqlserver` alone was 9,368 -- which is exactly the
 part the rules tell you not to use as a node icon. SKILL.md now directs a

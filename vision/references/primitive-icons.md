@@ -23,8 +23,10 @@ side and no amount of resizing makes the row read as one system — see
 [lessons.md](../lessons.md) → *Optical weight is not a size you can set*.
 
 Every icon in the **Compute · People · Network · Data · Analytics · Kubernetes · Action · DevOps**
-categories is stroked and interchangeable. The **Brand · Data stack · Language · Statistical tools**
-categories are filled silhouettes; use them together or not at all.
+categories is stroked and interchangeable, and lives in this file. The vendor marks in
+[primitive-icons-brand.md](primitive-icons-brand.md) are mostly filled silhouettes — check the
+icon, not the category: `docker` and `github` are drawn stroked. `verify-icons.py` decides MIX
+per icon, on whether it paints a stroke or a fill.
 
 ## Usage
 
@@ -65,7 +67,7 @@ cell. They are not node icons; at 24px they are a grey bar.
 
 ## Index
 
-All 103 icons by name. Copy one with `grep -A6 '^### <name>' references/primitive-icons.md` rather than reading either file whole — the brand file alone is ~24k tokens.
+All 73 icons by name. Copy one with `grep -A6 '^### <name>' references/primitive-icons.md` rather than reading either file whole.
 
 **Function icons — this file.** All stroked, all interchangeable:
 
@@ -79,12 +81,10 @@ All 103 icons by name. Copy one with `grep -A6 '^### <name>' references/primitiv
 - `DevOps` — git-branch · terminal · pipeline · bug · monitoring · test · dag · code
 - `File formats` — excel · csv · txt
 
-**Brand marks — [primitive-icons-brand.md](primitive-icons-brand.md).** Filled silhouettes; a diagram uses these *or* the set above, never both:
+**Brand marks — [primitive-icons-brand.md](primitive-icons-brand.md)** (~5k tokens). Filled silhouettes; a diagram uses these *or* the set above, never both:
 
-- `Brand` — docker · terraform · aws · azure · github · kubernetes · gcp · postgres · redis · nginx · gitea · keycloak · active-directory · minio · mysql · oracle · sqlserver · sqlite · hive · starrocks
-- `Data stack` — nifi · airflow · hop · pentaho · dagster · trino · superset · redash · tableau · powerbi · jupyter
-- `Language` — python · r · sql
-- `Statistical tools` — spss · sas · stata · rstudio · qgis
+- `Brand` — docker · github · postgres · redis · nginx · mysql · oracle · sqlite
+- `Language` — python
 
 ## Compute
 

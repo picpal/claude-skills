@@ -132,7 +132,7 @@ Semantic role combinations — reference these by name in type specs.
 
 Function icons and the name index: [primitive-icons.md](primitive-icons.md).
 Vendor logos: [primitive-icons-brand.md](primitive-icons-brand.md).
-Pull one icon with `grep -A6 '^### <name>'`; reading either file whole costs 10k/24k tokens.
+Pull one icon with `grep -A6 '^### <name>'`; the name index is ~0.4k tokens.
 Enforced by [`tools/verify-icons.py`](../tools/verify-icons.py).
 
 **The icon says what the node *does*; the label says which product does it.** A node already
@@ -145,8 +145,8 @@ tool comparison. Never in an architecture or flow diagram.
 **One icon style per diagram.** Stroked and filled marks cannot be optically balanced against each
 other — a filled silhouette is a solid mass, a hairline mark of the same box carries a fraction of
 the ink. The stroked categories (Compute · People · Network · Data · Analytics · Kubernetes ·
-Action · DevOps) are interchangeable; the filled ones (Brand · Data stack · Language · Statistical
-tools) are a separate set.
+Action · DevOps · File formats) are interchangeable; the nine vendor marks are a separate set.
+Style is decided per icon, not per category — `docker` and `github` are brand marks drawn stroked.
 
 | | rule |
 |---|---|

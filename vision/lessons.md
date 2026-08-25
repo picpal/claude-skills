@@ -601,6 +601,25 @@ so the split cannot silently drop or double an icon.
 
 ---
 
+## The index is the artefact that drifts
+
+**Symptom.** Splitting the icon library left a hand-written name index at the top
+of the function file — the one thing that makes `grep -A6 '^### <name>'` possible
+without opening either file.
+
+**Broke.** Nothing, yet. But the gallery had already drifted from the library once
+for exactly this reason: a derived view maintained by hand. Culling thirty brand
+marks would have silently falsified the index the same way.
+
+**Rule.** Anything derived from a source gets generated from it, and the generator
+gets a `--check` mode. Here `build-icons.py` grew from "write the gallery" to
+"write the gallery *and* the index", so one command keeps both true and CI can
+prove it.
+
+**Guard.** `tools/build-icons.py --check` reports each derived artefact separately.
+
+---
+
 ## Inherited defects worth knowing
 
 Not introduced here; recorded so they are not mistaken for fork damage.
