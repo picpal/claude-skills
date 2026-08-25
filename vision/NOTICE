@@ -186,6 +186,30 @@ they are not mistaken for fork damage:
   `ON DELETE CASCADE` plate was 88px for 85.7px of ink; it was widened to 104px
   here. Others may be equally tight — nothing measures text. See lessons.md.
 
+Icon layer rebuilt (2026-08-25). The library documented "a monochrome 24x24
+icon library" but nothing enforced it. Ten icons carried their own viewBox --
+`hop` at 440x506, `pentaho` with a fractional origin -- so each rendered fine
+standalone while the documented `<g transform>` placement would have drawn them
+5-20x oversized in a diagram. All 103 are now normalised to `0 0 24 24` and
+centred on (12,12). Sixteen function icons were added from Tabler (MIT), in a
+new `Analytics` category and across Data/Action/DevOps/Compute: `query`,
+`transform`, `schedule`, `dashboard`, `notebook`, `code`, `cluster`, `table`,
+`warehouse`, `catalog`, `stream`, `transfer`, `chart`, `report`, `ml`, `dag`.
+
+Every data-platform diagram (high-level x7, datalake x3) had used vendor logos as
+node icons -- NiFi's teardrop, Trino's rabbit, MinIO's flamingo, Superset's two
+circles -- alongside stroked Tabler icons. Two rules now govern this and are
+stated in primitive-icons.md and style-guide.md: the icon says what the node
+*does* while the label says which product does it, and one icon style per
+diagram. 86 icons were swapped to stroked function icons; brand marks stay in the
+library for diagrams where the vendor is the subject.
+
+`tools/verify-icons.py` (new) enforces the grid, the two sizes (24 in a node, 20
+in a caption), the icon-to-label axis, band-glyph centring, and the style ban --
+14 self-tests, 0 findings across 188 files. `tools/build-icons.py` (new)
+regenerates `assets/icons.html` from `references/primitive-icons.md`, so the
+gallery can no longer drift from the library; `--check` fails if it is stale.
+
 Connector defects fixed in this fork (routing only, no token change):
 `architecture` (connector leaving its own box's top border), `tree` (siblings
 sharing a border; ROOT/CAT boxes too short for their content), `deployment`

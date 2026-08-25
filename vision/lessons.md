@@ -494,6 +494,93 @@ half is outside the canvas.
 
 ---
 
+## A logo is not an icon
+
+**Symptom.** "아이콘이 의미하는 것이 분명한 것 이외 나머지는 의미가 불분명하다."
+Every data-platform diagram labelled its nodes with the vendor's logo: NiFi's
+teardrop, Trino's rabbit, MinIO's flamingo, Superset's two circles.
+
+**Broke.** The node already spells the product name in bold 11px underneath. The
+logo repeats that name in a shape a reader cannot decode, and spends the one
+visual slot that could have said *what kind of thing this is*. A reader who knows
+Trino learns nothing from the rabbit; a reader who doesn't learns nothing at all.
+Meanwhile "query engine" — the fact that actually helps — went unsaid.
+
+**Rule.** The icon says what the node *does*; the label says which product does
+it. Brand marks only where the vendor **is** the subject: an inventory, a
+comparison. Never as a node icon in an architecture or flow diagram.
+
+**Guard.** style-guide.md → Icons; `verify-icons.py` MIX (a brand set is filled,
+a function set is stroked, so reaching for one inside the other trips the style
+check).
+
+---
+
+## Optical weight is not a size you can set
+
+**Symptom.** "전체적으로 아이콘들이 정렬되어있지 않음." The obvious reading is a
+coordinate bug, so the obvious fix is to normalise every icon's bounding box to a
+common size and centre.
+
+**Broke.** Normalising the boxes changed nothing. Rendered side by side at equal
+size, NiFi's teardrop is a solid black mass and Airflow's pinwheel is a hairline
+outline — same box, an order of magnitude apart in ink. No placement makes those
+two read as one system.
+
+**Rule.** Optical weight lives in the artwork, not in the geometry. Filled and
+stroked marks cannot be balanced against each other at any size, so a diagram
+picks one and stays there. When "align these" cannot be satisfied by moving
+things, the misfit is in the assets.
+
+**Test.** Render the candidates at one size on one row. If some read as blobs and
+others as wireframes, no amount of coordinate work will fix it.
+
+**Guard.** `verify-icons.py` MIX.
+
+---
+
+## A library that renders is not a library that is aligned
+
+**Symptom.** `primitive-icons.md` opened with "a monochrome 24×24 icon library".
+Ten of its icons were not 24×24 — `hop` was 440×506, `pentaho` had a fractional
+origin at `47.71126037 35.82`.
+
+**Broke.** Each snippet carried its own `viewBox`, so each rendered perfectly
+standalone and in the gallery. Nothing looked wrong anywhere. But the documented
+placement was `<g transform="translate(x,y) scale(s)">`, which inherits the
+parent's user units — drop `hop` into a diagram that way and it draws 20×
+oversized, straight across the page. The defect was invisible until used.
+
+**Rule.** A contract stated in prose is a wish. Measure the corpus against it,
+then encode it in a checker. Here: parse every `viewBox`, compute every drawn
+bounding box with `getBBox()`, and compare against the documented grid.
+
+**Guard.** `verify-icons.py` GRID/BOX, and `build-icons.py` generates the gallery
+from the reference so the two cannot drift apart again.
+
+---
+
+## Align to the label, not to the box
+
+**Symptom.** Every node icon in `example-high-level-vertical.html` sat 56px right
+of centre. The first checker version compared the icon's centre to its enclosing
+rect's centre — correct for nodes, and it caught these.
+
+**Broke.** It also fired on every band and boundary, where a caption glyph sits
+at the left edge while the band's title is centred hundreds of pixels away. Those
+are not misaligned; they answer to a different rule.
+
+**Rule.** A stacked icon shares its **label's** axis, not its box's. Anchoring to
+the label makes the node case exact and drops the band case automatically — and
+a band glyph then gets its own rule (centred on the bar's centre line). Order
+matters: test band membership *first*, or a node label within reach claims the
+band's glyph.
+
+**Guard.** `verify-icons.py` AXIS and BAND, with self-tests for the left-anchored,
+rotated, out-of-reach and band-adjacent cases that must **not** fire.
+
+---
+
 ## Inherited defects worth knowing
 
 Not introduced here; recorded so they are not mistaken for fork damage.

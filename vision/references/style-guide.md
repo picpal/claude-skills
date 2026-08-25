@@ -128,6 +128,36 @@ Semantic role combinations — reference these by name in type specs.
 
 ---
 
+## Icons
+
+Full library and per-icon snippets: [primitive-icons.md](primitive-icons.md).
+Enforced by [`tools/verify-icons.py`](../tools/verify-icons.py).
+
+**The icon says what the node *does*; the label says which product does it.** A node already
+carries the product name in bold, so a brand mark on the same node repeats that name in a shape
+most readers cannot decode, and spends the one visual slot that could have said what kind of thing
+this is. Use `transform`, `query`, `bucket`, `schedule`, `dashboard`, `notebook` — not the vendor's
+logo. Brand marks are for diagrams where the vendor *is* the subject: a stack inventory, a
+tool comparison. Never in an architecture or flow diagram.
+
+**One icon style per diagram.** Stroked and filled marks cannot be optically balanced against each
+other — a filled silhouette is a solid mass, a hairline mark of the same box carries a fraction of
+the ink. The stroked categories (Compute · People · Network · Data · Analytics · Kubernetes ·
+Action · DevOps) are interchangeable; the filled ones (Brand · Data stack · Language · Statistical
+tools) are a separate set.
+
+| | rule |
+|---|---|
+| viewBox | exactly `0 0 24 24` |
+| size | **24** in a node, **20** in a caption, legend, or band; square, always |
+| placement | nested `<svg x= y=>`, never `<g transform>` |
+| stacked on a label | `icon_cx == label_x` — the icon hangs off the label's axis |
+| in a band | left edge, inset **12**, centred on the band's centre line |
+| stroke | `1.5`, `currentColor` or an explicit token; `fill="none"` |
+| colour | `ink` normally, `accent` on the focal node, `muted` for a caption glyph |
+
+---
+
 ## Customizing the skin
 
 Four options:

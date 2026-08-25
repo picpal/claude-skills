@@ -109,7 +109,8 @@ claude-skills/
 │   ├── assets/         예시 181개 (EN 142 + KO 39) + index.html 갤러리
 │   ├── scripts/        self_check.py
 │   └── tools/          lint-skin · verify-geometry · verify-connectors ·
-│                       verify-spacing · verify-text · svgstyle · build-gallery
+│                       verify-spacing · verify-text · verify-icons ·
+│                       svgstyle · build-gallery · build-icons
 └── ...
 ```
 
