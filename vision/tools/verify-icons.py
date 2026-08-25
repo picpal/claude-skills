@@ -137,7 +137,7 @@ def check(text, catalog=False):
         if vb.strip() != GRID:
             msgs.append(f'GRID: {name} at ({a.get("x","?")},{a.get("y","?")}) has '
                         f'viewBox="{vb}" — every icon is normalised to "{GRID}"; '
-                        f"re-copy it from primitive-icons.md")
+                        f"re-copy it from primitive-icons.md or primitive-icons-brand.md")
         if w != h:
             msgs.append(f"BOX: {name} is {w:g}x{h:g} — icons are square")
         elif w not in SIZES:

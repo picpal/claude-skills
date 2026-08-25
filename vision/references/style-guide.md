@@ -130,7 +130,9 @@ Semantic role combinations — reference these by name in type specs.
 
 ## Icons
 
-Full library and per-icon snippets: [primitive-icons.md](primitive-icons.md).
+Function icons and the name index: [primitive-icons.md](primitive-icons.md).
+Vendor logos: [primitive-icons-brand.md](primitive-icons-brand.md).
+Pull one icon with `grep -A6 '^### <name>'`; reading either file whole costs 10k/24k tokens.
 Enforced by [`tools/verify-icons.py`](../tools/verify-icons.py).
 
 **The icon says what the node *does*; the label says which product does it.** A node already

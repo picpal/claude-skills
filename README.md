@@ -105,7 +105,7 @@ claude-skills/
 │   ├── lessons.md      결함·원인·규칙 기록 (수정 전 필독)
 │   ├── LICENSE         원본 MIT
 │   ├── NOTICE          포크 출처·변경내역·제약
-│   ├── references/     39종 type-*.md + style-guide.md
+│   ├── references/     39종 type-*.md + style-guide.md + primitive-*.md
 │   ├── assets/         예시 181개 (EN 142 + KO 39) + index.html 갤러리
 │   ├── scripts/        self_check.py
 │   └── tools/          lint-skin · verify-geometry · verify-connectors ·

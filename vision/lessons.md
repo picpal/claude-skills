@@ -581,6 +581,26 @@ rotated, out-of-reach and band-adjacent cases that must **not** fire.
 
 ---
 
+## Measure the file before you shrink it
+
+**Symptom.** `primitive-icons.md` had grown to 117KB — more than twice SKILL.md,
+the largest file in the skill. The obvious economies are the obvious ones: strip
+the repeated `<svg>` wrapper, trim the descriptions, round the path coordinates.
+
+**Broke.** The wrapper is 13% and the prose 2%. The real weight is 32 filled
+brand silhouettes at 2,383 bytes each against 385 for a stroked icon — 72% of the
+file in the category the skill's own rules say not to use as a node icon.
+`sqlserver` alone is 9,368 bytes, and it renders as an illegible tangle.
+
+**Rule.** Profile before optimising, in bytes, by category. The cheapest cut is
+usually structural — here, splitting the file so an architecture diagram never
+loads the brand marks — not compression of what is already small.
+
+**Guard.** `build-icons.py` reads both files and still fails on duplicate artwork,
+so the split cannot silently drop or double an icon.
+
+---
+
 ## Inherited defects worth knowing
 
 Not introduced here; recorded so they are not mistaken for fork damage.

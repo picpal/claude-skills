@@ -204,6 +204,15 @@ stated in primitive-icons.md and style-guide.md: the icon says what the node
 diagram. 86 icons were swapped to stroked function icons; brand marks stay in the
 library for diagrams where the vendor is the subject.
 
+The reference was then split by cost. `primitive-icons.md` keeps the rules, a
+name index for all 103 icons, and the 64 stroked function icons (~10k tokens);
+`primitive-icons-brand.md` holds the 39 vendor marks (~24k). Brand marks are 72%
+of the original file's weight -- a filled silhouette averages 2,383 bytes against
+385 for a stroked icon, and `sqlserver` alone was 9,368 -- which is exactly the
+part the rules tell you not to use as a node icon. SKILL.md now directs a
+`grep -A6 '^### <name>'` against the index rather than a whole-file read: ~1k
+tokens for a typical twelve-icon diagram, against 33k before.
+
 `tools/verify-icons.py` (new) enforces the grid, the two sizes (24 in a node, 20
 in a caption), the icon-to-label axis, band-glyph centring, and the style ban --
 14 self-tests, 0 findings across 188 files. `tools/build-icons.py` (new)

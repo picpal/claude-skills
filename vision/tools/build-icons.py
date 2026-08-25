@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate assets/icons.html from references/primitive-icons.md.
+"""Regenerate assets/icons.html from the two primitive-icons references.
 
 The gallery used to be maintained by hand, so it drifted: it still carried the
 ten pre-normalisation icons with their own viewBoxes long after the library was
@@ -19,7 +19,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-REF = ROOT / "references" / "primitive-icons.md"
+# The library is split so an architecture diagram never pays for the brand marks:
+# the function set is ~10k tokens, the brand set ~24k. The gallery shows both.
+REFS = [ROOT / "references" / "primitive-icons.md",
+        ROOT / "references" / "primitive-icons-brand.md"]
 OUT = ROOT / "assets" / "icons.html"
 
 START = '    <section class="cat">'
@@ -64,10 +67,10 @@ def duplicates(cats):
 
 
 def main(argv):
-    cats = parse(REF.read_text())
+    cats = [c for ref in REFS for c in parse(ref.read_text())]
     for group in duplicates(cats):
-        print(f"{REF.name}: duplicate artwork: {', '.join(group)} — "
-              f"fold them into one entry", file=sys.stderr)
+        print(f"duplicate artwork: {', '.join(group)} — fold them into one entry",
+              file=sys.stderr)
         return 1
     page = OUT.read_text()
     head, _, rest = page.partition(START)
