@@ -92,6 +92,15 @@ Two checkers are new here and have no upstream counterpart:
   svgstyle.py            resolves CSS-class styling so the checkers above can
                          see nodes that carry no stroke attribute. Not a
                          checker; twenty files were invisible without it.
+  build-gallery.py       regenerates assets/index.html from the directory.
+
+The gallery was rebuilt in this fork. Upstream it is a wall of 52 type tabs above
+one preview frame, on the upstream paper-and-orange palette — which the retone
+never reached, so it kept an accent the rest of the skill had dropped. It is now
+a lazy-mounted contact sheet: every example live in its own frame, grouped into
+seven families, with a focus view for variants and language. The chrome is a pure
+neutral ramp of six greys and carries no hue at all, so the only colour on screen
+belongs to the diagrams.
 
 Per-type verifiers carried over under tools/: verify-treemap, verify-slopegraph,
 verify-ridgeline, verify-bubble, verify-dumbbell. `verify-ridgeline` and

@@ -1,6 +1,6 @@
 ---
 name: vision
-description: "Create branded architecture, IT current-state, flowchart, sequence, state machine, ER/data model, timeline, swimlane, quadrant, radar/spider, polar, loop/flywheel, nested, tree, org chart, layer stack, Venn, pyramid/funnel, treemap, bar, line, Gantt, scatter, high-level, process, medallion, data flow, DP integration, DP security matrix, Sankey, fishbone, Wardley map, kanban, user journey, deployment, dependency graph, UML class, story map or database schema diagrams as standalone HTML/SVG/PNG. Redraw .drawio or Mermaid sources at a chosen size/detail; onboard brand tokens from a URL; add callouts, motion or sketchy styling. 다이어그램·아키텍처·플로우차트·시퀀스·도식화·구조도 작성."
+description: "Create branded architecture, IT current-state, flowchart, sequence, state machine, ER/data model, timeline, swimlane, quadrant, radar/spider, polar, loop/flywheel, nested, tree, org chart, layer stack, Venn, pyramid/funnel, treemap, bar, line, Gantt, scatter, high-level, process, medallion, data flow, DP integration, DP security matrix, Sankey, fishbone, Wardley map, kanban, user journey, deployment, dependency graph, UML class, story map or database schema diagrams as standalone HTML/SVG/PNG. Redraw .drawio or Mermaid sources at a chosen size/detail; onboard brand tokens from a URL; add callouts, motion or sketchy styling. 다이어그램·아키텍처·플로우차트·시퀀스·도식화·구조도 작성. Show the example gallery on request. 갤러리·예시 보기."
 license: MIT
 metadata:
   version: "1.0.0"
@@ -18,6 +18,35 @@ Thirty-nine visual types. Semantic patterns describe behavior independently; typ
 > rule it produced. Most entries exist because something looked fixed and was
 > not — a green lint here does not mean a correct diagram. After fixing anything
 > worth remembering, add an entry. Not needed for routine diagram-making.
+
+## Showing the gallery
+
+Asked to see the gallery, the examples, or "what can this draw?" — open the
+contact sheet rather than describing it:
+
+```bash
+open     <skill-root>/assets/index.html    # macOS
+xdg-open <skill-root>/assets/index.html    # Linux
+start    <skill-root>\assets\index.html    # Windows
+```
+
+One self-contained page: 52 examples in seven families — systems, flow,
+structure, planning, analysis, quantities, and sources & motion. Each thumbnail
+is the real file in a frame, not an exported picture, so a diagram fixed on disk
+is fixed in the gallery the moment it is reloaded. Click one for the full-size
+view with its dark, editorial and Korean variants; `/` filters, arrow keys step
+through types, `Esc` goes back.
+
+To show a single type instead, open `assets/example-<type>.html` directly. The
+`-dark`, `-full` and `-ko` suffixes select the variants; 39 of the 52 ship a
+Korean example, and the seven import and motion demos ship light only.
+
+`assets/index.html` is generated, not hand-maintained — which variants a type
+ships is a fact about the directory, and transcribing it by hand is how a
+gallery ends up linking a file nobody rendered. After adding an example, file it
+under a family in `tools/build-gallery.py` and run `python3
+tools/build-gallery.py`; it fails rather than silently dropping a type you
+forgot to file. `--check` reports whether the committed page is current.
 
 ---
 
